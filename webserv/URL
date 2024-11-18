@@ -1,0 +1,118 @@
+URL [RFC3986]
+-------------
+
+scheme://host[port]path[?query]
+
+http://api.com/weather?year=1964&city=C%C3%A1diz
+
+scheme --> http
+host --> api.com
+port --> optional
+path --> /weather
+?query --> key:value pairs, separated by &
+
+validation:
+----------
+
+1) max length = 2083 characters
+	if > , return 414-URI Too long
+
+2) Case sensitive, except for scheme/host
+	if case don't match, fail the request
+	
+3) maintain case in URLS in responses
+
+4) Query parameter order doesn't matter
+
+5) If possible avoid %-encoding.
+	in the example above city=C%C3%A1diz
+	encodes "Cádiz"
+	%C3%A1 represents the UTF-8 encoding for the character á.
+	
+6) Legal chars:
+	0-9
+	A-Z
+	a-z
+	- . _ ~
+	/ ? # [ ] @ ! $ & ' ( ) * + , ; =
+
+
+HTTP Request/Reply pattern [RFC7231]
+------------------------------------
+Each HTTP request manipulates a resource & requires
+
+URL:		as above
+
+Method:		indicates how to manipulate the resource
+
+Headers:	key/value pairs for network plumbing
+		- proxies
+		- authentication
+		- caching
+		- body length/content
+		- conditionals
+		
+Bodies:		for parsing/returning ephemeral "structures" (JSON) or parsed data
+		example:
+		name, address, phone, mail
+		documents, photos, audio, video
+		
+		What is JSON?
+		JavaScript Object Notation, data format, structure
+		{
+			"name" : "Alice",
+			"age" : 25,
+			"courses": ["Math", "Science"],
+			"isStudent": false,
+			"address": {
+			 "city": "New Jersey",
+			 "zip": "10001"
+			 }
+		}
+
+Anatomy of an HTTP request & response
+-------------------------------------
+
+REQUEST							
+-------							
+POST /item?color=orange HTTP/1.1			
+
+	POST --> Method						
+	item.. --> Path & query Parameters			
+	HTTP.. --> version					
+
+Headers;						
+	host: www.contoso.com:443
+	accept: application/json
+	content-type: application/json
+	
+Request Body (ex: JSON)					
+
+	{
+		"someValue" : true
+	}
+
+RESPONSE
+--------
+HTTP/1.1 200 OK
+	HTTP --> version
+	200 --> status code
+	OK --> Reason phrase
+Headers:
+	//
+	
+Response Body(ex: JSON)
+	//
+
+
+What are the Header keys for Request and Response?
+--------------------------------------------------
+//not listed here
+
+Header values are strings
+-------------------------
+Valid strings for Boolean, Integer, Float, String, Date/Time, Durations
+not listed here
+
+
+

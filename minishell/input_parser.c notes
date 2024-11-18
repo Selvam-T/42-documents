@@ -1,0 +1,65 @@
+5. 	I think what you want to know is 
+	(a) what are you passing, and (b)what is it returning. 
+	
+	(a) you are passing (char **env, char *input)
+              input = "abc\"123$HOME\"def";
+	
+	(b) if there is wild card match, it will place all the strings in char **
+		arg[0] = malloc(match1);
+		arg[1] = malloc(match2);
+		...
+                arg[10] = NULL;
+     	    
+     	    if there is no wild card match, it will return the following,
+                arg[0] = ft_strdup(input);
+                arg[1] = NULL;
+        
+     	    if malloc error, return NULL (Emma to handle exit status)
+     	    
+input_parser.c functions explained briefly 
+------------------------------------------
+
+a) char	**parse_argument(char **env, char *input);
+
+	LANDING function. 
+	
+	Determines if the input needs to be parsed as " or '
+	example: "abc\"123$HOME\"def"
+	in this case, parsing quote is "
+	
+	calls (b) to parse input, quote char identified as c = "
+	
+b) char	**parse_quote(char **env, char *input, char c);
+	
+	it identifies "123$HOME"
+	calls (d) to resolve for the contents between "..."
+	
+	RETURN ft_strjoin (abc + (d) + def)
+					return (abc123/emmasung/def)
+	
+c) char	**no_match_ret_str(char *str);
+	
+	if there were no wild card matches,
+	arg[0] = "abc\"123$HOME\"def"
+	arg[1] = NULL;
+
+d) char	*resolve_quote_str(char **env, char *str, char c, int *do_wc);
+	
+	inside this function "123$HOME" part is handled
+	
+	it recognizes $HOME need variable substitution.
+	call function (e) on $HOME
+	
+	RETURN ft_strjoin (123 + (e))
+					return (123/emmasung)
+
+e) char	*variable_substitution(char **env, char *input, char c);
+	get value for $HOME if it exists,
+	else return NULL
+
+f) int	count_delim(char *str, char c);
+	helper
+
+g) char	*trim_quote_adv_idx(char *s, int *i, char c);
+	helper
+	

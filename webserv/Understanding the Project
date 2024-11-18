@@ -1,0 +1,400 @@
+reading - https://trungams.github.io/2020-08-23-a-simple-http-server-from-scratch/
+
+Write a HTTP server
+
+1) Read the RFC
+	RFC contains Technical and Organizational documents about the Internet
+2) Do some tests with telnet and NGINX before starting this project.
+3) Even if you don’t have to implement all the RFC, 
+	reading it will help you develop the required features.
+	
+
+What is Webserv project about?
+A program capable of
+	1 - running an HTTP server
+	2 - handling requests
+	3 - parsing configuration files
+	
+1)	Primary function of web server
+	- store --> HTML, CSS, JavaScript, images, and other resources, in storage 
+	(either locally or in databases).
+	- process --> interpret client request (GET, POST), assemble the response
+	- deliver web pages to clients --> HTML page or data
+	
+2)	Communication
+	- between client and server takes place using
+	  HTTP protocol
+		
+3)	Web pages delivered are mostly HTML documents
+	- include images
+	- style sheets
+	- scripts
+	- text content
+
+4)	Multiple web servers
+	- cause high traffic
+	
+5)	Who is making the request? - Web browser or Web crawler.
+	- initiates communications
+	- request a specific resource
+	- using HTTP
+	
+6)	Server responds
+	- a) with content of the requested resource
+	     a real file on the server's secondary storage (not always)*
+	- b) or error message if unable to do so
+	
+7)	Full implementation of HTTP also includes
+	- ways of receiving content from clients
+	- submitting web forms, including uploading of files
+	
+Requirement:
+-----------
+
+CONFIGURATION FILE
+1) Take a configuration file as input
+	what is a configuration file? What does it provide
+
+EXECVE
+2) You can't execve another web server.
+	
+	When you execve a web server, you are replacing the current process with 
+	that server's process. This means your original program (which called execve) 
+	will cease to exist in its current form.
+	
+	Design not recommended -
+	----------------------------------
+	1) Process-Based Servers:
+	   The main process does indeed spawn a new process or thread to handle 
+	   each new client request.
+	2) Thread-Based or Multi-threaded Servers: Instead of a full process, the server 
+	   may spawn a new thread to handle each request, which is lighter on resources 
+	   and faster to create but shares memory space with other threads, requiring 
+	   careful synchronization.
+	
+	The project requires the program be restricted from spawning or replacing itself 
+	with a new web server process.
+	
+	Design recommended -
+	------------------
+	3) Asynchronous, Non-Blocking Servers:
+	   Rather than creating a new process or thread, these servers use non-blocking I/O 
+	   and event loops to handle many requests within the same process efficiently.
+	
+3) Your server must never block and the client can be bounced properly if necessary.
+	
+	- handle multiple client requests concurrently
+	- asynchronous processing, start processing another request even if previous
+	  request is not completed
+	- if a client cannot be handled properly, redirect or reject with errors response
+	
+POLL()
+4) It must be non-blocking and use only 1 poll() (or equivalent) for all the 
+   I/O operations between the client and the server (listen included).
+   
+   	- Non-blocking I/O: The server won’t wait or "block" on any single I/O operation. 
+   	(including listening). Instead, it can continue executing while awaiting input 
+   	or output readiness, making it highly responsive.
+	
+	- Single poll() for all I/O: By using one poll() (or an equivalent like epoll or select), 
+	the server can check the readiness of all I/O events (connections, reads, and writes) 
+	with one system call.
+	
+	- The poll() function lets the server know which sockets are ready for action 
+	(e.g., accepting new connections or reading/writing data) without having to block 
+	or spawn multiple threads.
+
+⚠️ 	Thus, if you try to read/recv or write/send in any file descriptor
+	without using poll() (or equivalent), your grade will be 0.
+
+5) poll() (or equivalent) must check read and write at the same time.
+
+	- When you say that poll() (or its equivalent, like select() or epoll()) 
+	must check read and write at the same time, it means that the server can monitor 
+	multiple file descriptors (like sockets) to see if they are ready for either reading 
+	or writing in a single call.
+	
+	- When setting up a poll() call, you would typically provide it with a list of 
+	file descriptors and specify the events you're interested in (read, write, or both). 
+	The server would then react based on which events occurred, allowing it to process 
+	multiple clients effectively within a single iteration of the event loop.
+
+6) You must never do a read or a write operation without going through poll() 
+   (or equivalent).
+  
+  	- Event-driven Architecture: Using poll() aligns with the event-driven programming model,
+  	 where your application reacts to events (like data being available to read or a buffer 
+  	 being ready to write) rather than continuously checking or blocking on operations. 
+  	 This is crucial for building scalable and responsive server applications.
+  	 
+  	 example:
+  	 int ret = poll(fds, 1, 1000);
+  	 
+  	 - poll returns the total number of file descriptors that are ready for any event 
+  	 (read, write, etc.).
+  	 
+  	 - The readiness is detected by checking all pollfd entries in the fds array.
+  	 - Your application must loop through the fds array to identify which FDs are ready based 
+  	 on their revents values.
+ERRNO 	 
+7)⚠️ Checking the value of errno is strictly forbidden after a read or a write operation.
+
+	- In non-blocking mode, checking errno may not provide reliable or meaningful 
+	information because the error states can be ambiguous or misleading.
+	- Instead of relying on errno, it's more appropriate to check the return values of 
+	read/write operations directly.
+	- For read(), a return value of 0 indicates the end of the stream (socket closed), 
+	while a positive number indicates the number of bytes read.
+	- For write(), a return value of -1 indicates an error, and errno could be set, 
+	but it may not accurately reflect the state of the socket if you're in a non-blocking mode.
+	
+CONFIGURATION FILE + POLL()
+8) You don’t need to use poll() (or equivalent) before reading your configuration file.
+
+	- indicates that the use of polling mechanisms is unnecessary for certain types 
+	of I/O operations, specifically when dealing with local file operations such as 
+	reading configuration files.
+	
+	- Reading a configuration file is typically a synchronous operation that involves 
+	blocking I/O. When you attempt to read a local file, the operation will block until 
+	the file is available for reading, which means there's no need to check for readiness 
+	like you would with non-blocking sockets.
+
+SELECT()/MACROS
+9) You can use every macro and define like FD_SET, FD_CLR, FD_ISSET, FD_ZERO 
+   (understanding what and how they do it is very useful).
+   
+	- Understanding these macros is crucial for effectively using select() in 
+	non-blocking I/O programming.
+	- They provide a straightforward way to manage sets of file descriptors, 
+	enabling you to monitor multiple sources of I/O efficiently.
+	- Familiarity with these macros will help you handle network sockets and 
+	file descriptors effectively, leading to more robust and responsive applications.
+	
+	-  These macros are used with select().
+	- poll() and epoll() have their own structures (pollfd and epoll_event) for managing 
+	file descriptors.
+
+TIMEOUT 
+10) A request to your server should never hang forever.
+	- Implementing timeouts for requests helps ensure that if something goes wrong 
+	(like a deadlock, a long-running operation, or an external service being unresponsive), 
+	the server can handle the situation gracefully. Instead of hanging indefinitely, 
+	the server can timeout the request and return an error response, allowing it to 
+	continue functioning.
+
+BROWSER
+11) Your server must be compatible with the web browser of your choice. 
+	
+	- RFC 9112 defines the HTTP/1.1 protocol
+	- Follow HTTP Standards: Make sure your server complies strictly with HTTP/1.1 
+	specifications. 
+	- Browsers expect responses formatted to protocol standards, including 
+	properly set headers and status codes.
+	- Set Correct Headers: Include essential headers like Content-Type, Content-Length,
+	Connection, Date, and Server in your responses. This helps browsers interpret 
+	responses correctly.
+	- Content Types: For example, HTML, CSS, JavaScript, images, and other resources 
+	should be delivered in a format that the browser understands.
+	- MIME Types: Set appropriate MIME types in Content-Type for each response based 
+	on the file type to ensure that browsers render content correctly.
+	- Cross-browser Compatibility: For example, different browsers may implement features 
+	like cookies, session handling, or AJAX calls differently. Ensuring compatibility 
+	means accounting for these variations.
+	- Security Features: implement security features such as HTTPS, 
+	Content Security Policy (CSP), and Cross-Origin Resource Sharing (CORS) 
+	to align with the browser's security requirements.
+	- Error Handling and Response Codes: For instance, a 404 error should lead to a
+	user-friendly error page.
+	- Performance Considerations: handling caching headers and compression (like Gzip)
+	to improve loading times.
+	- Browser Testing: Test with popular browsers (Chrome, Firefox, Safari, Edge) to 
+	catch quirks and specific behaviors.
+	
+
+NGINX	
+12 a) We will consider that NGINX is HTTP 1.1 compliant and may be used to 
+    compare headers and answer behaviors.
+    
+    - Understanding NGINX's handling of HTTP/1.1 can inform best practices for server 
+    implementation, including how to properly set headers, manage caching, and implement 
+    security features.
+    
+    - NGINX is compliant with the HTTP/1.1 specification, which defines how web servers 
+    and clients (like browsers) communicate over the Internet. This compliance ensures 
+    that NGINX can correctly handle requests and responses according to the established standards.
+    
+    - HTTP headers are crucial in communication between clients and servers, as they 
+    provide metadata about the request or response. NGINX’s behavior in managing these 
+    headers serves as a benchmark. For instance, it properly handles headers like 
+    Content-Type, Content-Length, User-Agent, and Cache-Control.
+    
+    - NGINX can demonstrate expected behaviors when processing requests, such as 
+    handling redirects (with 301 and 302 status codes), serving static files, and 
+    processing dynamic content.
+    - By comparing how other servers behave against NGINX, you can ensure that your server 
+    behaves consistently with HTTP/1.1 expectations.
+    
+12 b) Do I need to 
+	- set headers
+	- manage caching
+	- implement security features
+	
+HTTP STATUS CODE	   
+13) Your HTTP response status codes must be accurate.
+	- HTTP status codes communicate the result of a client's request to the server.
+	- 200 OK: Indicates that the request was successful.
+	- 404 Not Found: Indicates that the requested resource could not be found.
+	- 500 Internal Server Error: Indicates that the server encountered an unexpected condition.
+	- For web applications, using accurate status codes is also essential for SEO. 
+	  Search engines rely on these codes to understand how to index pages. For instance, 
+	  using a 301 (Moved Permanently) status for a redirected page helps search engines 
+	  properly transfer ranking signals to the new URL.
+
+DEFAULT ERROR PAGES
+14) Your server must have default error pages if none are provided.
+	- Common HTTP error codes (like 404 for "Not Found" or 500 for 
+	  "Internal Server Error") should have associated default error pages. 
+	  These pages can be customized to match the website's branding, helping maintain 
+	  a consistent look and feel even in error situations.
+	  
+CGI/FORK()/PYTHON, PHP SCRIPTS
+15) You can’t use fork for something else than CGI (like PHP, or Python, and so forth).
+	- highlights a guideline regarding the use of the fork() system call in server 
+	development, particularly in the context of handling requests and processes.
+	- In the context of Common Gateway Interface (CGI), fork() is commonly used to 
+	execute scripts (like those written in PHP or Python). When a server receives a 
+	request for a CGI script, it can use fork() to create a new process to execute 
+	the script, allowing the main server process to continue handling other requests.
+	
+	Additionally explore -
+		- FastCGI
+		- WSGI(Web Server Gateway Interface)
+		- Using an HTTP API Server
+		- Process Managers or Microservices
+
+STATIC PAGE
+16) You must be able to serve a fully static website.
+	- Static content refers to files that do not change in response to user interactions 
+	or server-side logic. This includes HTML files, CSS stylesheets, JavaScript files, 
+	images, and other media files. Each time a request is made for these resources, 
+	the same file is served to the user.
+	- Static files can be served directly from the file system without the need for 
+	server-side processing, making it faster and less resource-intensive.
+	
+	- The server must be configured to handle requests for static files correctly.
+	1. Define a Root Directory: Set a specific directory for static files, like public/ 
+	   or static/, where your HTML, CSS, JS, and image files will be stored.
+	2. Map Request Paths to Files: When a request comes in for a static file, map the 
+	   URL path to the corresponding file in the root directory. For example, if the request 
+	   URL is /images/logo.png, the server should look for public/images/logo.png.
+	3. Set Appropriate Headers:
+	   
+	   Content-Type: Determine the file's MIME type (e.g., text/html for .html, 
+	   text/css for .css, image/png for .png, etc.) and set the Content-Type header accordingly.
+	   
+	   Cache-Control: Configure caching for static files by setting headers like Cache-Control 
+	   to allow client-side caching.
+	   
+	4. Read and Serve Files:
+	   - Open the requested file in read mode.
+	   - Serve the file contents to the client, sending it as the response body.
+	   - Make sure to handle errors (like file not found) and return an 
+	     appropriate response code (e.g., 404 Not Found).
+	     
+	5. Set Non-blocking I/O and Polling (for your server setup):     
+	   - Use poll() or similar non-blocking mechanisms to manage simultaneous file 
+	   requests without stalling other processes.
+
+FILE UPLOAD
+17) Clients must be able to upload files.
+	1 - File Upload Functionality: The server must implement endpoints that can 
+	handle file uploads. This typically involves an HTML form with an 
+	<input type="file"> element, which allows users to select files for uploading.
+	2 - HTTP Methods: File uploads generally use the POST method in HTTP. 
+	The server needs to be configured to handle POST requests that contain file data, 
+	which is usually sent as multipart/form-data.
+	3 - Handling File Data: The server must be able to parse incoming file data from 
+	the request. This involves:
+	- Reading the request body to extract the file information.
+	- Validating the file size, type, and any other constraints you may want to 
+	  enforce (e.g., allowed file extensions).
+	4 - Storage: Once a file is uploaded, the must server store it in a designated location. 
+	    This could be:
+	    - On the local filesystem.
+	    - In a database (for smaller files).
+	    - In cloud storage services (like AWS S3) for larger files or better scalability.
+	5 - Security Considerations: Implementing file upload functionality comes with security 
+	risks, such as the potential for uploading malicious files. To mitigate these risks, 
+	you should:
+	- Validate and sanitize file names.
+	- Restrict file types to only those that are necessary (e.g., images, documents).
+	- Implement size limits to prevent denial-of-service attacks due to excessively large files.
+	- Use secure storage practices to avoid overwriting critical files.
+	- Feedback and Error Handling: The server should provide feedback to clients 
+	  about the success or failure of their uploads.
+	  
+18) You need at least GET, POST, and DELETE methods.
+	- GET: Retrieve data from your database or server.
+	- POST: Add new data to your server or database.
+	- DELETE: Remove specific data from the server or database.
+
+STRESS TEST/ HIGH LOAD	
+19) Stress tests your server. It must stay available at all cost.
+	- To stress test your server and ensure it remains available under high load, 
+	you can use tools like Apache JMeter, Locust, or Artillery, which simulate a 
+	large number of requests.
+	
+LISTEN TO MULTIPLE PORTS
+20) Your server must be able to listen to multiple ports (see Configuration file).
+	    
+	- To configure your server to listen on multiple ports, you can set up a 
+	configuration file that specifies each port you want to listen on. 
+	The exact configuration method depends on your server software 
+	(e.g., Nginx, Apache, custom server).
+	
+BONUS:
+-----
+COOKIES/ SESSION MANAGEMENT
+21) Support cookies and session management
+	- Cookies are key-value pairs sent by the server and stored by the client. 
+	They help identify users between requests.
+	- Sessions allow the server to store information tied to a user session 
+	and are often managed using session IDs stored in cookies.
+	- Expiration: Set expiration for sessions and cookies to limit their lifespan.
+	- Secure Flag: Always set the secure flag in cookies for HTTPS.
+
+MULTIPLE CGI
+22) Handle multiple CGI.
+	- To handle multiple Common Gateway Interface (CGI) scripts, you can configure your 
+	server to serve multiple scripts, each mapped to different URLs or endpoints.
+	
+-----------------------------------------------------------------------
+
+Jeffrey recommendation:
+----------------------
+
+	- config parsing
+	- figure out poll
+	- HTTP request
+	- CGI
+	
+	- Bonus
+		cgi - for() required
+		cookie handling / store local
+		stasj / edit javascript to save as local cookie
+		
+	- vim test.php //popular choice for cgi
+	<? php
+	//command do logic
+	?>
+	
+	- vim test.py
+		print "<html>
+		//whatever inbetween
+		
+		
+	ex:6 //need poll() call
+	
+
+

@@ -1,0 +1,157 @@
+questions:
+
+0)	signature
+	cd sgoinfre/born2beroot
+	shasum born2beroot2.vdi
+
+1)	how a virtual machine works?
+2)	choice of os
+3)	rocky vs debian
+4)	purpose of virtual machine
+5)	aptitude vs apt
+6)	monitoring.sh information to be displayed 10 mins
+
+1a)	ensure machine does not have a graphicalenvironment at launch	
+		dpkg -l | grep desktop-environment
+		
+		if not output, it suggests that Desktop environment that provides 
+		GUI is not installed
+		dpgk is a command for debian package manager
+	
+1b)	password required before attempting to connect
+
+1c)	login must not be root
+		root has highest level of privileges, to avoid mistakes with 
+		severe consequences, avoid login in as root
+
+1d)	password should follow the rules
+
+2)	ufw service is started
+		sudo ufw status			-->displays rules
+		sudo systemctl status ufw	-->displays service currently running or not?
+		
+3)	ssh service is started
+		sudo systemctl status ssh
+		
+4)	os is debian
+		cat /etc/os-release	
+
+user
+1)	sthiagar is added to 1. 'sudo' and 2. 'user42' group?
+		getent group sudo user42
+2)	password policy implementation
+		vim /etc/pam.d/common-password
+		vim /etc/login.defs
+3)	create new user, assign password, explain how files were modified to implement policy
+		sudo adduser new_guy
+		cut -d: -f1 /etc/passwd  --> view only users
+		
+		sudo deluser new_guy
+		
+		sudo deluser new_guy new_group
+		
+		To remove user from a sudo group;
+			edit sudoers file, sudo visudo, comment the username line
+		
+4)	create group 'evaluating', assign new user to this group
+		sudo groupadd new_group
+		sudo usermod -aG new_group new_guy
+		
+		getent group new_group
+		sudo chage -l new_guy
+		
+		sudo groupdel new_group
+		
+5)	explain advantages/disadvantages of password policy
+		disadvantages - user frustration, password management challenges
+			lockout issues, limited security (multi-factor more secure)
+			administrative overhead
+
+hostname and partitions
+1)	is hostname sthiagar42?
+		hostname
+2)	change hostname to newuser, reboot, check hostname is updated
+		sudo hostnamectl set-hostname new_hostname
+		sudo reboot
+3)	restore hostname to sthiagar42
+		sudo hostnamectl set-hostname sthiagar42
+		sudo reboot
+4)	view pastitions
+		lsblk
+5)	is partition similar? (don't have to be, not doing bonus)
+6)	explain how LVM works
+		Logical Volume Manager
+		PVs - Physical Volume
+		VGs - Volume Groups
+		LGs - Logical Volumes
+
+sudo
+1)	sudo installed?
+		dpkg -l | grep sudo	-->debian package -list
+		
+		example of a service I didn't install, firefox
+		dpkg -l | grep firefox
+		
+2)	assign new user to 'sudo' group
+		sudo usermod -aG sudo new_guy
+		update sudoers file, add line: username ALL=(ALL:ALL) ALL
+		
+		sudo -lU username  -->check if user is part of sudo group		
+		
+3)	explain value and operation of sudo using example
+		example of using directive: mail_badpass
+		value - enhance security, detect unauthorized access attempts
+		operation - when directive enabled, email notification sent to sudo user
+		
+4)	implementation of rules imposed
+		edit the sudoer files to add rules.
+		User-sepcific rule, john ALL=(ALL:ALL) ALL
+		Group-sepcific rule, %group1 ALL=(ALL:ALL) ALL
+		
+5)	/var/log/sudo/ folder exists? has file? see history of commands used with sudo
+		ls /var/log/sudo/sudo.log
+6)	run command with sudo, see if file updated
+		cat /var/log/sudo/sudo.log
+
+ufw/firewall
+1)	ufw installed? ufw working?
+		sudo ufw status
+2)	what is ufw? value of using it?
+		ufw is ubuntu and debian based command-line tool for managing firewall iptables
+		simplicity and user-friendliness, to quickly setup and manage a firewall
+3)	list active rules in ufw, a rule must exist for port 4242
+		sudo ufw status	
+		notice status is active, port 4242 ALLOW
+4)	add a new rule to open port 8080, check this is added by listing active rules
+		sudo ufw allow 8080
+5)	delete the new rule for 8080
+		sudo ufw delete allow 8080
+
+SSH
+1)	SSH installed? working properly?
+		sudo service sshd status
+2)	what is SSH? value of using it?
+		Secure Shell Host, network protocol used for remote access
+		secure file transfer, secure remote login
+3)	SSH service only uses port 4242
+		update /etc/ssh/sshd_config -->change port 22 to 4242
+		sudo systemctl restart ssh
+4)	login with new user using SSH?
+5)	should not be able to login with root user using SSH
+
+script monitoring
+1)	how script works, show code
+		cat /usr/local/bin/monitoring.sh
+2)	what is "cron"
+		crontab command is used to manage and schedule tasks run at specific times
+3)	how does the script run every 10 minutes from when the server starts
+		sudo crontab -u root -e -->edit the crontab of root user
+4)	run every minute
+		sudo crontab -u root -e
+		*/1 * * * * /usr/local/bin/monitoring.sh
+5)	make the script stop running when server rebooted, without modifying the script
+		sudo /etc/init.d/cron stop
+		however it will halt all scheduled jobs until you start it again
+	
+		sudo /etc/init.d/cron start
+

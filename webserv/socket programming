@@ -1,0 +1,101 @@
+For reference: UNIX: Network Programming" by W. Richard Stevens 
+
+Socket programming basics
+-------------------------
+
+1)	Client and Server establish TCP connection
+
+2)	Client sends HTTP request over TCP connection
+3)	Server processes that request and sends back a reply.
+
+	Send Request / Send reply until connection is closed.
+	
+//Client --> don't need to create application. Browser is used as client.
+//------
+//	- create socket
+//	- connect
+//	- send
+//	- recv
+//	- close
+	
+Server
+------
+	- create socket
+	- Bind
+	- Listen
+	- Accept
+	- Recv  // HTTP message exchange
+	- Send  // HTTP message exchange
+	- close
+		- send EOF character
+		- close the socket file descriptor
+
+C++ has no standard library for socket programming
+---------------------------------------------------
+	- POSIX socket API (Portable OS Interface)
+		is a standardized interface for network communication, 
+		defined in the POSIX standard, and is implemented in C.
+	- includes functions for 
+		creating sockets, 
+		connecting to remote servers, 
+		sending and receiving data, 
+		and closing connections.
+		
+	- <sys/socket.h> and 
+	  <netinet/in.h>, 
+		provide the POSIX socket API functions. 
+	
+	- socket()
+	- bind()
+	- listen()
+	- accept() //used by the server
+	- connect() //used only by the client
+	- send()
+	- recv()
+	
+	
+	- You can then leverage C++ features (like RAII with classes to manage resources, 
+	e.g., socket file descriptors) while still using POSIX APIs for network communication.
+	
+	- While C++ does not add specific socket functions, you can wrap POSIX socket 
+	calls within C++ classes to create a higher-level, more C++-friendly API.
+	
+	- Sockets are represented by file descriptors, 
+	  you interact with them using system calls like 
+	  - socket()	//#include <sys/socket.h>
+	  - bind()
+	  - listen()
+	  - accept()
+	  - read()
+	  - write()
+	  - close()
+	  
+	A system call in C is a request made by a program to the operating system's kernel to 
+	perform a low-level operation.   
+
+I/O multiplexing or event notification mechanisms
+-------------------------------------------------
+
+- select() is best for small-scale applications with a few descriptors.
+
+- poll() offers improvements over select(), but still has linear scanning limitations.
+
+- epoll() is the most efficient and scalable choice for large numbers of descriptors on Linux.
+
+They are used to manage multiple file descriptors for asynchronous I/O operations, allowing a 
+program to monitor several file descriptors at once to see if they are ready for reading, writing, 
+or have errors without blocking the program’s execution.
+
+These functions prevent the program from being stuck waiting for data on a single socket, 
+making them ideal for handling large-scale network applications like HTTP servers.
+
+How many file descriptors will there be ?
+-----------------------------------------
+Say you have 10 clients making request -
+	- The listening socket (used to accept incoming client connections).
+	- 1 file descriptor for the listening socket (the socket you create 
+	with socket() and bind()).
+	
+	- 10 file descriptors for the 10 connected client sockets
+	(each returned by accept()).
+

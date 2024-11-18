@@ -1,0 +1,613 @@
+cd
+
+To be done:
+
+	1. change to home directory
+	cd
+	
+	2. change to home directory as above
+	cd ~
+	
+	3. move to parent directory
+	cd ..
+	
+	4. do not change/ remain in current directory
+	cd .
+	cd ./
+	
+	5. change to root directory
+	cd /
+		
+	6. change to previous directory
+	cd -	
+	
+	7. change to Absolute path
+	cd /path/to/directory
+	
+	8. change to Relative path
+	cd ./path/to/directory
+	cd ../path/to/directory
+	
+	9. change to directory within the current directory
+	cd libft
+	
+	10.🤔 change to given user directory
+	cd ~sthiagar
+	
+	11.🤔 Automating directory changes
+	cd "$(dirname "$0")"
+	//only possible if I have access to the directory stack with index of the list
+	//do I need to maintain a directory stack on my own?
+	
+	//regular file vs directory
+	12. Error message if it is a regular file, and not a directory.
+	cd abc.c
+	bash: cd: cd.c: Not a directory
+	
+	I use stat() function, and macros S_ISREG(), I don't believe macros are forbidden.
+
+	//symbolic link vs home directory
+	13.🤔 ~sthiagar is a home directory, it could also be a symbolic link to a file or dir
+	how can you tell?
+	lstat() function populates struct with attributes of the path that can be used to
+	find if symbolic link or directory, using macros S_ISLINK() and S_ISDIR()
+	
+	//14.🚫 flags (not implemented) 
+	-L
+	-P
+
+THEORY
+	absolute path vs relative path:
+	
+	absolute path is the path to a file or directory from the root directory (/).
+	It specifies the complete path starting from the root of the file system.
+	
+	Absolute path: /home/user/Documents/example.txt
+	
+	a relative path specifies the location of a file or directory relative to the 
+	current working directory. It does not start from the root directory (/) but 
+	instead navigates from the current directory using symbols like 
+	. (current directory) and .. (parent directory).
+	
+	Relative path: ../Pictures/photo.jpg
+			
+	shell command to find absolute path:
+		%> find "$(pwd)" -type d -name "dummy1"
+		or
+		%> echo "$(pwd)/dummy1"
+		
+	shell command to find the relative path:
+		you  need to know the absolute path first.
+		and then,
+		%> realpath --relative-to="$(pwd)" /home/sthiagar/dummy1
+
+Expected behavior:
+
+0,	If a path begins with a leading '/', then it is an absolute path.
+	If a path begins with './' or '../', then it is a relative path.
+	If a path begins without '/', './', or '../', 
+	then it is a path in the current directory.	
+	
+1,	cd takes only one argument in bash
+	if more than 1, throw too many arguments error.
+
+2,	chdir() takes the following as argument. "/", ".", "..", "/", "../.."
+	chdir() does not support "~", "-"
+
+3,	a. if '~', change to home directory
+	b. if '~emma', change to home directory of given user
+		if the username doesn't exit, then throw error 
+
+4,	a. if '..' or '../', then go down one level, a.k.a parent directory
+	b. if '../subdir2, then go down one level, then go up to subdir2
+	c. if '../subdir2/potato, one level down, 2 levels up
+	
+	d. if '.' or './' means current directory
+
+5,	if the path begins with leading '/' then it is an absolute path.
+	
+6,	if '-'
+	change to previous directory. i.e. OLDPWD
+	
+7,	Exit status ($?) related to cd command
+	0:	success
+	1:	directory doesn't exist or permission denied
+	2:	invalid flags
+	127:	cd command does not have its own executable file.
+	
+	Therefore, we only use 0 and 1.
+	2 is not relavant, because minishell doesn't require flags
+	127 is not relavant, because we are not using cd command's executable
+	
+What does cd do?
+	It changes directory. 
+	So basically update the CWD on the file system state.
+
+What does getcwd() do?
+	getcwd() returns the CWD.
+	
+What does chdir() do?
+	chdir() changes the CWD.
+	
+getcwd() and getenv("PWD") do not return the same value why?
+	getenv("PWD") looks up the environment list, returns value for PWD.
+	environment identifiers (variables) in the environment list 
+	pertains to the shell environment.
+	
+	getcwd() returns the current working directory of the calling process.
+	getcwd() and chdir() does not look up or update the environment list.
+	getcwd() and chdir() pertains to the process environment or the program environment.
+	Process environment can be viewed as a subset of the shell environment. (I think). 
+	The information for getcwd() and chdir() is maintained by the 
+	operating system,specifically in the kernel's data structures.
+	So the bulk of the work is in getting the correct pathname to pass to chdir()
+
+Why we do not use getenv() ?
+	Because chdir() does not update the environment list to the shell environment.
+	getenv() retrieves values from environment list, which is not useful to us.
+	But getcwd(), chdir() functions return the file system state within the process.
+
+What is our program logic in changing directory and updating PWD, OLDPWD?	
+	We must update the envrironment list our program maintains, to keep it 
+	consistent with OS state of current working directory.
+	To do this we update the PWD and OLDPWD everytime we use chdir() to change directory.
+	To know the current working directory, we use getcwd()
+
+How far back can you change directory name?
+	chdir() does not goes further back than the / (root directory)
+------------------------------------------------------------
+
+exit
+
+What needs to be done:
+exit
+	1.✅ exit with specific exit status (eg.1)
+	exit 1
+	
+	2.🤔 terminate current shell session or script.
+	exit
+	exits with default exit status (0)
+	
+What needs to be done:
+
+1.	performs cleanup tasks, 
+	closing file descriptors
+	releasing resources associated with the shell session
+
+2.	Bash sends an exit status to the parent process.
+	Based on this exit status, the parent process can take appropriate action, 
+	such as updating its own state or handling subsequent commands.
+------------------------------------------------------------
+
+unset
+
+What needs to be done:
+
+unset	---> need to remove a specified var from the environment maintained by us.
+	1.✅ opposite of export. remove export attribute from a variable
+	unset MY_VARIABLE
+	
+	2.✅ unsetting multiple variables
+	unset VAR1 VAR2 VAR3
+	
+	//3.🚫 unsetting a function:
+	unset -f my_function --> -f not implement, so unsetting a function is not expected
+	
+	//4.🚫 flags  (not implemented) 
+	-f
+	-v
+------------------------------------------------------------
+
+pwd
+
+What needs to be done:
+pwd	---> need to update the environment maintained by us.
+
+	1.✅  check current directory	---> write (str)
+	pwd
+	
+	2.🤔 used in command substitution ---> need return (str)
+	current_dir=$(pwd)
+	echo "The current directory is: $(pwd)"
+	
+	//3.🚫 flags (not implemented) 
+	-L
+	-P
+
+------------------------------------------------------------
+
+env
+
+What need to be done:
+
+env	---> need to create/ update /display the environment maintained by us.
+	1,✅  displaying all environment variables
+	
+	%>env
+	
+	unlike export command, 
+	env command will display only if the identifier has =
+	example: name=
+	
+	2,✅ executing a command with var=value pair, either existing var or new var
+	
+	%>env VAR=value
+	 
+	Observation and implementation: 
+	
+	%> env MY_VAR="Hello, World!" echo $MY_VAR
+	I tested this. 
+	1. env DOES NOT change the value of MY_VAR if it exists
+	2. env DOES NOT create MY_VAR="Hello" if it does not exist
+	
+	3,✅  Throws error message, if var does not have assignment 
+	ex: %>env VAR
+	error message 
+	%>env: ‘home’: No such file or directory
+
+Useful Theory:
+	The env command is used to run a command in a modified environment. 
+	It allows you to specify environment variables for a particular command 
+	without permanently changing the shell's environment. 
+	It's commonly used to set temporary environment variables 
+	or to override existing ones when running a command.
+	
+------------------------------------------------------------
+
+echo
+
+To be done:
+
+	1.✅ print string	---> write (str) + write (\n)
+	echo "Hello"
+	
+	2.✅ with flags 	---> write (str) 
+	echo -n "skip newline"
+	//echo -e "enable interpretation of backslash escapes" (not implemented)
+	//echo -E "disable interpretation of backslash escapes" (not implemented)
+	
+	3.🤔 print variables 	---> need return (str)
+	name="alice"
+	echo "name, $name"
+	
+	4.🤔 print to file 	---> need return (str)
+	echo "append this line to file" >> output.txt
+
+Arguments and expected behavior:
+
+	1. echo "Hello" 
+	 argument: args[0] == "Hello"
+	 output: no newline flag, so writes (Hello\n)
+	
+	2. echo -n "Hello"
+	 argument: args[0] == "\n", args[1] == "Hello"
+	 output: has newline flag, so writes (Hello), 
+	 but no space will appear between end of last string and the cmd prompt.
+	
+	3. user_created_identifier. 
+	name="alice"
+	echo "name, $name"
+	(if handled, the identifier expansion is done prior to function call)
+	 argument: args[0] == "name", args[1] == "Emma"
+	 output: writes (name, Emma\n)
+	
+	4. echo $HOME*
+	If your HOME is home directory, 
+	then it will display directory without * concatenation
+	
+	If you HOME=dummy, value changed, then it will concatenate * to string
+	Why?
+	Because * means it is looking for file or dir names in cwd. So it is looking
+	for directory name returned by HOME value. When found it will return the file name,
+	i.e. * in this case is a wild card, not a char in the string.
+	
+	But if the value of HOME turns out not to be a file or directory name, then * is treated
+	as a char and is concatenated to the value of HOME (or any identifier for that matter).
+	
+	5. print to file
+	echo "write this line to file" >> output.txt
+	echo "write this line to file" > output.txt
+	argument: args[0] == "write this line to file"
+	output: writes (write this line to file\n)
+	remember write() writes to STDIN. Redirection is handled outside this function.
+	
+------------------------------------------------------------
+
+export
+
+To be done:
+
+export	---> need to update the environment maintained by us.
+	1.✅ setting an environment variable or user_created variable
+	export MY_VARIABLE="some value"
+	
+	2.✅ export multiple variables
+	export VAR1=value1 VAR2=value2 VAR3=value3
+	
+	3.✅ export
+	will display env list, including identifiers without =
+	example: name
+	example: name=
+	example: name=something
+	will all be displayed in a display format different from env
+	 
+	4.🤔 MY_VARIABLE="some value"
+	export MY_VARIABLE
+	In this, line 1 will not add MY_VARIABLE to env list
+	but export MY_VARIABLE will add it to the env list
+	
+	//5.🚫 flags  (not implemented) 
+	-n
+	
+Expected behavior:
+	
+1.	%> export
+	%> lists all the env identifier=value pair
+
+2. 	%>export PWD
+	  // In the background it may update PWD=value pair to data structure for exported
+	  // And it makes PWD available to the child process
+	  //but it displays nothing
+	%>
+	
+3. 	%>export dummy
+	  // If dummy doesn't exist, nothing is added to environment list
+	%>
+	
+4. 	%>export PATH="abc"
+	  //set and export the PATH identifier
+	  //meaning it update value for exisiting identifier.
+	  //and do other things as mentioned above.
+	  //I update the value for existing identifier. Display nothing.
+	%>
+
+5.	%>export dummy="abc"
+	  //create dummy=abc in enviroment list, and rest as above.
+	  //I create this in environment list. Display nothing.
+
+//error cases
+	//What we call variable is known as identifier in bash.
+	//1. invalid identifier name. Example identifier name cannot start with number
+	//	it can only contain num, letter, _
+	//2. values that contain special characters without proper quotes
+	//	if user press ", it rectifies
+	//	if user input something, the finally close. add everything user added
+	//	   for spaces, 1 space no matter how many spaces were added	
+	//	if user press CTRL+C, terminate, exit status is 130
+	//3. the user imput, and the exit status determinatin is outside of this function
+	
+HOW THIS TRANSLATES TO CODING -
+
+	1. EXPORT 
+	(without arguments)
+		1. display env key-value pair
+		ex1: identifier=abc ---> will display as identifier="abc"
+		ex2: identifier=    ---> will display as identifier=""
+		ex2: identifier     ---> will display as identifier
+		2. prefix string "declare -x "
+	
+	2. EXPORT PWD 
+		if no value, regardless of key exists or not
+		do nothing
+	
+	3. EXPORT dummy
+		if no value, regardless of key exists or not
+		do nothing
+
+	4. EXPORT dummy=
+		if it has '=' treat it as set value
+		if valid key, 
+		if key exists --> update with '\0' for value
+		if key doesn't exists --> add new key. with '\0' for value
+		
+	5. EXPORT PWD=something
+		if valid key, valid value
+		if key exists --> update
+		else if key does not exist --> add new
+	
+	6. EXPORT PWD+=something
+		if valid key, valid value
+		append
+
+	7. EXPORT dummy==123 something
+		the 2nd '=' is part of value. Only until space.
+	
+	8. EXPORT dummy= something
+		first element dummy= is assigned a value
+		the 2nd element 'something' is a valid identifier or identifier name
+		but because it doesn't have a '=' it is not assigned a value
+		comparte this example with the next, which is similar, but returns error
+
+	9. EXPORT dummy= 123
+		123 not a valid identifier ERROR
+		The first part dummy= is valid with no value assigned
+		The next part 123 is expected to be an identier, 
+		but because it begins with number, it is invalid
+
+	10. EXPORT = 
+		'=' not a valid identifier
+		because remember an identifier can only have num, letter and '_'
+		in this what precedes '=' space which is invalid
+	
+	11. EXPORT dummy = 123
+		 not a valid identifier ERROR
+	
+	12. EXPORT dummy =jack
+		not a valid identifier ERROR
+
+	13. EXPORT PWD=123 =bad USER=456 =toobad
+		It will set PWD and USER
+		Throw error stating '=bad' not a valid identifier
+		Throw error stating '=toobad' not a valid identifier
+
+	13. Limitations: Identifier cannot be a bash keyword or reserved word, 
+		but that check is not performed
+
+	14. OTHER Errors
+		if invalid key --> throw error
+		if unclosed quote --> may consider heredoc, but we can skip it
+		if unclosed quote --> we may treat it as error
+
+------------------------------------------------------------
+Why does the program need to maintain a copy of environment list?
+
+It has everything to do with forbidden use of setenv() in minishell.
+Everytime, you chdir() you can update the PWD and OLDPWD in the environment list,
+if you were allowed to use setenv(). But because you are not able to update it,
+you want to be able to maintain a copy of the environment list, and update it on your own.
+For the same reason getenv() function becomes useless to you, because although it is
+able to access the program's environment list, it is not updated for reasons mentioned above.
+
+Below is how you acces the environment list to make a copy.
+
+extern char **environ 
+---------------------
+
+	When a new process, such as the minishell, is created, 
+	it inherits the environment variables from its parent process.
+	
+	This array is accessible to C programs through the 
+	extern char **environ declaration.
+	
+	It contains a null-terminated array of character pointers. 
+	Each pointer in the array points to a null-terminated string 
+	representing an environment variable in the format "NAME=value". 
+	
+	environment variables contain information such as 
+	- user preferences, 
+	- system configuration settings, 
+	- and runtime information for the shell and its child processes.
+	
+	Configuration and Customization: Environment variables allow users to 
+	customize the behavior of the shell and its child processes. 
+	Users can set variables like PATH, HOME, USER, etc., to define default paths, 
+	user directories, usernames, and more, influencing how commands are executed 
+	and where files are located.
+	
+	Communication and Information Passing: Environment variables provide 
+	a means of communication between the shell and its child processes. 
+	They can be used to pass information such as configuration settings, 
+	runtime parameters, or flags to child processes spawned by the shell.
+	
+	Process Management: Environment variables can affect the behavior of processes 
+	launched by the shell. For example, setting the PATH variable determines 
+	where the shell looks for executable files when running commands, 
+	influencing which programs can be executed directly from the command line.
+	
+	some useful environment variables.
+	- PWD: Specifies the current working directory.
+	- PATH: Specifies the directories to search for executable files.
+	- SHELL: Specifies the default shell.
+	- HOME: Specifies the home directory of the current user.
+	- OLDPWD: Specifies the previous working directory.
+	- -: Contains the path to the current executable.
+------------------------------------------------------------
+
+Minishell limitations
+
+Wildcard
+--------
+1) Wildcard function will match wildcard in the current directory only, as per PDF
+   example e) is the reason why I am not doing beyond what is required.
+     
+  a)✅  echo *
+     open current directory and do the rest
+     opendir(".");
+ 
+  b)✅  echo */ --> look in cwd (for directories because / is directory)
+  
+  c)🚫echo /* ---> not handle. because this is not the CWD
+     The directory should go into root, then match everything
+     This is not a challenge
+    
+  d)🚫echo /bin/* ---> not handle. because this is not the CWD
+     This goes into /bin/ directory and match everything
+    
+  e)🚫 echo /bi*/z* ---> not handle. because this is not the CWD
+     This needs a lot of work, not going to put that work into it 
+     when project doesn't require it.
+     
+Comparison of wildcard matching and output:
+
+	For string enclosed in dbl-quotes -->
+	1- Only letters, nums, and '_' is recognized as valid identifier
+	2- the remaining characters are temporarily set aside
+	3- retrieve the value of the identifier if present.
+	 - or '/0' if there is no such identifier.
+	4- concatenate the value with the characters set aside
+
+1)	%>echo "$HOME*"		%>echo "$HOMEZ"		%>echo "$HOME+"
+	%>/home/sthiagar*	%>			%>/home/sthiagar+
+	
+	HOME is taken valid identifier name
+	* is not treated as wc inside dblequote
+	value returned by HOME is concatenated with *
+	
+	HOMEZ is taken as a valid identifier name
+	There is no such identifier, hence it returns nothing
+	
+2)	%>echo "$HOME"*		%>echo "$HOME"Z		%>echo "$HOME"+
+	%>/home/sthiagar	%>			%>/home/sthiagar+
+	
+	HOME is taken as a valid identifier name
+	* is outside the dblquotem hence it acts as a wildcard * prefixed to the value
+	the wildcard matching on /home/sthiagar* in the CWD will find a folder by that name
+	hence it returns the match. Notice * is not contanenated to it.
+	
+	BUT the above is how BASH would behave.
+	BUT minishell is only expected to do wildcard match in the CWD
+	but /home/sthiagar is not the cwd, hence minishell will treat the whole thing as string
+	
+------------------------------------------------------------
+
+cleanup logic for double quote
+------------------------------
+
+The idea is to not do variable subsitution of parsing of double quote content (ex: "$HOME")
+during the parsing stage, because in cases of multiple pipes, the parsing of 
+"$HOME" must be performed at the executor stage, because in the preceding pipes
+the value of $HOME could have been changed.
+
+So with this in mind, we retain "" with logic listed below.
+
+1, "*" --> don't remove ""
+2, * --> don't add ""
+3, "$HOME" --> "$HOME" --> don't remove
+4, $HOME --> "$HOME" --> add
+5, "abc$HOME" --> "abc$HOME"
+6, abd$HOME* --> abd"$HOME"* //$ part in "", coz valid identifier, * outside
+7, abd$9HOME* --> abd$9HOME* //$ part NOT in "", coz invalid identifier
+
+"*" is placed inside "", as it is already inside
+ * is not placed inside "", as it is already outside
+
+"$" is placed inside "", as it is already inside
+$ is place inside "", a) if it is a valid key name
+
+if $ is followed by <space>, it is not place in "", it is relegated to regular str
+if $*, it is hardcoded to mimic bash to output nothing, thus $* remove from parsed str
+if $ is followed by invalid key identifier, it is still placed within "", to be handled
+	in resolve_dblequote() function.
+
+clean up logic for single quote	
+--------------------------------		
+case 1: %> echo '"$HOME"'
+	displays %> "$HOME"
+	
+	but if removed ' ', the input string will become echo "$HOME"
+	this during executor stage will be treated as a "", not as a string itself
+	thus resulting in variable substitution.
+
+case 2: %> echo '*'
+	displays %> *
+	but if remove ' ', the input string will become echo *
+	again during executor stage will be treated as * without quotes,
+	thus resulting in wildcard matching
+	
+case 3: %> echo '$HOME'
+		similar case as above
+
+Therefore if I encounter "", $, * within '', I should not remove ''
+Have a single_quote_parser function handle this.		
+	
+

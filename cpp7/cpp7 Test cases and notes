@@ -1,0 +1,188 @@
+cpp7 learning
+	- passing instantiated function template as function parameter
+	- template for different types of array
+
+
+What are Arrays and what are not Arrays:
+----------------------------------------
+
+Stack Memory Allocation of an Array:
+-------------------------------------
+
+int x[10];				//single array with 10 elements.
+A<float> f[10];		
+
+Dynamic Memory Allocation of an Array:
+--------------------------------------
+
+int * x = new int[10];			//dynamic but as above
+A<float> * f = new A<float>[10];		
+
+Stack Memory Allocation of Array of Arrays:
+-------------------------------------------
+
+int x[5][10];				//5 arrays of 10 elements each.
+A<float> f[5][10];
+
+Dynamic Memory Allocation of Array of Arrays:
+---------------------------------------------
+
+int ** x = new int*[5];			//dynamic but as above
+A<float> ** f = new A<float>*[5];
+
+Understand Array objects as per this exercise:
+----------------------------------------------
+Difference between
+------------------
+	A<float>* f = new A<float>[10]; //square bracket
+	
+		- allocates an array of 10 objects of type A<float>.
+		
+	A<float>* f = new A<float>(10); //curly bracket
+	
+		- allocates a single object of type A<float> and 
+		- initializes it with the value 10, through parameterized constructor
+		
+Which is Empty Array:
+---------------------
+	int *a = new int[0];	//array of 0 elements, effectively an empty array
+	
+	int *a = new int(0);	//single object with value 0
+
+
+✅ Ex: 00
+---------
+
+1) 	Swap
+	
+2) 	min(arg1, arg2)
+	1) returns min or 
+	2) if arg1 == arg2 return arg2
+	
+3)	max(arg1, arg2) 
+	1) returns max or
+	2) if arg1 == arg2 return arg2
+			 
+4) 	Pg 5. The only requirement is that the two arguments must have the same type.
+	I assume the user inputs the same type.
+	
+5)	support all operators for Objects
+	<, <= , >, >=, ==, =!
+	
+6)	Test Dummy class objects.
+
+✅ Ex: 01
+---------
+1)	Pg 8. The third one is a function that will be called on every element of the array.
+	Meaning iter() will call its argument function as follows - 
+	f(t[i]); i.e. on the element of the array. 
+
+Notes:
+	
+A)	undestanding template<parameter-list> declaration:
+	- template<class T>
+	  void f(T x);
+	  
+	- This means that T is a placeholder for any data type.
+	- when you call function f(x) with specific arguments, the compiler 
+	  deduces the type of T based on the types of the arguments you pass.
+	- if the argument x being passed is not same type, compiler throws an error
+	  including when template parameter T represents a Parent class, 
+	  and the argument being passed is a child.
+	  
+B)	What is an instantiated function template ?
+	when the compiler replaces the template parameters with acutal arguments.
+
+     	
+C)	a) In C++98 standards I must explicitly specify the template arguments.
+	example:
+	template <typename T> void print(const T& value) {//code}
+	
+	explicity specify -
+	print<int>(42);
+	print<double>(3.14); 
+	
+	b) Template parameter deduction in function calls is a feature introduced in C++11
+	
+	you don't need to specify -
+	print(42); 
+	print(3.14);	
+	
+D)	Understanding Explicit specification
+
+	example 1:
+		int	x = 4;
+		callback<int>(i, funct<int>);  
+
+	- callback<int> deduces that T = int, 
+	- This means the function template will use T = int.
+	- This means callback<int> is invoking callback template 
+		void callback(T t, void (*funky)(T, const std::string &))
+
+	example 2:
+	
+	a)	int* x = new int[3];
+		callback<int>(x, 3, funct<int>);
+		
+		
+		
+	b)	Butwhy not callback<int *>(x, 3, funct<int>);
+	
+✅ Ex: 02
+---------
+
+About TPP file:
+	- TPP file replaces CPP file for Template classes.
+	- In Makefile remember to not reference CPP file that was not created.
+	- In Makefile TPP file will not be referenced as we do with CPP file.
+	- TPP files are automatically included in the compilation process 
+		when you compile the source files.
+		
+1)	Construction with no parameter: Creates an empty array.
+	example:
+	
+	Array<int> x;
+	x[0] = 1; //throws error because empty array
+	
+2)	Construction with an unsigned int n as a parameter:
+	Array<int> x(5);
+
+3)⚠️	Did you initialize elements in Param constructor? (I didn't I had error)
+	If not, you will have valgrind error for the following -	
+	
+	This will compile and run. No issue. Heap memory free. No issue.
+	But it will have conditional jump error.
+	
+	Test:
+	Array<int> m(1);
+	std::cout << m[0] << "\n";
+	
+	Test:
+	int *x = new int[1];
+	std::cout << m[0] << "\n";
+	
+	Why conditonal jump error?
+	The error message from Valgrind occurs because the std::ostream code, 
+	which prints the value, relies on this uninitialized value to perform some operations 
+	(such as formatting the output). Since the value is uninitialized, the program's 
+	behavior becomes undefined, and a conditional jump or move occurs based on those 
+	uninitialized values.
+	
+3)	Ensure Copy constructor and Copy assignment operator overload, 
+	do something tantamount to deep copy
+
+4)	Pg 9. Preventive allocation (allocating memory in advance) is forbidden.
+	// Allocating memory for 1000 integers in advance
+	int* array = new int[1000];
+
+5)	[] operator overload function throws exception?
+	- Ensure fucntion signature does not have 'const' in return type, as well as
+	  end of the function signature.
+	
+	  T& Array<T>::operator[](const unsigned int index);
+	  
+	- Function return type must be a reference. So it allows to 'write' value.
+
+	
+
+

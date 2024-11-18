@@ -1,0 +1,115 @@
+Norminette
+	Not required
+	
+Compiling
+	c++ -Wall -Wextra -Werror
+		refers to the entire programming language itself, 
+		which has evolved over time with newer standards like C++11, C++14, C++17, 
+		and so on, each introducing new features and improvements.
+	-std=c++98
+		tells the compiler to adhere to the C++98 standard
+
+Class Name
+	UpperCamelCase format
+	
+Files containing class code
+	named according to the class name
+	ClassName.hpp/ClassName.h
+	ClassName.cpp
+	ClassName.tpp
+
+Output messages
+	ended by a new-line
+
+Allowed
+	almost everything from the standard library.
+	
+Forbidden
+	other external library
+	C++11 (and derived forms)
+		What is this?
+		C++11 brought numerous improvements and new features that significantly
+		enhanced the language's expressiveness, performance, and safety. 
+		These features help developers write cleaner, more efficient, and more
+		maintainable code.
+		
+		How to avoid C++11?
+		By explicitly setting the compiler to use C++98 or C++03, 
+		you can prevent accidental use of C++11 features.
+	Boost libraries
+		Instead of boost::shared_ptr and boost::scoped_ptr, use raw pointers 
+		and manual memory management, or write your own simple smart pointers.
+	*printf()
+		The primary alternatives are std::cout for output and 
+		std::cin for input, provided by the <iostream> header. 
+	*alloc()
+		What not to use -
+		malloc(), calloc(), and realloc()
+		std::vector: internally it uses dynamic memory allocation, not allowed
+		std::deque, std::list, std::map, etc., use dynamic allocation		
+	free()
+		You are not allowed malloc, so you can't use free()
+	using namespace <ns_name>
+		What can you do about it?
+		You can refer to each element by its fully qualified name, 
+		which includes the namespace:
+		ex:
+		std::cout << "Hello, world!" << std::endl;
+		
+		Instead of importing all the names from a namespace, you can 
+		import specific names with using declarations:
+		using std::cout;
+		
+	friend keywords
+		 Design your classes such that they do not require friendship 
+		 to access private or protected members
+		 
+		 Design your classes with appropriate public and protected interfaces 
+		 that provide necessary access to internal data.
+		 
+		 Provide getter and setter methods for accessing and modifying 
+		 private data members.
+		 
+		 Use inheritance to allow derived classes to access protected members 
+		 of the base class.
+		 
+		 Forward declarations and use public Interfaces.
+		 
+	You are allowed to use the STL in the Module 08 and 09 only.
+	no Containers (vector/list/map/and so forth)
+		cannot use -
+			std::vector
+			std::list
+			std::deque
+			std::set
+			std::map
+			std::stack
+	no Algorithms (anything that requires to include the <algorithm> header
+
+Memory leakage
+	When you allocate memory (by using the new keyword), you must avoid memory leaks.
+	
+Class design
+	Orthodox Canonical Form
+	avoid the problem of double inclusion by adding include guards.
+	
+	You can add some additional files if you need to (i.e., to split your code).
+
+Orthodox Canonical Form
+	1, Public member variables and functions should be listed first in the 
+	class declaration.
+	2, Protected member variables and functions, if any, should follow 
+	public members.
+	3, Private member variables and functions should be listed last in the 
+	class declaration.
+	 
+	4, Constructors should be placed at the beginning of the class declaration,
+	immediately after the member variables.
+	5, If the class requires a destructor, it should be placed after 
+	the constructors.
+	6, Public member functions should be listed after constructors and destructor.
+	7, Protected member functions, if any, should follow public member functions.
+	8, Private member functions should be listed last in the class declaration.
+	
+	
+

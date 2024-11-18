@@ -1,0 +1,215 @@
+What is a command, operation, option, and operand?
+
+%> ls -l file.txt 
+
+ls is the operation or the command
+-l is an option
+file.txt is an operand
+
+operand is the target of the command
+-------------------------------------------------------------------
+
+What does a command line input do?
+
+1,	execute commands
+2,	run scripts
+3,	manage files and directories
+4,	manage processes
+
+-------------------------------------------------------------------
+what are the types of commands?
+
+1,	Unix commands are stored in PATH environment variable
+	examples - ls, grep, cat, cp, mv 
+2,	built-in Shell commands do not have a PATH environment variable
+		- echo with option -n
+		- cd with only a relative or absolute path
+		- pwd with no options
+		- export with no options
+		- env with no options or arguments
+		- exit with no options 
+3,	Shell scripts can be stored anywhere in the filesystem,
+	These scripts typically begin with ('#!/bin/bash')
+	which is located in  '/bin/bash'
+	
+-------------------------------------------------------------------
+What is the flow of minishell program?
+
+1,	Parse input into -
+	- commands
+	- arguments
+		- \ ;  or special characters are not required to be interpreted
+		- 'single quote' if enclosed, treat everything as literal string
+		- 'single quote' if not closed, do not interpret
+		- "double quote" if enclosed, treat everything as string, except if $variablename
+		- "double quote" if not closed, do not interpret
+		- options
+		- filename
+		- directory name
+		- parameters required by command
+		- > >> < << redirection operators
+		- | pipe
+		- $ --> used in Variable expansion or Variable substitution
+			a. expression following '$' is a variable name,
+			   replaces it with the value of that variable.
+		- $? --> expand to the exit status of the most 
+			 recently executed foreground pipeline
+		- $(..) --> used in command substitution 
+			    (as opposed to variable substitution).
+			    commands enclosed in $(...) are often executed in a subshell.
+		- $? --> exit status
+		- interactive mode
+			ctrl-C display a new prompt on a new line
+			ctrl-D exits the shell
+			ctrl-\ does nothing
+(*BONUS*)	- || conditional operator
+(*BONUS*)	- && conditional operator
+(*BONUS*)	- * work for the current working directory
+			1. represent zero or more characters in filename
+			2. represent zero or more characters in pattern matching
+			3. represent zero or more characters in any text processing
+-------------------------------------------------------------------
+2,	Validate Syntax and structure
+
+-------------------------------------------------------------------
+3,	Process Input -
+		- Variable expansion
+		- command substitution
+		- input / output redirection
+		- other operations
+
+-------------------------------------------------------------------
+4,	Execute command and Shell built-in commands
+
+5,	Wait for command to complete
+	- return status of wait() and exit with that status
+	- or exit because command was terminated by signal
+	
+6,	Display results on the terminal
+
+-------------------------------------------------------------------
+Project mandatory requirements:
+-------------------------------
+
+1. DISPLAY PROMPT WHEN WAITING FOR A NEW COMMAND
+
+2. Implement REDIRECTIONS
+	< input
+	> output
+	<< input, read until delimiter is seen
+	<< not required to update history
+	>> output, append mode
+
+3. Implement PIPES
+
+4. Handle ENVIRONMENT VARIABLES ($ sequence of chars)
+
+5. Handle $?
+ 	- exit status, most recently executed foreground pipeline
+
+6. Handle [ctrl-C, ctrl-D, ctrl-\ ]. They must behave like in bash.
+	 - ctrl-C display new prompt on a new line, terminate gracefully.
+	 - ctrl-D signifies end of file stream
+	 - ctrl-\ for debugging, trigger a core dumb, program's state at termination
+
+7. Implement the following built-ins
+ 	-echo -n
+	-cd (with only a relative or absolute path)
+	-pwd with no options
+	-export with no options
+	-unset with no options
+	-env with no options or arguments
+	-exit with no options
+
+8.readline() function can have memory leaks.
+-------------------------------------------------------------------
+
+Parse double quote function
+---------------------------
+
+1, ft_split() not a good idea because $()could be joined together with words
+2, valid characters for identifier (variable) name letters, digits, underscore
+3, ft_strchr()
+
+if $ followed by char, except space or \0
+1. if var found, replace $var with value
+2. if var not found, remove $var, replace nothing
+3. $var(something) returns value(something)
+4. $var can be joined together with any characters execept letter, _, and digit,
+    in which case, they are considered part of var name. 
+    example: $var* returns value*, but $var1 or $var_ or $varA returns a space
+    assuming var1 or var_ or varA are not valid identifiers.
+
+else if $( 
+1. check if it is a built-in command. Call routine that handles that
+   when it returns value add to the string.
+2. if it is a unix command, then run execve(), get value add to string.
+   finally return the new string.
+
+How to determine a identifier name
+--------------------------------
+
+1, It could be user created identifier:
+	You should extract the identifier name, by reading all chars that follow $ 
+	until you hit a char that is not letter, digit, or underscore.
+   
+   The challenge is extracting user created identifier name, the logic of which might
+   over ride the logic of recognizing special identifier.
+   
+   When looking for values of identifiers, start by looking at environment identifier first,
+   then user created identifier. Because if user created identifier same as env identifier,
+   env identifier over rides. 
+   
+   Convert identifier name of env identifier to upper case. Because env identifiers are uppercase.
+
+-----------------------------------------------------------
+2, It could be a special identifier:
+	$$	Process ID (PID) of the current shell.
+	$*	Represents all positional parameters as a single string,
+		separated by the first character in the $IFS identifier.
+	$0	Name of the shell or script.
+	$HOME	Home directory of the current user.
+*** I think we are not handling special identifiers
+
+some examples of special identifiers -
+
+> echo $$
+> returns the process ID
+
+> echo $HOME
+> sthiagar
+-----------------------------------------------------------
+
+How to determine a command name
+-------------------------------
+1, $( --> $ followed by (
+
+2, What happens when the closing bracket is missing ?
+   echo "$(pwd"
+   notice in this case Bash will prompt user to type the incomplete closing bracket.
+   but even if you type ')' it will be place after the " such as "$(pwd")
+   this is invalid syntax, or incorrect command name, depending on how you look at it.
+   The process doesn't terminate, it contiues to prompt no matter what you type, until
+   you press CTRL+D to kill it.
+   
+   but note, the example above is different from the one below,
+   echo $(pwd
+   In this case, when Bash prompts for you to input, and you type ')'
+   it completes the argument in the syntax form of $(pwd) so it will execute it correctly.
+   
+   But here we are working in the context of doble quote, so we are concerned here with the 
+   first error example.
+
+------------------------------------------------------------	
+
+$name$name works $name() works, but $name_ returns 1 space, $(pwd) works too, finally $ is valid
+
+1. var, name = name, start=0, len=5 (including $)--> Action 1. replace with value
+2. var, name = name. start=6, len=5 
+3. var, name = name, start=18, len=5
+4. invalid, it must be replaced with nothing, not even a space --> Action 3. replace with ''
+5. cmd, name = pwd, start=30, len=6 --> Action 2. replace with value
+6. valid. no action required. --> Action 4. no action
+
+------------------------------------------------------------
+

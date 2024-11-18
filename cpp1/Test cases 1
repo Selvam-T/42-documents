@@ -1,0 +1,214 @@
+CPP1
+
+
+✅  ex0:
+--------
+0) 	PDF doesn't require take arguments from input.
+	I have hardcoded Zombie name.
+	
+1) 	Display message: 
+		name: BraiiiiiiinnnzzzZ...
+2)⚠️	Explain difference between randomChump() and newZombie() functions.
+		Which is creating zombie on Heap, and which on Stack?
+	
+3)⚠️ 	Does the destructor display message for both 'HEAP' and 'STACK' clean up?
+
+4)		Default construct. PDF does not say what to initialize. I do nothing.
+
+✅ ex1:
+-------
+
+0) 	PDF doesn't require take arguments from input.
+	It does mention passing parameter, but that is for the function call.
+	
+1) 	Created N zombies in 1 allocation?
+		Using 'new' ?
+		Using 'delete' to destroy?
+⚠️ 		valgrind check	
+
+2) 	How is N objects created?
+		How do you initialize all 10 objects with 'name'?
+		I am using a public setter function.🟦
+	
+	Can it be done during instantiation? 
+	Without having a separate while loop to initialize using setter function?
+	
+3) 	I originally misunderstood that allocation of N objects 🟦
+	AND initialization of each object must be done in a single allocation.
+	
+	Not true. They are separate steps.
+	It says, "Then" the initialization to be done for each object.
+
+4) 	If objects are not initialized, can you call setter function to assign 
+	parameteric value?
+	Yes.
+
+✅ ex2:
+-------
+
+1)⚠️ 	Explain reference vs pointer
+	Pointer stores address of string.
+		Allows dynamic memory management.
+		Can be reassigned to point to different things.
+	
+	Reference is Aliasing for string. 
+		Can not be reassigned.
+		You cannot declare a reference without initializing it.
+		Reference cannot be NULL.
+
+✅ ex3:
+-------
+
+1)⚠️ 	In which case do you think it would be best to use 
+	- a pointer to Weapon?
+	- a reference to Weapon? 
+	- Why?
+	
+🟦 	Notes
+	
+	1. Weapon _weapon; //declare an instance of a class in main()
+	2. Weapon& _weapon; //declare a reference to an instance of a class in HumanA
+	3. Weapon* _weapon; //declare a pointer to an instance of a class in HumanB
+
+2) 	Ensure you didn't modify the main.cpp
+
+3)⚠️ 	Check valgrind
+	
+✅ ex4:
+-------
+0) 	Title page says "Sed is for losers"
+	What is Sed?
+	Unix command-line utility used for parsing and transforming streams of data.
+
+1)⚠️ 	Forbidden: std::string::replace , rest allowed
+	How did you work around it?
+		- std::string::find
+		- std::string::erase
+		- std::string::insert
+	
+2) 	C file manipulation functions is forbidden / cheating
+	Did you use C functions to replace?
+	
+3) 	Program input: 
+	./program filename str1 str2
+	
+	Input argument validation:
+	
+	1) No arguments - throw error
+	2) Less than 3 arguments - throw error
+	3) argv[1] - invalid filename - throw error
+	4) argv[1] - no read permission - throw error
+		chmod 000 filename
+	5) argv[2] - str1 is empty - what is the behavior
+	6) argv[3] - str2 is empty - what is the behavior
+
+4)⚠️  	output filename is filename.replace?
+
+5)⚠️  	Does output file contain contents of input file?
+	- str1 is replaced by str2?
+	- check ( diff input input.replace)
+	- the number of lines and newline is the same as input file
+	- did you insert newline in the last line if it terminated with EOF?
+	
+6)⚠️	std::getline() vs std::cin
+		std::cin: By default, reads input up to the first whitespace.
+		std::getline(): Reads an entire line of input until (\n).
+	What are you using to read input argument?
+	
+	Test with input arguments "hello world"	
+	
+🟦 Notes:
+
+How do I handle error message:
+-----------------------------
+std::cerr	//<iostream> header
+	designed for error messages, messages are displayed immediately, without delay
+
+How do I handle input file:
+---------------------------
+	- 'ifstream' is part of the C++98 standard. 
+	- use #include <fstream>
+	- "input file stream"
+	- used for reading data from files, within the same scope of the function
+	- when ifstream goes out of scope, the file is automatically closed.
+	- you cannot directly pass a 'std::string' object to initialize 'std::ifstream'
+		object, because its constructor expects a C-style string const char*
+		
+	//Convert std::string to const char* using c_str()
+	std::ifstream file(filename.c_str());
+    		
+How do I handle output file:
+----------------------------
+
+	I use std::ofstream::trunc mode to clear exisiting contents of output file.
+
+	ofs.open(ofile.c_str(), std::ofstream::trunc | std::ofstream::out);
+
+✅ ex5:
+-------
+
+1)⚠️	Declared private and public functions as stated in the PDF?
+
+2)⚠️	Are you using pointers to member functions?
+	Yes.
+
+3)	PDF doesn't want if/else statements, how did you comply with it?
+	
+	a) 	Can  you implement using switch/ case: ?
+		switch argument is integer, not string, so it can work either.
+	
+	b)	no Containers (vector/list/map/and so forth)
+
+⚠️	I did by declaring 2 arrays -
+		- array of std:string {DEBUG, INFO, WARNING, ERROR}
+		- array of function pointers to each of the private member functions
+		- compare the 'level' with string array [i]
+		- call function pointer [i]
+
+
+✅ex6:
+------
+
+1) 	I consider this project an extension of ex5.
+	The only difference being, display all levels above.
+	Meaning, if level = INFO, then display INFO, WARNING, ERROR
+	
+	Evaluation requires that you use "Switch Case" but PDF makes no mention of it.
+	So you can defend yourself on that.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

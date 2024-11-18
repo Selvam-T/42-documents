@@ -1,0 +1,102 @@
+Bash		Traditional Unix Shell.
+
+Unix shell 	-command-line interpreter that provides a user interface 
+		for interacting with the operating system.
+		-allows users to execute commands, run scripts, manage files and processes.
+		-reads commands from the terminal and executes them, acting as a middle
+		layer between the user and kernel of the operating system.
+		-commands such as 'ls', 'cd', 'pwd', 'mkdir', 'touch' and 'exit' are
+		executed within the Bash shell, interacting with the filesystem and
+		performing various operations.
+
+Unix commands	-refer to standalone executable programs that are stored in directories
+		listed in the system's PATH environment variable. /bin, /usr/bin etc
+		examples - ls, grep, cat, cp, mv etc
+
+built-in shell commands are part of shell itself, and they are executed directly by shell itself.
+		they do not have a separate location in the filesystem.
+		examples - cd, echo, export, history, exit etc
+		built-in commands are faster to execute than external commands because they
+		don't require launching a seperate process.
+
+shell scripts written in Bash or other scripting languages. They can be stored anywhere in the 
+		filesystem by the user. The scripts are executable and can be run in a Unix env.
+		These script files typically have a shebang line at the beginning ('#!/bin/bash')
+		indicating the script should use be executed using the Bash shell, which is
+		located at '/bin/bash'
+
+-------------------------------------------------------------------------------------
+Terminal accepts input, passes it to the shell, 
+and the shell’s output is sent back to the terminal to be displayed. 
+The shell accepts input as a set of commands.
+
+-------------------------------------------------------------------------------------
+shell operation:
+----------------
+1,	Read User Input from Terminal: 
+	The shell reads input string entered by the user on the terminal.
+
+2,	Parse User Input:
+	break down input into individual commands and arguments.
+	commands - ls, cd, mkdir
+	arguments - options, filenames, directory names, any parameter the command may require
+	example: cat < text
+	cat is command, text is argument, whereas < is neither command nor argument
+	but rather an redirection operator
+	
+3,	Validate Syntax and Structure:
+	to ensure the Syntax and Structure are correctly formed.
+	Syntax refers to the general structure and arrangment of the components of the instruction.
+	command [options] [arguments]
+	example: ls -l /path/to/directory
+	
+4,	Process Input: which involves 
+		- variable expansion
+			replace references to variables with their values
+			$% greeting="hello"
+			$% echo "$greeting"
+			in this example, $greeting is expanded to "hello"
+		- command substitution
+			replace command enclosed within $(...) with the output
+			$% today=$(date +%Y-%m-%d)
+			$% echo $today
+		- input/output redirection
+			<  input
+			>  output
+			>> append to output file
+		- other operations that allow flexibility to command-line instructions
+			|  allows output of one command to be used as input of next
+			|| conditional or
+			&& conditional and
+			*  matching filename patterns
+			?  matching filename patterns
+
+5, 	Execute Commands and Shell Built-ins:
+	only if the Syntax is valid.
+
+6,	Optionally waits for the command to complete and collects the exit status.
+	The return status of a simple command is its exit status as provided by
+	waitpid function, or command was terminated by signal n.	
+
+7,	Display Results on the terminal.
+
+--------------------------------------------------------------------------------------
+Writing you own Shell
+---------------------
+
+Shell implementation is divided into 3 parts The Parser, The Executor, and Shell Subsystems
+
+Parser is divided into Lexical Analyzer and Parser
+--------------------------------------------------
+The tokens are described in a file shell.I.
+The grammar rules used by the parser are stored in shell.y
+
+Example of Grammar rules -
+	cmd [arg]* [|cmd [arg]*]*
+		[[>filename] [<filename] [>& filename] [>> filename] [>> & filename]]*
+		[&]
+	
+I didn't read up any more on this, as my partner had taken up working on Parser.
+--------------------------------------------------------------------------------------
+
+

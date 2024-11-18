@@ -1,0 +1,29 @@
+Jacobsthal sequence in Ford-Johnson merge-insert sort algorithm
+---------------------------------------------------------------
+
+In the Ford-Johnson merge-insert sort algorithm, the Jacobsthal sequence plays a key role in determining the steps at which elements are inserted into an already sorted sequence. The Jacobsthal numbers are used to guide the merge-insert process, ensuring that elements are inserted in an efficient order to minimize the number of comparisons needed.
+
+Here's how it works:
+--------------------
+
+Divide and conquer: The Ford-Johnson algorithm sorts by first sorting smaller groups of elements and then inserting the remaining elements into the sorted sequence.
+
+Jacobsthal sequence: The indices where elements should be inserted into the sorted sequence follow the Jacobsthal sequence. These numbers dictate the optimal points to perform insertions so that the number of comparisons is minimized, leveraging the pattern of growth in the Jacobsthal sequence.
+
+The Jacobsthal sequence provides an optimal and efficient insertion strategy in the Ford-Johnson merge-insert sort due to the way it balances comparisons across the process of merging and inserting elements into a sorted sequence. Here's why this works:
+
+1. Balanced Distribution of Insertions
+--------------------------------------
+The Jacobsthal sequence grows relatively slowly compared to other sequences like Fibonacci. By using it to determine where elements should be inserted, the algorithm ensures that the new elements are spread across the sorted subsequence in a way that minimizes redundant comparisons and avoids clustering many insertions in the same region.
+
+2. Minimizing Comparisons
+-------------------------
+
+The slow growth of the Jacobsthal sequence means that elements are inserted progressively in fewer overall comparison steps. Each Jacobsthal number corresponds to an index that creates a "balanced" structure of already inserted elements. This leads to fewer comparisons because you're distributing new elements across the sequence in a way that maintains a nearly balanced state.
+
+3. Optimal Substructure
+-----------------------
+
+Ford-Johnson relies on merging smaller sorted groups and incrementally inserting elements in an already sorted structure. The Jacobsthal sequence ensures that these insertions are made at positions where minimal reorganization of the sorted structure is needed, which reduces the overall complexity of the insertion phase.
+
+In short, using the Jacobsthal sequence helps ensure that the algorithm maintains balance during the merge-insert process, avoiding excessive comparisons and achieving the lower-bound comparison complexity that the Ford-Johnson sort is known for.

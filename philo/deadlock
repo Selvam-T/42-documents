@@ -1,0 +1,78 @@
+Multiple processes are unable to get job done, when each process is trying to gain control
+of a resource that another process is holding. When this happens none of the processes are
+able to do anything, they simply block and your program freezes.
+
+example of DEADLOCK:
+
+	process A			process B
+	.				.
+	.				.
+	X.lock()			Y.lock()
+	Y.lock() --->*			X.lock() --->**
+	//critical section		//critical section
+	Y.unlock()			X.unlock()
+	X.unlock()			Y.unlock()
+	
+	*Y is locked in B, therefore A cannot proceed past this line
+	**X is locked in A, therefore B cannot proceed past this line.
+	If they can't proceed further, because they are both waiting for eachother
+	to unlock X and Y.
+	
+	This is known as a CIRCULAR wait.
+	
+3 conditions that make deadlock possible are-
+	
+	1) Mutual exclusion
+		some aspect of a code that can only be executed by 1 process at a time
+	2) No preemption
+		when a resource is taken away from a process even though 
+		it is not finished with it
+	3) Hold and wait
+		once you lock a mutex, hold it until you are done with it.
+		
+Solution:
+Have a Global ordering of claiming resources to avoid CIRCULAR wait.
+
+Example: 
+Incorrect method
+	philosopher grabs 1 fork first, then next.
+	philosopher grabs fork with the same index as the philosopher,
+	i.e. 	p0, grab 0, 
+	 	p1, grab 1, and so on
+	 	
+		
+		p0 is waiting for 0+1 (0+1 mod 5)
+		p1 is waiting for 1+1 (1+1 mod 5)
+		except p4 is waiting for 0 (4+1 mod 5)
+		
+	This is a deadlock, because each p is waiting for a fork that has already
+	been claimed by his neighbor.
+	
+Correct method
+	Anytime, any process request a resource, it has to request in the same order.
+	
+	The problem with Incorrect method is, philosopher 0 to 3, 
+	request same index number fork first, then request 1 number higher.
+	Whereas philosopher 4, requests same index number first, then a lower number
+	fork next.
+	
+	Solution:
+	In the case of first fork being claimed, instead of claiming i, then 1+1
+	we claim the minimum of (i and i+1 mod 5)
+	This will still assign fork 0 to p0, fork 1 to p1, but for p4 it will not
+	assign fork 4, because minimum of (4 and 4+1 mod 5) is 0.
+	
+	Similarly, the 2nd fork being claimed is the max of (i, i +1 mod 5)
+	
+	How does that work?
+	Philosophers 0 to 3 will successfully claim first forks with same index.
+	But Philosopher 4 is requesting first fork with index 0, that has already
+	been claimed by philosopher 0. And philosopher 4 has not claimed fork 4.
+	This leaves fork 4 availble for philosopher 3 to claim 2nd fork successfully.
+	There is no deadlock in this case.
+
+	
+
+		
+		
+	

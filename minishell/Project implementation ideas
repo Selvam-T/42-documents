@@ -1,0 +1,112 @@
+Project implementation ideas
+----------------------------
+
+Emma's requests
+---------------
+0,	valgrind problem in wildcard.c could be from matched_arr(t_var *match) 
+	where t_var is converted to arr, but is the var->name content malloced, is this 
+	causing valgrind error when I free dbl_ptr_arr()?
+
+1,	All functions in env_variable, need return type, to indicate if malloc failed, or 
+	operation is successful.
+	
+2,	validate.c has a function is_valid_id_chr() --> replace sections in export.c
+	is_valid_key() function	THEN test entire EXPORT	
+
+3,	In all functions, free the return char * and char ** if there is error. Valgrind.
+
+4,🟢	echo $9HOME
+	output> HOME	//first char is invalid char for key, so rest treated as str
+	
+	vs
+	
+	echo $K9HOME
+	output> 	//valid key name, but has no value
+	
+5,🟢	quote parser function:
+	A function to parse single quote
+	Test: 	echo '"$HOME"'
+		display "$HOME"
+		
+6,🟢	Reformat parse string:
+	Seperate ( , | , &&, || , <, > , >>, >>
+	
+	Error: 
+	"apple <<infile>> && |||a"
+	It is isolating >> INCORRECTLY. It is returning a >
+
+7,🟢	Clean up function handling single quote -
+	case 1: echo '"$HOME"'
+		display "$HOME"
+	but if removed ' ', the input string will become echo "$HOME"
+	this during executor stage will be treated as a "", not as a string itself
+	thus resulting in variable substitution.
+	
+8,🟢	All built-in functions return exit(0), exit(1), exit(127) etc
+	malloc() error --> exit(1)	
+	
+
+9,🟢	Wildcard filename matching
+	If malloc error --> char ** returns NULL. Calling function set exit status = 1
+	If no match found --? char *[0] == NULL. Calling function will return original str.
+	If match found --> return char**. Calling function will handle each string in a loop.
+	
+
+10,🟢	EXPORT has error with handling of +=
+
+11,🟢	Clean up function handling " " -
+	a) wildcard *
+		If it is in double quote leave it as string.
+		If it is not in double quote, then expand.
+		 	- If there is value, take the value, 
+		 	- If no value, return string	
+	b) $	
+		If it is in double quote expand to value. 
+		(both variable and command)
+		
+		It will not be without "" during expansion, 
+		it is going to be in double quote. 
+		SEE ABOVE.
+
+12,🟢	quote parser function:
+	in: char *
+	return: char *
+	
+	Variable_substition
+	- function( char *str)
+	  do expansion for string within double quote, 
+	  then strjoin with addition char
+	  
+	  ex: "$HOME"D
+	   outcome: /home/sthiagarD
+
+	- If string received is in "$Hello" and it has $
+		you perform variable expansion
+	- return value as string.
+	- What happens if variable doesn't exist? 
+		NULL will me strjoined to result
+
+13,🟢	Problems I identified with EXPORT built-in
+	a) export "apple=bad'"
+		There is no error with unenclosed ('), 
+		because it is treated as a part of string as it is enclosed within (")
+		
+	b) export " apple=bad"
+		There is a space before apple, which should be retained.
+		The EXPORT command will throw error, because space is not a valid
+		identifier character.
+
+---------------------------------------------------------------------------------	
+
+1,	//variable expansion 
+	%>test=HOME
+	%>cat $test --> test is substituted with 'HOME', 
+			returns the value of HOME
+
+2,	In EXPORT key=value pair, I must remove spaces if value == spaces only
+	question: Can I assume value will not equal spaces?
+	If I need to remove spaces, then I must have ft_substr2() that returns NULL
+	if str only has spaces.	
+	
+--------------------------------------------------------------------------------
+

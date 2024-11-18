@@ -1,0 +1,257 @@
+
+Configuration file sets up various aspects of web server's behavior for serving HTTP requests.
+
+The way nginx and its modules work is determined in the configuration file.
+
+nginx.conf, placed in 
+	/usr/local/nginx/conf, 
+	/etc/nginx, or 
+	/usr/local/etc/nginx.
+
+1) The number of worker process is defined in the configuration file
+	- may be fixed for a given configuration or
+	- automatically adjusted to the number of available CPU cores
+	- the optimal value depends on many factors including
+		- the number of CPU cores
+		- the number of hard disk drives that store data
+		- and load pattern
+		
+		
+3) Sending signal to nginx process
+	nginx - s quit
+	or
+	kill -s QUIT 1628	//unix tool command
+
+--------------------------------------------------------------------------------
+Nginx configuratio file
+
+1) Simple directive;
+   Block directives {}	
+   
+2) located at 
+	- /etc/nginx/nginx.conf
+	- /usr/local/nginx/conf/nginx.conf
+	- /usr/local/etc/nginx/nginx.conf
+   
+3) Configuration file structure
+	- it is organized in a tree-like structure	
+
+4) Configuration contexts
+	a)
+	- marked by sets of brackets ({ and })
+	- areas that these brackets define are called “contexts"
+	- These divisions provide an organizational structure along with 
+	some conditional logic to decide whether to apply the configurations within.
+	- Nginx allows configurations to be inherited.
+	- Directives can only be used in the contexts that they were designed for. 
+	- Nginx will throw an error when reading a configuration file with directives 
+	that are declared in the wrong context. 
+	
+	b)
+	- The main context represents the broadest environment for Nginx configuration. 
+	- It is used to configure details that affect the entire application. 
+	- While the directives in this section affect the lower contexts, 
+	many of these cannot be overridden in lower levels.
+	
+	c)
+	- Some common details that are configured in the main context are 
+		the system user and group to run the worker processes as, the number of workers, 
+		and the file to save the main Nginx process’s ID.
+		
+	example:
+	
+	# Main context settings
+	user  www-data;         	# System user and group for worker processes
+	worker_processes  4;    	# Number of worker processes
+	pid  /var/run/nginx.pid; 	# Path to store the main Nginx process ID
+	
+	d)
+	- events context
+		- contained within the 'main' context
+		- used to set global options that affect how Nginx handles connections
+		- there can only be a single events context
+		
+		- Nginx uses an event-based connection processing model
+		- directives defined within events determine how worker processes 
+		should handle connections.
+		- directives here are used to either select the connection processing technique to use
+		- or to modify the way these methods are implemented
+		- epoll method is usually the best choice.
+		
+		- Other items that can be configured are the number of connections 
+		each worker can handle, 
+		- whether a worker will only take a single connection at a time or 
+		- take all pending connections after being notified about a pending connection, 
+		- and whether workers will take turns responding to events.
+	
+	example:
+	events {
+	    # Defines the maximum number of simultaneous client connections that a 
+	    # single worker process can handle.
+	    worker_connections 1024;
+
+	    # Specifies the connection processing method.
+	    # Typically, this is auto-selected based on the platform.
+	    # On Linux, epoll is often used automatically, so specifying it is optional.
+	    use epoll;
+
+	    # Configures how frequently a worker process should attempt to accept new connections.
+	    # By enabling this, all worker processes will try to accept connections.
+	    accept_mutex on;
+
+	    # The delay time for the accept_mutex lock, reducing chances of connection contention.
+	    # This is set in milliseconds (e.g., 100ms).
+	    accept_mutex_delay 100ms;
+	}
+	
+	e)
+	- HTTP context
+		- define how the program will handle HTTP or HTTPS connections.
+		- The http context is a sibling of the events context, 
+		- so they should be listed side-by-side, rather than nested.
+		- They both are children of the main context:
+		
+		- Some of the directives that you are likely to encounter control the 
+		default locations for access and error logs 
+		(access_log and error_log), 
+		
+		- Configure asynchronous I/O for file operations (aio, sendfile, and directio), 
+		
+		- Configure the server’s statuses when errors occur (error_page). 
+		
+		- Other directives configure compression (gzip and gzip_disable), 
+		
+		- fine-tune the TCP keep alive settings 
+		(keepalive_disable, keepalive_requests, and keepalive_timeout), 
+		
+		- the rules that Nginx will follow to try to optimize packets and system calls
+		(sendfile, tcp_nodelay, and tcp_nopush). 
+		
+		- Additional directives configure an application-level document root and index files
+		(root and index) 
+		
+		- Set up the various hash tables that are used to store different types of data
+		(*_hash_bucket_size and *_hash_max_size for server_names, types, and variables).
+		
+	example:
+	http {
+	    # Specifies the default location for access logs, logging all requests made to the server.
+	    access_log /var/log/nginx/access.log;
+
+	    # Specifies the default location for error logs, logging all server errors.
+	    error_log /var/log/nginx/error.log warn;
+
+	    # Enables asynchronous I/O for file operations to improve performance on Linux systems.
+	    aio on;
+
+	    # Enables the use of `sendfile` to transfer files directly from disk 
+	    # to the network socket.
+	    # This improves performance by bypassing user space for sending files.
+	    sendfile on;
+
+	    # Directs large file operations to use direct I/O to avoid caching in user space.
+	    directio 4m;
+
+	    # Defines custom error pages for specific HTTP status codes.
+	    error_page 404 /custom_404.html;
+	    error_page 500 502 503 504 /custom_50x.html;
+
+	    # Enables Gzip compression to reduce the size of responses sent to clients, 
+	    # improving load times.
+	    gzip on;
+
+	    # Disables Gzip compression for older browsers that don’t fully support it.
+	    gzip_disable "msie6";
+	}
+	
+	f)
+	- server context
+		- “server” context is declared within the “http” context.
+		- http {
+			server{ # first server context }
+			server{ # second server context }
+		  }
+		
+		- You can have as many server blocks as you need, each of which can 
+		  handle a specific subset of connections.
+		  
+		- Each client request will be handled according to the configuration 
+		defined in a single server context.
+		- There are two common options, which differ in their use of domain names:
+		
+		- listen: The IP address / port combination that this server block is 
+		  designed to respond to. 
+		  If a request is made by a client that matches these values, this block 
+		  will potentially be selected to handle the connection.
+		
+		- server_name: This directive is the other component used to select a 
+		  server block for processing. 
+		  If there are multiple server blocks with listen directives of the same 
+		  specificity that can handle the request, Nginx will parse the “Host” header 
+		  of the request and match it against this directive.
+		
+	example:
+	http {
+	    server {
+		# The first server block listens on port 80 for requests to example.com
+		listen 80;
+		server_name example.com www.example.com;
+
+		# Root location for this server, serving files from /var/www/example
+		root /var/www/example;
+		index index.html;
+
+		# Custom log files for this server
+		access_log /var/log/nginx/example_access.log;
+		error_log /var/log/nginx/example_error.log;
+
+		location / {
+		    try_files $uri $uri/ =404;
+		}
+	    }
+
+	    server {
+		# The second server block also listens on port 80, but only for 
+		# requests to example.org
+		listen 80;
+		server_name example.org www.example.org;
+
+		# Root location for this server, serving files from /var/www/example_org
+		root /var/www/example_org;
+		index index.html;
+
+		# Custom log files for this server
+		access_log /var/log/nginx/example_org_access.log;
+		error_log /var/log/nginx/example_org_error.log;
+
+		location / {
+		    try_files $uri $uri/ =404;
+		}
+	    }
+	}
+	
+	g)
+	- location context
+		- Location contexts share many relational qualities with server contexts. 
+		- multiple location contexts can be defined, each location is used to 
+		handle a certain type of client request, 
+		- and each location is selected by matching the location definition 
+		against the client request through a selection algorithm.
+		
+	example:
+	- Say, for example, that a client requests http://www.example.com/blog on port 80. 
+	- The http, www.example.com, and port 80 components individually would all be used 
+	to determine which server block to select. 
+	- After a server is selected, the /blog portion (the request URI), would be evaluated 
+	against the defined locations to determine which further context should be used to 
+	respond to the request.
+	
+	h)
+	- Upstream context
+		- The upstream context is used to define and configure “upstream” servers. 
+		This context defines a named pool of servers that Nginx can then proxy requests to.
+		This context will likely be used when you are configuring proxies of various types.
+		
+		- The upstream context should be placed within the http context, 
+		outside of any specific server contexts. 
+

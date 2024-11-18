@@ -1,0 +1,185 @@
+Forbidden Functions: NONE
+
+Bit representation of Integer vs Floating point
+-----------------------------------------------
+Bits representing an integer are interpreted literally as a binary number, 
+while bits in a floating point number have a more complicated interpretation.
+
+Floating point numbers are inherently different from integers 
+in that not every fraction can be represented exactly in binary, 
+whereas any integer can. 
+
+--------------------------------------------------------------------------------
+🟢 copy constructor:
+--------------------
+
+Shallow Copy: 
+	Copies the object's pointer references. 
+	Changes to the copied object affect the original object.
+
+Deep Copy: 
+	Copies the actual objects, creating independent copies. 
+	Changes to the copied object do not affect the original object.
+
+	
+🟢 Copy assignment operator overload:
+-------------------------------------
+- Allows you to define how an object should be assigned the values 
+	from another object of the same type. 
+- This is particularly important when dealing with dynamic memory 
+	or other resources that require a deep copy to ensure 
+	the two objects are independent of each other.	
+- This operator is invoked when an existing object is assigned value of
+	another existing object of the same class.
+	
+Example of copy assignment operator:
+------------------------------------
+
+Sample& operator=(const Sample &other); //in header file
+Sample& Sample::operator=(const Sample &other){} //in cpp file
+
+	There is actually 2 parameters passed, although you only write one.
+	The current instance of the class is passed as the HIDDEN first parameter.
+	
+	And the return type is a reference to the Sample object.
+
+What is the return type of this overload?
+return *this;
+
+	First of all we have a reference on the Sample class.
+	Only the current instance will be returned.
+	"this" is the pointer to the current object.
+	So we deference the "this" pointer, returning a reference to the current object.
+	
+	Note that Sample& expects a reference, not a pointer.
+	Therefore, 'return this' is invalid because you are returning a pointer to the object.
+
+🟢 operator++() overload:
+------------------------
+You have 2 cases - 
+	++1 prefix increment
+	1++ postfix increment
+
+prefix increment:
+	prefix ++, return a reference to incremented object itself
+	allows modification to be applied to original object
+	return reference to teh original object
+
+postfix increment:
+	postfix ++, returns original state of the object before increment
+	so we make a copy of the original state to be returned
+	now we can modify the original state by incrementing it.
+	return the copy of the original state, which is the previous state.
+	outside the scope of this function, the copy is destroyed.
+
+	++_fixed;// method1 increment fixed in current state
+    ++(*this);// method2 increment using prefix operator ++ overload
+
+✅ ex0:
+-------
+
+0)⚠️ 	Ensure Orthodox canonical form is used.
+
+1)⚠️ 	Did you initialize The fractional bits value to 8?
+		It should be initialized in cpp file.
+		Where does it say it must be initialized? Pg 8/ ex01
+	
+2) 	Explain constructor vs copy constructor?
+
+3) 	Explain Copy Assignment operator.
+
+4) 	In copy constructor did you use direct assignment
+	or use copy assignment operator?
+	This should explain the difference in the output.
+	see below for my implementation.
+
+	Fixed::Fixed( Fixed const &instance)
+	{
+	    
+	    std::cout << "Copy constructor called" << std::endl;
+	    
+	    //a) direct assignment using public member function
+	    //		member variable value copied from another object 
+	    //		to the current object instance
+	    _fixed = instance.getRawBits();
+	    
+	    //b) use copy assignment operator
+	    // copy an instance of another object to the current object instance
+	    *this = instance; 
+	}
+		
+5) 	Check if copy constructor directly access the private member int _fixed
+
+	//technically correct, but goes against the principles of encapsulation
+	_fixed = instance._fixed;
+			
+✅ ex1:
+-------
+
+1) 	Explain your understanding Fixed-Point:
+		A way to represent float values as Integers, 
+		without losing the decimal values, to a number of fixed point.
+	
+	Example: 
+	consider float fl = 42.42,
+		If you multiply 42.42 by 100 , you get 4242 a full integer value.
+		Lets call 100 the scaling factor.
+		Thus, fixed point = 4242.
+		If you want to get the float from fixed point, divide it by the same scaling factor.
+
+	You do the same with bitwise operation,
+	where scaling factor is detemined by the number of bits given to represent fraction.
+	That is to say, decimals will be represented by 8 bits, 
+	the remaining 24 bits represent the Integer part.
+	Thus (1 << 8) = 256 is the scaling factor.
+
+2)⚠️	Allowed functions : roundf (from <cmath>)
+
+3)	Division by 0, it is acceptable that the program crashes
+
+4)⚠️	Why is a destructor called during Copy assignment operation?
+
+5)⚠️	a) 	Why is [operator '=' overload function] a member function of the class,
+	b) 	whereas, [operator '<<' intejection overload function] a non member function?
+
+	a) 	Fixed& operator = (Fixed const &rhs);
+		You are assigning one instance of class to another instance of same class.
+		lhs = rhs are both instances of same class
+		particularly, the left hand side operand is an Object, therefore
+		the function is an attribute of the Object class.
+
+	b)	std::ostream& operator << (std::ostream& os, Fixed const &other);
+		is not a member function because the left-hand operand of the insertion operator (<<) is an std::ostream object, 
+		not a Fixed object.
+
+✅ ex2:
+-------
+
+1)⚠️ 	Explain setRawBits() , getRawBits(), toInt(), toFloat() relationship
+
+2)⚠️ 	why is the return type of operator=() overload function
+	a reference to object
+
+	whereas, the return type of operator+() overload function 
+	a copy of the object?
+
+3)⚠️ 	Explain difference between operator++() prefix and postfix overload functions
+	
+✅ ex3:
+-------
+
+1)⚠️ 	Examine how the Point constructors were implemented, 
+	making use of the constructors of Fixed
+	
+2)	Triangle formula and comparison is not the interesting part,
+	but does it give correct results?
+⚠️	Is the point on the edge?
+⚠️	Is the point equal to vertex?
+⚠️	Is the point inside the Triangle?
+	
+3)	To compare or do arthmetic on Point (x,y) did you make use of 
+	operator overload functions from Fixed class?
+	
+
+	 
+

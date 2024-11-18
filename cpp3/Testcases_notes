@@ -1,0 +1,258 @@
+
+🟡
+
+no Containers (vector/list/map/and so forth). pg5
+i.e no:
+std::vector
+std::list
+std::map    
+
+🟡 Understanding implementation of linked_list using struct:
+------------------------------------------------------------
+- struct is declared as public member in the class definition
+- public member functions related to struct are declared within the struct block
+    it is often clearer to include related member functions 
+    within the struct definition, as opposed to outside of struct block.
+
+    except insert() is outside, explained separately.
+
+- We need a 'head' pointer to the linked_list of 'Nodes'.
+    We declare the pointer 'head' as a static variable.
+    'head' is a pointer of type struct 'Node'
+
+- This static 'head' variable must be initiatialized
+    It is initialized as follows in implmentation
+    ClapTrap::Node* ClapTrap::head = NULL;
+
+    'Node' and 'head' are qualified with class name, because they
+    are both member attributes of the class.
+
+ - Initializing the static member head of the Node struct to NULL. 
+    It sets up the starting point of the linked list, 
+    which will be used to keep track of the lists nodes.
+
+- Accessing static Node* head from the constructor
+    You do not need a getter function for head. 
+    You can directly access the static member head from within 
+    any static or non-static member function, including constructors, 
+    using ClapTrap::head.
+
+- Inside ClapTrap constructor we create the linked_list of 'Nodes'
+    
+    Node* newNode = new Node(this);
+    
+    Why 'newNode' is a pointer ?
+    'newNode' is a pointer because it is dynamically allocated using new, 
+    which allows the node to be created on the heap and persists beyond 
+    the scope of the constructor. This is crucial for managing linked list nodes, 
+    which need to exist beyond the function call and need to be linked together. 
+    
+    A reference (Node& newNode) would not work in this context because it requires 
+    an existing Node object to refer to, whereas a pointer allows for creating 
+    and managing new instances dynamically.
+    
+- To manage the insertion of Node instances into a linked list, the insert() 
+    function should indeed be part of a higher-level class or function that manages
+    the list, rather than being a member of the Node struct itself.
+
+-  destructor for struct node.
+    In the current implementation since I create new Node, I must delete each Node.
+    Just like the insertion of Node, deletion of Node should be part of the 
+    higher-level class, in this case ClassTrap.
+
+    The destructor is not explicitly used here.
+
+✅ ex00:
+--------
+
+Assumptions and Limitations:
+----------------------------
+1) 	I use a linked list of struct Nodes to store instances of object.
+	with members object and next node.
+
+2)	Pg 5. ClapTrap can not do anything if It has no 'Hit' points or 'Energy' points.
+	My interpretation:
+	It does not say either Hit points or Energy points.
+		To repair myself: I need Energy points. (Don't need Hit points)
+		To attack someone: I need Energy and Hit points.
+
+3)	I lose Hit points: If I am attacked
+	I lose Energy points: If I attack OR If I repair.
+
+4)	How do you handle objects with same string "John".
+	Meaning, does "John" attack "John"
+	PDF doesn't have any guidance on this, so no penalty
+   
+
+5)	Pg 5. Hit points (10), represent the health of the ClapTrap
+	i.e., if Hit point == 0, guy is dead.
+
+------------------------------------------------
+
+1) 	Pg.5 ClapTrap will have the following private attributes
+⚠️	ensure variables are private.
+		
+2)	Do you allocate memory? Delete it? 
+	Run Valgrind.
+	
+3)⚠️	Ensure Orthodox Canonical form design is implemented.
+ 
+4)⚠️	Pg 5. Name, which is passed as parameter to a constructor.
+	Constructor cannot take other member attributes as parameter?!?
+	
+5)⚠️	Pg 5. When ClapTrack attacks, it causes its target to lose <attack damage> hit points.
+	How do you implement ClapTrack attacks, and reduction target hit points?
+
+6)⚠️	What happens if ClapTrap attacks, invalid object?
+
+7)⚠️	Check if the 3 member functions display what it does.
+	Pg.6 does not specifies custom message you could display
+	
+	Check if constructor and destructor display message.
+	
+8)	Each constructor should have a destructor in the same order.
+
+✅ ex01:
+--------
+
+Limitations:
+-------------
+1)	Notify evaluator: Limitations in my COPY CONSTRUCTOR and ASSIGNMENT OPERATOR
+	In Derived classes, the copy constructor and copy assignemnt operator
+	take as argument only objects of same class.
+	
+	Therefore If I try to copy parent object to derived object, it will throw error.
+	I can resolve this by have a copy constructor that take in parenet object as parameter.
+
+-------------------------------------------------------------------------
+1)⚠️	Pg 7. ScavTrap and will inherit the constructors from ClapTrap. 
+	However, its constructors will print different messages.
+	
+  ⚠️	Pg 7.  proper construction/destruction chaining must be shown in your tests.
+	Such that it prints both ClapTrap and ScavTrap print messages.
+	
+	What is expected behaviour?
+		Base class constructor message
+		Dervice class constructor message
+	
+	Aside:
+	I orginally thought ScavTrap constructor overrides ClapTrap constructor print msg.
+	
+	To achieve this I tried to use virtual method to print message. 
+	Such that derived class will override the base class print method.
+	
+	But Virtual calls in Constructors pose an issue -
+	-----------------------------------------------
+	If you call a virtual method in the base class constructor, the call 
+	resolves to the base class’s version of the method.
+	This is because the derived class’s vtable is not yet in place, 
+	and the base class constructor is not aware of the derived class’s implementation.
+
+2)⚠️	Ensure ClapTrap member variables are "protected" because they are inherited
+	by ScavTrap and FragTrap.
+		
+3)	ClapTrap attributes should be Protected, so that they are only available to 
+	derived members?
+		
+4)⚠️	ScavTrap attack() will print different messages.
+	Yes or No ?
+	
+	Aside:
+	I tend to confuse using Virtual method, but it does not apply here.
+
+5)⚠️	void guardGate(); implemented?
+	Yes or No?
+
+
+6)⚠️ 	When a ScavTrap is created, the program starts by building a ClapTrap. 
+	Destruction is in reverse order. Why?
+	Is the destruction in reverse?
+	Yes.
+	
+	Explain:
+	
+	When a derived class object is created, 
+		the base class's constructor is called first.
+		This ensures that the base class part of the object is fully 
+		constructed before the derived class adds its own components. 
+	
+	When a derived class object is destroyed, 
+		the derived class's destructor is called first. 
+		This allows the derived class to clean up its resources before 
+		the base class destructor is invoked. 
+		If the base class destructor were called first, it might attempt 
+		to clean up resources that the derived class still relies on.
+	
+7)⚠️	ScavTrap will use the attributes of ClapTrap (update ClapTrap in consequence) ?
+
+		When ScavTrap inherits from ClapTrap, it gains access to all public 
+		and protected attributes and methods of ClapTrap. 
+		This means that any changes or interactions with these attributes 
+		in ScavTrap will directly affect the base class's attributes.
+
+✅ ex02:
+--------
+1)	FragTrap is very similar to ScavTrap. pg 8. 
+	But it is not the same.
+	
+	- So I don't assume it has guardGate() or it's own attack()
+
+	- additionally, It inherits from ClapTrap, not from ScarTrap.
+	
+
+2)	FragTrap member attribute Hit point represent the health of the ClapTrap
+	i.e. FragTrap constructors do not initialize this member attribute.
+	
+✅ ex03:
+-------
+
+1)	The DiamondTrap class will have a name private attribute.
+	PDF is a little confusing on this.
+
+⚠️	Pg 9. If ClapTrap’s variable is "_name", give the name "_name" 
+	to the one of the DiamondTrap.
+
+	It means both the Base class Protected member and Derived class private member
+	will have the same variable "_name"
+
+2)⚠️	pg 9. it will inherit from both the FragTrap AND the ScavTrap.
+	
+	class DiamondTrap : public ScavTrap, public FragTrap {};
+
+3)	Pg 9. Its attributes and member functions will be picked 
+	from either one of its parent classes:
+	
+	I assume this to mean, I could set and get member attributes through
+	either parent classes, when necessary.
+	
+4)⚠️	ClapTrap::name (parameter of the constructor + "_clap_name" suffix)
+
+	What this means, 
+		ClapTrap class "_name" = "John_clap_name"
+		DiamondTrap class "_name" = "John";
+
+5)	Pg 10. Of course, the ClapTrap subobject of the DiamondTrap will be created once, 
+	and only once. Yes, there’s a trick
+	
+⚠️	Check Constructor print out, 
+	Ensure ClapTrap constructor is called only once.
+	
+	How is it done?
+	ClapTrap needs to be inherited virtually by ScavTrap and FragTrap,
+
+6)	Check if inheritance is done as follows -	
+	Diamond inherit ScavTrap + FragTrap
+	
+	Name --> constructor parameter
+	ClapTrap:: name
+	Hit  --> FragTrap
+	Energy --> ScavTrap
+	Attack --> FragTrap
+	
+	attack() --> ScavTrap
+	
+	whoAmI() 
+		display Name and ClapTrap::name
+⚠️		Ensure "_name" and "ClapTrap::_name" are associated with correct class
+		in the printout.
+

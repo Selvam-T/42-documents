@@ -1,0 +1,258 @@
+
+Notes:
+
+Input:
+	A "string representation of a C++ literal" 
+	refers to a string that contains the textual form of a literal, 
+	which can be parsed and interpreted as a literal in C++. 
+	For example, "42" is a string that represents the integer literal 42.
+	
+	For char:
+		- non displayable characters shouldn’t be used as inputs.
+			- (ASCII 0 to 32 && 127)
+			- Means you can't input char that are 0-32, 127.
+			- But it doesn't mean you can't input integer 0-32, 127 as input
+		- if a conversion to char is not displayable, prints an informative message.
+			- (non displayable characters/ ASCII 0 to 32 && 127)
+				display message "Non displayable"
+			- if resulting ASCII values outside 0 to 127
+				display message "impossible"
+	For int:
+		- only the decimal notation will be used
+		
+	For float and Double
+		- not handling scientific notation floating-point literal "2.0e10" 
+			or "0000.456E-3"
+			throw exception "scientific notation floating-point not handled"
+		- handle leading zeroes- "000123.456" is equivalent to 123.456.
+		- handle pseudo literals 
+			float: -inff, +inff, nanf.
+			double: -inf, +inf and nan.
+
+Display:
+	Scalar Types
+
+	In C++, a scalar type refers to a type that represents a single value. 
+	Unlike compound types like arrays, structs, or classes, scalar types 
+	are the most basic data types and can hold only one value at a time.
+	
+	Int, float, double - only the decimal notation will be used.
+	
+	For instance, if you have a value x, you would output:
+
+    	char version of x
+    	int version of x	
+    	float version of x
+    	double version of x
+
+I cannot use the following string conversion functions, because they are in c++11 standards
+	stod()//Convert string to double
+	stoi()//Convert string to integer
+	stof()//Convert string to float
+
+✅ Ex:00
+--------
+
+1a)	ScalarConverter() class is not instantiable. pg.7
+	How do you handle constructors ?
+	I originally throw(exceptions). Although this is logically a valid design,
+	the subject requirement says the object should not be instanitiable.
+	I placed the constructors in 'Private'. So it throws compiler error.
+
+1b)	If you don't have constructor, then do you need a destructor?
+	Is you destructor private or public?
+	
+2)	This class doesn’t need to store anything at all. pg.7
+	Ensure there are no private data variables or static variables.
+	
+3)	Contain only one static method "convert".
+	- Make sure there is only one static method.
+	
+4)	Pg. 7. please note that non displayable characters shouldn’t be used as inputs.	
+	" " --> ASCII 32, <SPACE>. 
+	How do you handle non displayable character , as in pg 7 ? Not a required test.
+	I throw exception.
+	
+	./convert " " --> throw exception
+	
+5)	Scientific notation as input for Float and Double.
+	Not required??
+	I have limitations.
+	- I do not handle it, I throw exceptions
+
+6)	Test Char Scalar value for '' encapsulation:
+		- ./convert 0  --> <Non displayable> must not be enclosed in ''
+		- ./convert 42 --> '*' must be enclosed in ''
+		
+	Char is 1 byte -128 to 127.
+	But Ascii characters only exist for decimal range 0 to 127.
+	-128 to -1 is treated as signed integers, it does not correspond to a valid ascii character
+		
+7)	Test Inputs:
+	
+	./convert	no argument, display error message
+	
+	Exceptions:
+		1) ""	ascii 0. Not a required test. Non displayable invalid input. 
+			You can throw exception
+		2) " "	ascii 32. Not a required test. Non displayable invalid input. 
+			You can throw exception
+		3) .f	Not a valid float input. Throw exception
+	
+	Char: impossible
+		1) -1		Because -1 is outside ascii range of 1 to 127
+		2) "128"	
+	
+	Char: Non displayable
+		1) +1		Accept +. Because 1 is in the range of ascii 1 to 32
+		2) 0 - 32	Because 1 is in the range of ascii 1 to 32.
+		3) 0000.1	Leading zeros accepted
+		4) .0		valid input. decimal part is "". ascii 0 is non displayable
+	
+	
+	Int: impossible
+		./convert 12345678901
+		
+	Float: impossible
+		./convert 1234567890123456789012345678901234567890
+	
+9)	Float: has f
+	
+10)	Float and Double: has decimal places
+	
+11)	Valid inputs:
+		1) "0000"."123f"
+		2) "0."1
+		3) .0
+		4) 0.
+		5) '*'	remeber to enclose in ''. Special character.
+		6) '&'	remember to enclose in ''. Special character.
+		7) A
+		8) "".	"" is not part of string. '.' has ascii 46
+		9) 10.f
+		
+12)	Invalid inputs:
+		0) 10f
+		1) "0000"."123F" 	uppercase F
+		2) abc
+		3) 1.23f45		f can only appear in the end
+		4) 1f.234		decimal part can't have f
+		5) 1f.2f		
+		6) 1..2		more than 1 decimal point
+		7) 1.2.3	alternating decimal points
+		8) *		is interpreted as wildcard for files in director
+		9) &		operator that tells shell to run your program in the background
+		
+		10) " ".9	Not a required test. Non displayable character input throw exception.
+		11) 9." "	Not a required test. Non displayable character input throw exception.
+
+13)	std::cout does not display decimal zero.
+	Ex: ./convert 12
+	float: 12f
+	
+	How did you force it to display 12.0f?
+	 
+14)	Test pseudo literals
+	- nan
+	- nanf
+	- nanx
+	- nanfx
+	- -inff
+	- +inf	
+
+✅ Ex 01:
+---------
+uintptr_t	unsigned integer type capable of holding a pointer to void
+		Defined in header <cstdint>
+
+1)	class Serializer{} has no data members?
+	a) Pg.10 class Serializer, who will not be initializable by the user by any way
+	b) given member function, uintptr_t serialize(Data* ptr);
+	
+	Considering class is not initializable by user by any way, and the parameter in
+	the function, it is clear the class has no private or static data members.
+	
+2)	How do I create Data struct and bring it in within the scope of the member function
+	of class Serializer{}
+	
+	1) Declare Data in the global scope in main()
+	
+	2) Within the same scope where A{} is defined.
+		meaining a nested struct
+		
+	3) Data struct in a separate header file.
+	
+3)	uintptr_t --> which header did you use
+		<cstdint>	//(c++11)
+		<stdint.h>
+
+5)	Explain why you could not use following to cast uintptr_t to Data* and vice versa
+	- static_cast
+	- dynamic cast
+
+6)	Explain reinterpret_cast	
+
+7)	File for Data struct?
+	pg. 10 Do not forget to turn in the files of your Data structure.
+	
+8)	What is the purpose of serialize() and deserialize()?
+	Hint:	webserv
+	
+	Serialization is a crucial process for converting complex objects 
+	into formats suitable for storage, transmission, or reconstruction. 
+	It is widely used in file handling, network communication, IPC, caching, and logging.
+
+9)	valgrind leak check
+
+✅ Ex 02:
+---------
+
+Improvements I seek:
+
+1)	Challenge 1:
+	void Base::identify(Base* p);
+	I want to use 1 try{} catch() blocks in the function.
+	
+	1) considered array of 3 function pointers, 
+		with pointers to 3 functions for A, B, C
+		
+		I don't like this, I am replacing 3 try{} catch{} blocks with 3 functions and array
+	2) considered template <typename T>
+		This requires I am passing an instance of an derived class object.
+		But this doesn't make sense to pass an instance of object
+		when I want to making one inside the class.
+		
+2)	Challenge 2:
+	void Base::identify(Base* p);
+	How can I pass an invalid class to the function to test it is not A , B, or C?
+
+Questions:
+	
+1)	Note: The 4 classes don't need to comform to Canonnical form
+	
+2)	Pg 11. Implement a Base class that has a public virtual destructor only.
+	It should not have the 3 functions as static, public or private member functions
+	
+3)	Explain how the behavior of dynamic_cast differs between pointers and references? 
+	and how they handle errors?
+	Answer:
+	
+	B *b = dynamic_cast<B *>(&p);	// Pointer Casts
+	
+	- a pointer can naturally represent the absence of a valid object with nullptr. 
+		If the cast fails, nullptr is assigned to it
+	
+	A &a = dynamic_cast<A &>(*p);	// Reference Casts
+	
+	- When casting a reference, dynamic_cast cannot return nullptr 
+		because references in C++ must always refer to a valid object. 
+		Hence  it throws a std::bad_cast exception.
+		
+4)	Pg 11. Including the typeinfo header is forbidden.
+
+	What is typeinfo header, what is it used for?
+	- provides support for runtime type information with std::type_info Class
+		
+		typeid(x).name() returns the name of the type of x.
+
+

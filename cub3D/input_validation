@@ -1,0 +1,70 @@
+Input validation checklist:
+
+Run Valgrind error test:
+valgrind --leak-check=full --show-error-list=yes ./cub3d test.cub
+
+1. ensure Type identifier is not be duplicated  ✅
+	
+	ex: Add a duplicate line of F 128,5,10
+	
+2. ensure All 6 type identifier are provided ✅
+	
+	ex: remove the line EA ./incs/seeds.xpm
+
+3a. Type identifier 1 or 2 chars, N/NO, S/SO, W/WE, E/EA, F,C ✅
+	
+	ex: FA 128,5,10
+
+3b. Type identifier NON, SON, WEN, FEN ✅
+
+4. Type identifier must have info, only 2 strings total ✅
+   EA ./path (total 2 string)
+   F 200,100,0 (total 2 strings also)
+   
+   	ex: NO ./incs/tube.xpm HELLO
+   	
+5. Remove read permission from a xpm file. It must throw error.✅
+	remove read permission - chmod a-r filename
+	add read permission -	 chmod a+r filename
+
+6. Type information with trailing spaces is acceptable? ✅
+   EA ./path..<space> <space> \n
+   
+   	YES.
+
+7. F & C info has int between 0 to 255 ✅
+	ex: F 128,5,10000
+
+8. F & C not have duplicates.  ✅
+	It can have only one occurence, just like N S W E
+	    
+9. Newline between Typeid elements ✅
+   1 or more
+   between NO, EA, F, C etc
+   
+   	YES.
+
+10. Order of Typeid - any ✅
+   EA F or NO WE etc
+   
+   	YES.
+
+11. Empty space between information ✅
+   1 or more <space>
+   EA <space> <space> ./path
+   F <space> 255,0,255
+
+12. Map is closed ✅
+
+13. allowed chars 0 [48] 1 [49] N [116] S [123] E [105] W [127] SPACE [32] ✅
+	For Bonus we add Door D. SO D is accepted.
+
+14. Map need not be a rectangle ✅
+
+15. Map contain spaces on each line ✅
+
+16. Accepts empty line between TypeID and Map. ✅
+	You could argue, empty line is not accepted.
+
+17. Map is last ✅
+	ex: move F 128,5,10 below map

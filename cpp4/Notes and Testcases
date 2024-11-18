@@ -1,0 +1,337 @@
+✅ ex00:
+--------
+
+1) 	Contains Animal, Dog, Cat classes?
+
+2) 	Virtual function:
+	-----------------
+	Virtual function in the base class
+	so the derived class can override the function
+	
+	example:
+	makeSound();
+	
+3) 	Protected:
+	----------
+	protected member attribute in Base class?
+	such that derived classes can inherit.
+	
+	std::string _type;
+		
+4)	Destructor:
+	-----------
+	1) Delete dynamic allocation of object in destructor?
+	2) Where is the "new" objects deleted, 
+		main() where it is instantiated or destructor?
+	run valgrind
+
+5)	Copy constructor:
+	-----------------
+	Deep copy VS Shallow copy?
+	If pointer, do Deep copy, which is to dereference pointer, copy values
+	If non-pointer, do shallow copy, deep copy doesn't apply. 
+
+6)	WrongAnimal test -	
+	Test what happens if virtual keyword is removed from makeSound() in Base class
+	This is what they mean WrongAnimal, WrongCat test.
+	The Derived class makesound() will not override. Base class message output.
+	
+✅ ex01:
+--------
+
+1)	Brian class -
+	std::string ideas[100];
+	
+2)	Dog and Cat -
+	1) private member attribute -
+		Brain* _brain;
+		
+	2) constructor has -
+		new Brain();
+		
+	3) destructor delete the brain -
+		//delete [] _brain; //incorrect _brain is a pointer (pointing to static array).
+		delete _brain;
+	
+3)	In main() -
+	1) 	pg 7. create array of Animal objects. (see below*)
+		fill half with Dog
+		fill half with Cat
+		
+		I interpret as, 
+		Pointers of Animal type, pointing to derived objects.
+		Meaning, Animal pointer pointing to Dog and Cat objects.
+		
+	2)	pg 7. delete the array of Animals
+		1) loop over this array and delete every Animal.
+		2) delete every Animal.
+		3) You must delete directly dogs and cats as Animals.
+		4) The appropriate destructors must be called in the expected order.
+
+	3) Valgrind check
+		
+4)	Copy constructor of Dog and Cat
+	Deep copy ?
+	In Dog::operator=()
+	- Shallow copy: I am copying address. So rhs and lhs both have same address.
+		_brain = other._brain; 
+
+	- Deep copy: I am assigning a new address to lhs. Do not have same address.
+		_brain = new Brain(*other._brain);
+		
+		- you should also see double free segmentation fault, because
+			since lhs == rhs, they are pointing to the same memory
+			so when you delete lhs, then rhs you are double freeing
+		
+
+A) Understanding create and fill array of Animal Objects.
+=========================================================
+
+1) Although I can create an Array of Animal objects, and Copy Dog()
+	Animal x[100]; 		//const Animal x[100] is different issue
+
+	for (int i = 0; i < 50; i++) 
+		x[i] = Dog();
+	
+	a) This does not make it a Dog() object. It is still an Animal.
+	   The Dog specific member attributes will be lost due to "slicing" effect.
+	b) So if I tried to call makeSound(), it will call Animal function, 
+	   not Dog function.
+	c) Importantly, the destructor will call Animal destructor only.
+	   The PDF pg 7. says "appropriate destructors must be called".
+	   We expect Dog destructor to be called, but it does not, 
+	   because it is not a Dog object.
+	   
+2) I use pointer based approach. 
+	So it is an array of pointers to objects, rather than array of objects.
+	Using Animal* pointers allows you to store objects of different derived types
+	(like Dog and Cat) in the same array while maintaining polymorphic behavior.
+	See B)
+	In 1) I do not have Dog objects, but in 2) I have Dog objects.
+	
+	Animal* x[100];
+	for (int i = 0; i < 50; ++i)
+    		x[i] = new Dog();
+
+B) Understanding Pointers to array of objects of different types.
+=================================================================
+pointer to a constant base class (Animal) array of Dog objects. (vs)
+pointer to a constant array of Dog objects.
+
+-----------------|---------------------------------------|------------------------------
+Feature	         | const Animal* x = new Dog[50];	 |const Dog* x = new Dog[50];
+-----------------|---------------------------------------|------------------------------
+Type of Pointer	 | const Animal*	                 |const Dog*
+-----------------|---------------------------------------|------------------------------
+Array Allocation | new Dog[50]	                   	 |new Dog[50]
+-----------------|---------------------------------------|------------------------------
+Type of Elements | Dog 	                          	 |Dog 
+  in Array       |  (but accessed as const Animal)       |  (and accessed as const Dog)
+-----------------|---------------------------------------|------------------------------
+Access to Array  | Elements are Dog,	 	         |Elements are Dog, 
+  Elements       |   but treated as const Animal         |   and accessed as const Dog
+  		 |  (Dog attributes, methods lost) 	 |   (has Dog attributes) 
+-----------------|---------------------------------------|------------------------------
+Modification     | Cannot modify Dog objects 	         |Cannot modify Dog objects 
+  Allowed        |   through x , because CONST           |  through x , because CONST 
+-----------------|---------------------------------------|------------------------------
+Method Access    | Calls Dog methods 	                 |Calls Dog methods 
+                 | (e.g. makeSound()) as const Animal    |(e.g. makeSound()) as const Dog
+-----------------|---------------------------------------|------------------------------
+Example Usage    | x[0]->makeSound(); 	          	 |x[0]->makeSound(); 
+                 |   (calls Dog's method,                |(calls Dog's method, 
+                 |   but x treats as const Animal)       |directly accesses as const Dog)
+-----------------|---------------------------------------|------------------------------
+
+✅ ex02:
+--------  
+
+1)	Default AAnimal class should not be instantiable.
+	- Check Class name changed to AAnimal (suggested convention pg.9)
+	- Has Pure Virtual function such as 
+		virtual void makeSound() const = 0;
+	- no constructors because it can't be instantiated ?
+	- virtual destructor required, to delete pointer to the base class.
+		because in main() we declare pointers of AAnimal type
+		
+	But why Virtual destructor?
+		To delete a derived class object through a base class pointer.
+		Otherwise only the base class destructor will be called.
+		
+2)	Demonstrate AAnimal class is an abstract class. 
+	Other than saying it has pure virtual function.
+	
+	- Instantiate AAnimal, it should throw compiler error. Because it has no constructor.
+
+3)	Do you need to implement the Pure Virtual function in the Abstract class?
+	- Not if it not necessary. It is meant to be overridden by derived class.
+	- C++ does not prohibit Base from providing a definition for the 
+	  pure virtual function. However, the derived class still has to 
+	  implement the pure virtual function.
+
+
+Note:	Difference between Abstract class and Interface?
+	Interface:
+	- It only has pure Virtual functions
+	- It doesn't have member variables
+	- no constructors or destructors
+	- no implementation for methods
+	- to provide a contract that derived classes must adhere to 
+		without enforcing how they implement the functionality.
+	Abstract Class:
+	- At least one Pure Virtual method, to make it an Abstract class
+	- the rest can be as in a normal class
+	- To define a common base with shared functionality and state 
+		that derived classes can extend or modify. 
+
+What differentiates pure Virtual functions from standard Virtual functions?
+- inheriting class is required to implement the pure virtual function. 
+- It's optional in case of standard virtual function.
+
+✅ ex03:   
+--------
+
+Question on AMateria 
+--------------------
+1) 	AMateria(std::string const & type);
+
+	Why is the parameter in constructor a reference to string, why not just string?
+
+	If the parameter were a std::string instead of a reference, 
+	there would be two copy operations: 
+	
+	one when the string is passed to the constructor (copying the argument), 
+	and another when the string is copied into the member variable. 
+	
+	Using a reference avoids the first unnecessary copy operation, 
+	resulting in only one copy operation when initializing the member variable.
+	
+
+2)	std::string const & getType() const;
+ 	
+	For the same reason, the getter function returns a reference to member variable,
+	instead of std::string itself.
+	
+	So, returning std::string const & is generally preferred for read-only access 
+	to avoid the overhead of copying while maintaining efficiency.
+
+3) 	Pg.11, 
+	"While assigning a Materia to another, copying the type doesn’t make sense."
+	
+	What does that mean?
+	use a shared pointer (std::shared_ptr) rather than a direct assignment ?
+	
+4)	what is the purpose of clone() in AMateria class?
+	
+	AMateria is an Abstract class. It cannot be instantiated like -
+		AMateria* tmp = new AMateria();
+		error: allocating an object of abstract class type 'AMateria'
+	But what you can do is call a function that returns an AMateria derived class object.
+	clone() is a function that returns a reference to Ice{} or Cure{}
+
+
+Question on ICharacter and Character
+------------------------------------
+
+1) ☑️ 	Since ICharacter is an Interface, does the derived class constructor need initializer list?
+	- ICharacter has no constructors defined,
+	- Character inherits ICharacter
+	
+	Does the derived class Character Constructors need initializer list ? 
+	Example:
+	
+	Character::Character(void) : ICharacter() ???
+	
+	- NO.	Because there are no member variables in Interface, 
+		there is no need for a constructor to initialize member variables.
+		Thus the derived class has no need to call on Base class constructor.
+
+2)	Circular dependency of ICharacter.hpp in AMateria.hpp and vice versa.
+	Did you have this issue? How did you fix it?
+	- Forward Declaration in AMateria.hpp: 
+		Instead of including ICharacter.hpp, 
+		forward declare the ICharacter class in AMateria.hpp:
+		
+To be careful with the following Instantiation and testing:
+-----------------------------------------------------------
+
+1)	This is how Ice() and Cure() objects are instantiated and passed as parameter in main().
+
+	1) A new instance of Ice() or Cure() is created in the parameter, without a pointer to it.
+	
+	i.e.   
+	IMateriaSource* src = new MateriaSource();
+	src->learnMateria(new Ice())
+	.	//other code
+	.	//other code
+	delete src;
+	
+	How is memory managed here? 
+	learnMateria() will delete Ice()
+	So, when main() goes out of scope, we don't worry about Ice() on heap, 
+	because it is already deleted
+	
+	2) But consider this,
+	
+	Ice* i = new Ice();
+	IMateriaSource* src = new MateriaSource();
+	src->learnMateria(i);
+	.	//other code
+	.	//other code
+	delete src;
+	delete i; //no you can't delete i, not allowed, because Ice() object is already deleted
+	
+
+🔔 Test cases:
+--------------
+
+1) 	Pg. 11
+	IMateria constructor will set their type to "ice" or "cure" passed as string.
+	
+2) 	Pg.11, 
+	"While assigning a Materia to another, copying the type doesn’t make sense."
+	Means you cannot have a copy constructor. Make it private.
+	
+❓ 	Does it mean you can't have a duplicate, but rather a pointer to the same object?
+	I created a new instance of AMateria.
+	
+3)🔔	Pg.11,
+	The unequip() member function must NOT delete the Materia!
+	
+	- Inspect if there is delete in function -
+		Character::unequip();
+		
+	- What did you do with unequipped() Materia?
+	
+	
+4)	me->use(0, *bob); //ensure Character me has AMateria in index 0.
+	valgrind check
+	
+5)	unequip() Character me at index 0.
+	Now Test,
+	me->use(0, *bob);
+	valgrind check
+
+6)	Character.hpp member variables are 'protected' ?
+	protected: 
+		std::string _name;
+		AMateria* _slot[4];
+		
+7)🔔	Test	createMateria("invalid"); + equip(NULL);
+
+	In main() : create invalid Materia and equip() it.
+	
+	Example:
+	
+	AMateria* tmp; 
+	tmp = src->createMateria("invalid"); 
+	me->equip(tmp);
+		
+	- equip() should check if argument is NULL, take no action if NULL
+	- should not seg fault
+	VALGRIND 
+	
+8)🔔	Test	unequip() with
+	- out of range index i.e > 3
+	- unequip index that has already been unequiped.
+	VALGRIND				

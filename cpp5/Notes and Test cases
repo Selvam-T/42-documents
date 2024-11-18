@@ -1,0 +1,161 @@
+Notes and Testcases:
+------
+
+✅Ex 00:
+--------
+
+Bureaucrat logic: 
+	Bureaucrate has a name and grade.
+	The grade point gives authority to sign or execute forms.
+	The smaller the number the higher the grade point.		
+
+1)	I do not allow Default constructor 
+	because Object has const member variable, that which 
+	once initialized cannot be changed. So I decided to throw exception.
+	std::invalid_argument is a derived type of std::exception
+	
+2)	a) Pg5. throw an ex-ception:
+	
+	Bureaucrat::GradeTooHighException
+	Bureaucrat::GradeTooLowException.
+	
+	The requirement suggests that you access the nested class by referring 
+	to it through the outer class, like 
+	OuterClass::NestedClass
+	
+⭐	This suggests that you implement 'nested class'
+	
+	b) Pg 5. The exception class does not have to have Canonical Form.
+
+	What did I try, that didn't work?
+	- I tried to have GradeTooHighException as a separate file.
+	- Inside Bureaucrat{} I gave Forward declaration to it.
+	- This didn't work, because for the catch () to work, it expected
+	  GradeTooLowException{} to have definition inside Bureaucrat{}
+	- I still had to define the what() function in the implementation file.
+		const char* Bureaucrat::GradeTooHighException::what() const throw()
+		
+3)	Issue with operator= overload function, because
+	the private member variable is a constant.
+	
+	std::string const _name;
+	
+	Which means in the operator= overload function,
+	you are not allowed to assign value to member variable.
+	Because 'const' means, once variable is initialized it cannot be changed.
+	
+	How did you resolve this issue?
+⭐	1) skip assigning values to 'const' member variable
+		copy only 'non-const' member variables.
+		
+	2) Delete the rhs instance of the object, create new instance,
+	   initialize with values from lhs object.
+	   Disadvantage is the loss of object identity, old object gone.
+
+4)	Pg5. 
+	If (grade < 1)
+	throw exception -> Bureaucrat::GradeTooHighException 
+	//notice it is TOO HIGH
+	
+	If (grade > 150)
+	throw exception -> Bureaucrat::GradeTooLowException 
+	//notice it is TOO LOW
+	
+	
+5)	member functions to increment the bureaucrat grade.
+	if (grade - 1 < 1)
+	throw exception -> Bureaucrat::GradeTooHighException
+	
+	member functions to decrement the bureaucrat grade.
+	if (grade + 1 > 150)
+	throw exception -> Bureaucrat::GradeTooLowException 
+	
+6)	Pg 6.
+	implement an overload of the insertion («) operator to print
+	<name>, bureaucrat grade <grade>.	
+
+✅Ex 01:
+--------
+Form sign logic:
+	The Bureaucrat should have sufficient grade points to sign the form.
+
+1)	Form member variables are Private. (Not protected)
+
+2)	Add function signForm() to Bureaucrat{}	
+
+3)	Form{} does not allow default constructor, and copy operator= overload, why?
+	
+	Because Form{} member variables are const. Once initialized they cannot be changed. 
+	So having a default constructor and intializing to some default values, 
+	and not be able to change later does not make sense.
+	Same for copy assignment operator.
+	I throw exception.
+	
+4)	I allow copy constructor. 
+	Why? Because I create a new instance, initialize it with other obj.
+
+5)	How is Form::GradeTooLowException and Form::GradeTooHighException() implemented ?
+	I previously made the mistake of catch(Bureaucrat::GradeTooLowException& e) etc,
+	The correct method is to catch(std::exception& e);
+
+6)	Does signForm() correctly display output message?
+	If Bureaucrat's grade is 1 and the Form's sign grade is 2
+	 	then "Bureaucrat signs form"
+	else
+		"Bureaucrat cannot sign form"
+
+✅ Ex 02:
+---------
+Form execute logic:
+	For the form to be executed, it must have been signed as in Ex 01.
+	And the Bureaucrat should have the grade points to execute the form.
+
+1)	AForm{} is inherited by
+	- ShrubberyCreationForm {}
+	- RobotomyRequestForm {}
+	- PresidentialPardonForm {}
+	
+	They have a private member _target
+	
+2)	How did you make Form an abstract class?
+	
+3)	AForm{} member attributes are private
+
+4)	Doesn't not ask to implement overload of the insertion («) operator 
+	that prints all the form’s information
+	
+5)	What was the design logic of creating execute()?
+	Where did you place the execute condition logic, in base class or child?
+	Where did you place the action if condition valid, in base class or child?
+	
+6)	Does Shrubbery action create a file <target>_shrubbery in the working directory?
+	Limitation: 
+	 - I had to use C style <dirent.h> to list files in directory because of c++98 standards
+	 - my file structure does not recursively display subfolders tree <tab> spaced.
+
+8)	Robotomy take action, display message correctly?
+
+9)	President take action, display message correctly?	
+
+7)	Is executeForm() implement in Bureaucrat?
+
+✅ Ex 03:
+--------
+
+1)	It says Form* rfg;
+	So I renamed AForm to Form.
+
+Resubmit : 	
+ERROR in my code, not caught during Evaluation: FIXED
+-----------------------------------------------
+
+1)ok	RobotomyRequestForm::action() 
+	rand() is not seeded. It doesn't give random numbers.
+	I must use srand()
+	
+2)ok	Intern::makeForm()
+		ptr = (this->*fptr[0])(target); // index 0 is incorrect. index 'i' is correct
+		
+ 
+
+

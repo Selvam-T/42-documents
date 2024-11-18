@@ -1,0 +1,33 @@
+Variables:
+
+Player Facing direction: N S W E in radians.
+The number of rays cast = number of pixels along the width of the game screen.
+
+What is a ray? 
+
+How is ray 1 different from ray 2? (Assume there is 100 pixels along the width).
+
+How does ray advance along the path of its direction?
+
+How do I determine what point of the cell wall the ray strikes?
+
+In what units are the sides of a wall divided?
+
+Check every cell value along the direction of the ray.
+	1) which axis of the cell did the ray strike?
+		Top and Bottom are y axis
+		Left and Right are x axis
+	2) which side of the cell did the ray strike?
+		If y axis (Top or Bottom)
+		If x axis (Left or Right)
+
+Raycasting: The components of the DDA algorithm include -
+    	1)Start and end points of the line or ray.
+    	2)Step increments for x and y coordinates.
+    	3)Calculation of the distance and direction to step through the grid.
+    	
+How do I represent the camera plane vector?
+
+The relationship between Player facing direction and the camera plane vector?
+
+If I rotate the Player facing direction, how do I rotate along the camera plane vector?

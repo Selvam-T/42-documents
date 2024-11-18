@@ -1,0 +1,209 @@
+
+Test cases:
+----------
+
+EX 00:
+------
+
+1)⚠️ 	What is C++98 vs C++11
+2)⚠️ 	What does including flag --std=c++98 flag specifies?
+	Ensures compatibility with C++98 standard, throw warning.
+3) 	How would you describe this std::string?
+	string class in the C++ Standard library.
+4)	What is :: ?
+	Scope resolution operator.
+	Indicates that string is a part of standard namespace.
+5)	what << ?
+	Stream insertion operator.
+	It is used to send data to the output stream, std::cout
+3) 	How did you solve the exercise in C++ manner as opposed to C?
+4) 	Ensure executable name is 'megaphone', as given in the sample output.
+
+EX 01:
+------
+
+1) 	Executable file name - any accepted.
+2) 	Naming convention of class is CamelCase?
+
+3) 	Input validation of contact fields is not required.
+		I have limited validation for learning.
+	
+⚠️		But do you handle (ctrl + d) pressed as input?
+	 	
+4)⚠️ 	Explain the design logic of creating contacts AND phone book.
+
+	member functions in contact class?
+	non member functions in contact class?
+	or functions in separate file
+
+5)	Although you can design your classes anyway  you want, 
+	have you ensured anything that will always be used inside a class is private?
+	anything used outside a class is public?
+	
+6)	Main Menu:
+	1) Prompt ADD, SEARCH, EXIT
+	
+	2) Input ADD111, SEARCH111, EXIT111 
+		Does it treat as invalid? Discard input?
+		
+	3) Input 111ADD, 111SEARCH, 1111EXIT
+		Invalid, discard input?
+	4) Press entry, continue to display menu.		
+		
+7)	On startup is the phonebook empty? page 7.
+
+8)	Explain the same for ADD, DISPLAY, SEARCH functionality
+
+9)	ADD: A saved contact can’t have empty fields. Page 7.
+	I interpret this as whitespace like spacebar entry is not accepted.
+	string.empty() function accepts whitespace. How is this handled?
+	
+	Input space bar repeatedly
+	
+10) 	Did you allocate memory using new keyword, and delete?
+		Dynamic allocation is forbidden. Page 6.
+		
+11)	When ADD contact exceeds 8, are you replacing Oldest contact with new?
+	What is the algorithm for it?
+	Go one full cycle to check if you are replacing all Oldest with newer Contacts,
+		and not just replacing the top one (like I did).
+
+12)	If ctrl+d is pressed while adding first_name does it clean exit?
+	
+13)	If you are using String and String substring methods,
+	String must be allocating memory, Do you free it?
+	How is the memory allocated to String objects freed?
+
+14)	SEARCH: Do you first display the added contacts before prompting for search index ?
+			
+15) 	1) Are you displaying 4 columns with | separator ?
+
+16)	2) Display Index, First, Last, Nick name. (Not phone, secret)
+
+17)	3) each field is right aligned 
+	4) each field if < 10 characters, truncate and end 10th character with '.'
+	5) What C++ String functions did you use to achieve this?
+	
+18)	SEARCH, if index is incorrect, implement your own behavior.
+	1) If index is correct, display correct contact
+	2) Display 1 field per line.
+	3) How are you handling invalid search index input?
+		0, -5, abc, 999999999999999999999999999
+	
+19)	How are you converting string to number for search index?
+		I use std::stringstream
+		
+20) 	Explain Constructor and Destructor.
+		Is your phonebook instantiated as an instance of PhoneBook class?
+		Is your contacts instantiated as an instance of Contact class?
+
+21) 	EXIT, exits program.
+	1) How can you know if the contacts are lost forever when EXIT?
+
+Limitations:
+-----------
+1) SEARCH : 
+	Invalid inputs are - 1) non-digits 2) empty 3) Invalid index
+	
+	Ideally for all invalid inputs it must give user 2 more tries
+	It does for 1) and 2)
+	But for 3) it reverts to main menu.
+	
+	This is because I am not passing the phonebook member _count as
+	parameter in function call to search_contacts.
+	
+2) ctrl+d key press handling when reading from std::cin
+
+	This is handled seamlessly in the main menu prompting [ADD, SEARCH, EXIT]
+	
+	But when ctrl+d key press in encountered in functions embedded in the main loop,
+	the EOF condition is not propagated from the functions to the main loop.
+	Therefore the exit is not clean.
+	
+	Ideally, I should fall back to the main() loop and 
+	continue with the main menu, without exit program.
+	(I think it has to do with handling failbit)
+
+EX 02:
+------
+
+1) Recreate Account.cpp ?
+
+2)⚠️ Does the constructor initialize all private member variables of the object class?
+	If not, when you valgrind with -s flag, it will show conditional jump error
+	on some member variables that were not initialized.
+
+3) Account.hpp is not modified? If modified why? 
+	1. PDF doesn't say you can or can not modify .hpp
+	2. I ask this question because originally I was confused as to whether or not to have 
+		getter and setter functions for private member variables. 
+	3. How did you figure out you need not have it? 
+		I only figure after discussing with Avery.
+
+4) Do you recognize the PUBLIC static int functions like 
+	getNbAccount() .. getNbWithdrawals() are getter functions to get values
+	of private static int variables like
+	_nbAccounts .. _totalNbWithdrawal
+	
+	But did you really need them? You could directly access them and modify 
+	them from member functions.
+5) public int checkAmount(void) const; did you really need it?
+	Where did you use it? could you have access the member variable directly?
+	
+6)⚠️ When is withdrawal refused? Is message displayed correctly?
+
+7) Can you explain Private vs Public
+	static vs non static functions
+
+8) What is the difference between
+	int const function();		//return type is constant int
+	vs
+	int function() const;		//return int, BUT it cannot modify the object 
+					//on which it is called. May be it is returning int counter
+5) How did you begin to put them together?
+	What did you figure out first and how?
+
+print log in the order of function call:
+---------------------------------------
+1. Constructor
+2. Display AccountsInfos
+3.	Display Status
+4.	Make Deposit
+5. Display Accounts
+6.	Display Status
+7.	Make Withdrawal
+8. Display Accounts
+9.	Display Status
+10. Destructor	
+
+What member variables does each function call:
+---------------------------------------------
+Display AccountsInfos:
+	1. _nbAccounts
+	2. _totalAmount
+	3. _totalNBdeposit
+	4. _totalNBwithdrawal
+	
+Display Status:
+	1. _accountIndex
+	2. _amount
+	3. _nbDeposits
+	4. _nbWithdrawals
+
+Make Deposit:
+	1. _accountIndex
+	2. "P_amount" = _amount
+	3. "deposit"
+	4. "amount" = _amount + "Deposit"
+	5. nbDeposits++
+	
+Make Withdrawal:
+	1. _accountIndex
+	2. _amount
+	3. if "withdrawal" > _amount
+		a. _amount = _amount - _"withdrawal"
+		b. _nbWithdrawal++
+	   else
+	   	"refused"
+	
+

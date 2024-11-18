@@ -1,0 +1,476 @@
+Timestamp in milliseconds
+-------------------------
+
+Microseconds (µs): One microsecond is equal to one millionth of a second 
+	(1/1,000,000 seconds). 
+	It is often used for very short durations or precise timing requirements.
+
+Milliseconds (ms): One millisecond is equal to one thousandth of a second 
+	(1/1,000 seconds). 
+	It is commonly used for measuring slightly longer durations compared to microseconds.
+	
+-----------------------------------------------------------------------------------------
+0,	printf, malloc, free, write
+	NOTE: exit is not allowed
+
+1,	usleep()
+	 - 1 millisecond = 1000 microseconds
+	 - usleep(500000) //sleep for 500 milliseconds
+	 - <unistd.h> 
+		
+2,	gettimeofday()
+	 - man gettimeofday
+	 - return value 0 for success, -1 for failure
+	 
+-----------------------------------------------------------------------------------------
+
+3,	memset()
+	memset(arr, 0, sizeof(arr));
+	//where arr is an int array, it can be any array
+	//the value to be set is 0, but it will be treated by memset as an unsigned char
+	
+	//I think this function is allowed to initialize to 0 after malloc, but
+	//I malloc struct, therefore this may not come in handy
+-----------------------------------------------------------------------------------------
+	What is threads? Why use threads?
+
+	Threads are lightweight processes within a program. 
+	They share the same memory space but have their own registers and program counter, 
+	allowing them to execute independently.
+	
+	- Concurrency: Threads allow multiple tasks to execute concurrently, 
+	  improving the overall performance and responsiveness of a program.
+	- Responsiveness: By offloading time-consuming tasks to separate threads, 
+	  the main thread can remain responsive to user input, ensuring a smooth 
+	  and interactive user experience.
+	- Asynchronous Operations: Threads are commonly used for handling 
+	  asynchronous tasks, such as responding to events or processing 
+	  background tasks without blocking the main thread.
+	  
+	- Registers and Program counter of a thread is not useful at user-level code,
+	  only useful, when low-level manipulation of hardware state is involved.
+	 
+	- Thread Scheduling - although user-level code doesn't control thread scheduling,
+	  understanding the concept of context switching (where the CPU switches
+	  between executing different threads) can help developers write more efficient
+	  and responsive multithreaded programs. By understanding when a thread might be
+	  preempted and how often context switches occur, developers can design algorithms
+	  and data structures that minimize contention and maximize parallelism.
+	  
+	- Concurency Control: Knowing which thread is currently running or waiting to run
+	  can be crucial for implementing synchronization primitives like locks, semaphores,
+	  or condition variables correctly. For example, a thread might use its own register
+	  and program counter information to determine when it needs to acquire a lock
+	  shared resources safely or when it can release a lock to allow other threads to 
+	  proceed.
+
+-----------------------------------------------------------------------------------------
+4,	pthread_create()
+	- used to create a new thread, within the same process.
+	- do not confuse thread with process. 
+	- takes 4 arguments
+		- a pointer to the thread identifier
+		- thread attributes
+		- a function pointer to the function the thread will execute
+		- arguments to pass to that function
+		
+	- When pthread_create() is successful, the pthread_t thread_ID is stored in a
+	  memory location pointed to by the thread_ID.
+	- What happens when pthread_create() function is called. A new thread begins to 
+	  execute the function that is passed as argument. 
+	- The thread terminates when the function it is execution has ended. Or by 
+	  explicit termination or cancellation.
+
+5,	pthread_join()
+	- is like a wait() function, not a function to start the Thread as I imagined.
+	- is used to wait for a thread to terminate
+		so who is waiting? The calling process.
+	- it suspends the execution of the calling thread until the target thread
+	  terminates
+
+6,	pthread_detach()
+	- is an alternative to pthread_join(), not an alternative to pthread_create()
+	- used to mark a thread as detached, meaning that its resources will be
+	  automatically reclaimed by the system when the thread exits
+	- detached thread cannot be joined, and their resources are automatically
+	  cleaned up.
+	- the detached thread can continue its execution independently of the main thread.
+	- the main thread continues its execution without waiting for the detached thread 
+	  to finish.
+	- when the detached thread completes its execution (reaches the end of its function
+	  or calls 'pthread_exit()'), its resources are automatically reclaimed by the system.
+	- When no reason exists to synchronize with the termination of a particular thread,
+	  then that thread should be detached.
+ 	- If tid has not terminated, pthread_detach() does not cause the thread to terminate.
+	
+//	- When a thead terminates it frees up it's resources, you don't need to call 
+	  pthread_detach(). 
+//	- When you use pthread_join(), it waits for the target thread to terminate, 
+	  before the calling thread can join, in which case the resources of target
+	  thread is freed, so pthread_detach() need not be called.
+
+------------------------------------------------------------------------------------------
+	What is mutexes, why use mutexes?
+	Prevent duplicating forks.
+	Protect the forks state.
+	
+	A mutex is a synchronization mechanism used to control access to 
+	shared resources by multiple threads in a concurrent program.
+	The term "mutual exclusion" implies that only one thread can access 
+	the protected resource at any given time.
+	
+	- Critical Section Protection: Mutexes are commonly used to protect critical sections 
+	  of code, ensuring that only one thread can execute the critical section at a time. 
+	  This prevents data corruption and race conditions.
+	- Data Integrity: When multiple threads have access to shared data, 
+	  using mutexes helps maintain data integrity by preventing simultaneous 
+	  writes or conflicting updates. This is crucial in preventing data corruption.
+	- Concurrency Control: Mutexes provide a way to control the order of execution 
+	  of threads, allowing developers to coordinate access to shared resources and 
+	  avoid race conditions.
+	- Preventing Deadlocks: In multithreaded programs, deadlocks can occur 
+	  when multiple threads are waiting for each other to release resources. 
+	  Mutexes help prevent deadlocks by providing a structured way to acquire 
+	  and release locks.
+	- Synchronization: Mutexes facilitate synchronization between threads. 
+	  They allow threads to coordinate their activities, ensuring that certain 
+	  operations are completed in a controlled manner.
+
+7,	pthread_mutex_init()
+	pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr)
+	ensures only one thread can access a shared resource at a time.
+	- mutex: a pointer to the mutex object that you want to initialize
+	- attr: an optional pointer to a mutex attributes object.
+	  If 'NULL' is passed, default attributes are used.
+	- return 0 on success, error code if an error occurs.
+	- It's important to initialize a mutex before using it.
+	
+8,	pthread_mutex_destroy()	
+	pthread_mutex_destroy(pthread_mutex_t *mutex)
+	used to destroy a mutex that was previously initialized with pthread_mutex_init()
+	- parameter: a pointer to the mutex object that you want to destroy.
+	- after calling this function, the mutex is considered uninitialized and should
+	  not be used without being re-initialized.
+	- return value, 0 on success, error code if an error occurs
+	- it is important to destroy a mutex when it is no longer needed to avoid
+	  resources leaks.
+	
+9,	pthread_mutex_lock()	
+	pthread_mutex_lock(pthread_mutex_t *mutex)
+	locking a mutex is essential to protect critical sections of code where 
+	shared resources are accessed and modified.
+	- returns 0 on success, error code if an error occurs
+	- if the mutex is already locked by another thread, the calling thread will be
+	  blocked (suspended) until the mutex becomes available.
+	- Once the mutex is succesfully locked, the thread can proceed to execute the
+	  critical section of code protected by the mutex.
+	- pthread_mutex_lock() forces the other Threads that may be accessing the 
+		resources to wait until the unlock() is reached.
+
+10,	pthread_mutex_unlock()	
+	pthread_mutex_unlock(pthread_mutex_t *mutex)
+	the reverse of above.
+	- It's crucial to unlock the mutex after entering and completing the critical section.
+	- Failing to unlock the mutex can lead to deadlock situations where threads are
+	  unable to proceed.
+	  
+11,	Mutex vs Semaphore:
+
+	Mutex: Allows only one thread to access a shared resource at a time. 
+	It's like a key to a room, where only one person can enter at a time.	  
+	
+	Semaphore: Controls access to a shared resource by maintaining a count of the 
+	number of threads that can access it. It's like tickets to a movie, 
+	where a limited number of people can enter the theater.
+	
+12,	sem_open
+13,	sem_close
+14,	sem_post
+15,	sem_wait
+16,	sem_unlink
+-----------------------------------------------------------------------------------------
+
+The purpose of the project is to avoid deadlock and race conditions 
+when creating multithread applications.
+
+Deadlock:
+
+Deadlock in the context of multithreading occurs when two or more threads are blocked indefinitely, waiting for each other to release resources that they need. Essentially, 
+each thread is holding a resource that another thread needs, and neither thread can 
+proceed until the other releases the resource it's holding.
+
+Imagine two threads, A and B, where A holds resource X and waits for resource Y, 
+while B holds resource Y and waits for resource X. In this scenario, neither thread can 
+proceed because each is waiting for a resource held by the other, resulting in a deadlock.
+
+Deadlocks can lead to a complete halt in program execution, as the threads involved are 
+stuck indefinitely. They are a serious issue in multithreaded programming and can be 
+challenging to debug and resolve.
+
+To prevent deadlocks, strategies such as avoiding circular dependencies, using 
+resource ordering, or implementing timeouts can be employed. Additionally, careful design 
+and testing of multithreaded code can help identify and prevent potential deadlock situations.
+
+Race condition:
+
+A race condition in the context of C program threads occurs when the outcome of a program 
+depends on the relative timing or interleaving of operations performed by multiple threads.
+It arises when two or more threads access shared resources concurrently, and the 
+final outcome depends on the order of execution.
+
+In simpler terms, imagine two threads trying to update a shared variable simultaneously.
+Depending on which thread gets to execute its update operation first, the final value of 
+the variable may be different. This unpredictability in the outcome due to the timing of 
+thread execution is called a race condition.
+
+Race conditions can lead to unexpected behavior, including program crashes, incorrect results,
+or data corruption, making them a common source of bugs in multithreaded programs.
+
+To mitigate race conditions, synchronization mechanisms such as mutexes, semaphores, 
+or atomic operations are used to ensure that only one thread can access a shared resource 
+at a time, preventing conflicting accesses and maintaining data integrity.
+
+Atomic operation is not a specific C library function; rather, it refers to operations that are indivisible and uninterruptible. In C, atomic operations are typically achieved using special instructions provided by the hardware or through compiler intrinsics. Atomic operations ensure that a specific operation (e.g., read, write, increment) on shared memory occurs atomically, without interruption from other threads. Mutexes, on the other hand, provide exclusive access to a shared resource by allowing only one thread to enter a critical section at a time, thus preventing concurrent access and potential data corruption.
+
+-----------------------------------------------------------------------------------------
+Concurrency vs Parallelism:
+
+Concurrency deals with managing multiple tasks or processes at the same time, 
+but they may not necessarily run simultaneously. Concurrent execution is where the CPU 
+will switch back and forth between executing multiple Threads. Even though the Threads
+are executing over the same period of time, at any particular moment in time only one of
+the Threads is executing and the CPU is switching between them.
+
+Parallelism involves actually executing multiple tasks or processes simultaneously 
+to speed up overall execution.
+
+This project is about dealing with concurrency, not parallelism.
+-----------------------------------------------------------------------------------------
+
+Process vs Threads:
+------------------
+
+A process is an instance of a program that is being executed. A process can create other
+processes to perform multiple tasks at a time (child processes). Each process contains its
+own memory space and does not share it with the other processes.
+
+A Thread is the subset of a process and is also known as a lightweight process. A Process
+can have more than one Thread, and these Threads are managed independently by the scheduler.
+All the Threads within one Process are interrelated to each other.Threads have some common
+information, such as data segment, code segment, files, etc, that is shared by their peer
+Threads.
+
+Multi-threaded processes, where different Threads perform different tasks, thus multiple
+tasks can be performed at the same time. Example: one Thread for displaying the web page
+and another one for downloading, and another one thread for the user to interact with the
+web page. If there was only one Thread uses, then until one task completes the other task
+can not be done, so the user has to wait for one of the tasks to complete before he can
+do the other.
+
+-----------------------------------------------------------------------------------------
+
+Who or what determines which thread is executed, and which comes next?
+Do the threads execute in particular order or are they selected randomly?
+
+The operating system's thread scheduler determines which thread is executed and what thread comes next. The scheduler's job is to manage the execution of threads on the CPU cores based on various scheduling algorithms and priorities.
+
+Threads typically do not execute in a predetermined order. Instead, they are scheduled by the operating system's scheduler based on factors such as thread priority, available CPU resources, and scheduling algorithm. While some scheduling algorithms may exhibit certain patterns or tendencies, the exact order of thread execution can appear random, especially in systems with multiple threads contending for CPU time.
+
+-----------------------------------------------------------------------------------------
+Philosopher project:
+
+Arguments
+---------
+number of philosphers
+philosopher state
+number of times each philosopher must eat
+
+The input
+---------
+./philo 50 410 200 200
+
+Evaluation asks to test 200 philos --> So argument 1 should not be more than 200.
+
+philosopher state
+-----------------
+1,	Time to die --> starts from the begining of last meal
+2,	Time to eat
+3,	Time to sleep
+4,	Time to think --> is not fixed, it can collapse and expand, 
+			  allowing to provide buffer for the thread to wait for the next eat.
+			  Think has an upper bound, and a lower bound of 0. If the upper bound
+			  of Think is exceed then the Thread dies.
+
+sequence of action:
+------------------
+eat sleep think eat
+
+Simulation ends when
+--------------------
+1, All philosophers eat respective number of times
+2, A philosopher dies
+
+output
+------
+<timestamp> <philosopher x> <action>
+
+where, 	x= 1 to number of philosophers
+	action= Taking a fork
+		Eating
+		Sleeping
+		Thinking
+		Dying
+		
+The main problem of this project is how to organize the eating action of the philosophers.
+Philosophers have to organize by themselves.
+-----------------------------------------------------------------------------------------
+Possible deadlocks and bottlenecks-
+-----------------------------------
+
+1,	Deadlock:
+	Using sanitizer it warns me of a possible deadlock in which 
+	each philo grabs a fork making it impossible for all philos 
+	to grab a second one and therefore eat.
+
+2,	Bottleneck:
+	printf function can be a bottleneck.
+	
+3,	Printing:	
+	In someone implementation the printed time is not exactly state change time 
+	but the time when the thread got hold of the mutex for printf. So it might have 
+	changed state  way earlier than the stamp it prints.
+	
+	My implementation was also printing status when forks were released. 
+	When I removed that, I was able to make more philosophers eat without dying. 
+	(I managed 24 Philos on my home computer, I guess more on school computers!)
+	I suppose the frenzy to acquire the printing mutex by threads exiting eat and 
+	threads starting eating delayed the threads so much they starved and died.
+	
+-----------------------------------------------------------------------------------------
+
+Test cases:
+
+NOTE: The PDF does not explicitly ask to validate inputs expect number of Philosophers,
+so leave it to the student to defend it.
+
+0.	Global variables are not permitted. Check for extern in .h file
+	or a variable declared outside of any function in .c file, like under #include
+1,✅	Negative input is not accepted?
+2,✅	Non-integers is not accepted?
+3,✅	Arguments can only be 5 or 6, not less, not more?
+4,✅	Philosopohers < 200
+5,✅	./philo 5 "" "" "" --> is not a valid input
+6.      ./philo 5 800 200 200 0 --> num of meals should be 1 or more
+
+6,	 valgrind --tool=drd --fair-sched=yes ./philo 2 500 300 100
+	ensure -fsanitize flag is not in the cc flag in makefile
+
+7, 	Check each philosopher has a thread. i.e pthread_create()
+8, 	Check there is only as many forks as there are philosophers
+9,	Check fork is protected by mutex.
+10,	Project is turned in directory philo/
+11,	Norminette -R CheckForbiddenSourceHeader
+12,	Message announcing death is displayed no more than 10 ms
+
+13,	Detect data races and thread synchronization issues-
+	catch race conditions and other threading bugs at runtime.
+		ADD -fsanitize=thread FLAG to cc in Makefile
+	
+14,	Detect memory corruption issues like buffer overflows and use-after-free errors.
+	While it doesn't directly detect mutex issues, it can help identify memory-related bugs 
+	that might indirectly cause threading problems.
+		ADD -fsanitize=memory FLAG to cc in Makefile
+	
+15, 	Additional tool to detect data races and lock order violations.	
+		valgrind --tool=helgrind --fair-sched=yes ./philo 1 500 400 100
+16,	Check philosophers are not communicating with each other,
+	meaning they do not have access to each other's data, 
+	such as next_meal of the other philosopher
+17,	Evaluation sheet apparently says the time value minimum is 60 ms,
+	so avoid testing with time below 60 ms.
+	
+DEFENSE of my LOGIC to retire Philosopher after they have eaten x number of meals.
+
+" If all philosophers have eaten at least number_of_times_each_philosopher_must_eat
+times, the simulation stops.".
+
+It does not say what individual philosophers should do, if they have eaten allocated
+number of meals. Can they retire if they have eaten atleast x number of meals ?
+Or should they continue to eat? It doesn't say.
+
+The statement in PDF is specific to when a simulation must stop,
+given number_of_times_each_philosopher_must_eat option.
+1) And my program ensures it stop when philosophers have eaten atleast x number of meals.
+2) Additionally my program optimizes for performance, by reducing the challenges to
+	concurrency issue, by reducing the load by removing philosophers who have eaten.
+
+-----------------------------------------------------------------------------------------
+Fork assignment explained.
+
+1) 	Odd number of philosophers:
+	
+	(n-1) Even number philosopher picks up 2 forks first.
+	Picks up i (i.e. own) first, followed by i+1 fork next.
+	
+	
+2) 	Even number of philosophers:
+	1st philosopher, Odd number philosopher picks up 2 forks first.
+	Picks up i+1 first, followed by i fork (i.e. own) next.
+
+Forced time delays explained:
+
+In order to ensure alternating philosophers pick forks, I put ODD philosophers to
+usleep(1000). Same effect if I put EVEN philosophers to usleep(1000); Didn't figure out why.
+
+Additionally, I set philosophers, all of them, to think for 100 ms, if there were ODD number
+of philosophers, and 0 ms if there were EVEN mumber of philosophers.
+This had an effect on ./philo 5 800 200 200 vs ./philo 4 410 200 200
+If I didn't set think correctly one or the other would fail.
+
+-----------------------------------------------------------------------------------------
+What to look out for going forward in developing the code
+
+1)	DEADLOCK
+	P1 Lock Fork1
+	Waiting for Fork2
+	P2 Lock Fork2
+	Waiting for Fork1
+
+2)	PRINTING can lead to race condition
+	printing needs mutex.
+	
+	There is ONLY one print function for eat, sleep, think, die.
+	Such that ph1 print_sleep, ph2 wait then print_eat and so on.
+	
+3)	LOCK common resources when PH is updating it
+	t_program ->dead
+	
+4)	Problem of fairness:
+	
+	|---------|---------|??????????|
+	    1 eat    2 eat    1 and 3 are ready to eat
+	    
+	    but if 3 doesn't eat he will die
+	    How do I ensure the next person to die, will eat first?
+
+5)	Die in the middle of SLEEPING:
+	
+	|---- tt_live for P ------|
+
+	|----- tt_eat -----|----- tt_sleep ----|
+	
+				  ^ at this point P will die
+	So how does P announce his death, when he is still sleep?
+	
+6)	Die in the middle of EATING:--> Not required. 
+	He is safe as long as he starts eating before he died.
+	Once he starts eating, his next meal time of reset.
+
+	|---- tt_live for P ------|
+	|--------------- tt_eat ----------------|
+	                          ^ at this point P will die
+	same as above
+	
+7)	Die in the middle of THINKING: --> Doesn't happen.
+	The time to think is just a buffer. It can be set to 0.
+

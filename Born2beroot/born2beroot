@@ -1,0 +1,153 @@
+1,	Create virtualbox (or UTM)
+
+[√]	Turn in signature.txt at the root of your repository,
+	place in it the signature of your machine's virtual disk
+
+2,	set up Operating System
+	
+	specific rules to set up OS
+		install minimum of services
+		graphical interface not required
+			forbidden to install X.org or other graphical server
+		
+3,	Debian vs Rocky
+	Debian recommended, new to system administration
+	
+[√]	AppArmor for Debian must be running at startup.	
+
+4,	Create atleast 2 encrypted partitions using LVM
+
+5,	Difference between aptitude and apt
+
+6,	SELinux vs AppArmor
+
+7,	SSH service will be running on port 4242 only.
+[√]	It must not be able to connect using SSH as root.
+	[/etc/ssh/sshd_config >>> PermitRootLogin no]
+	//leave it commented, by default it does not permit root.
+	
+[√]	(By default 22 is the port for SSH, must I deny port 22, after I allow 4242?)
+	
+8,	Understand how SSH works.
+>>>	Setup a new account.
+			
+[√]	Configure OS with the UFW firewall, leave only port 4242 open
+
+[√]	The firewall must be active when you launch your virtual machine.
+
+[√]	The hostname - sthiagar42
+[√]	be able to modify hostname during evaluation
+	
+[√]	Implement a strong password policy
+
+9,	sudo
+
+[√]	Install and configure sudo following strict rules
+
+[√]	In addition to the root user, a user with your login as username has to be
+	present.
+[√]	This user has to belong to user42 and sudo groups.
+
+[√]	During evaluation, create a new user and assign it to a group
+
+10,	Setup a strong password policy.
+
+[√]	Password has to expire every 30 days
+	minimum number of days allowed before password modification is 2
+	user receive a warning message 7 days before their password expires.
+	Password must be at least 10 characters long. 
+	atleast 1 UPPERCASE, 1 lowercase, and a number
+	must not contain more than 3 consecutive identical characters
+	must not include the name of the user
+	have at least 7 characters that are not part of the former password
+	
+[√]	root password has to comply with this policy,
+	except the 7 characters
+
+***	After setting up your configuration files, you will have to change all the 
+>>>	passwords of the accounts present on the virtual machine,
+	including the root account
+	
+11,	setup a strong configuration for your sudo group
+
+[√]	Authentication using sudo limited to 3 attempts, event of incorrect password
+[√]	custom message of your choice displayed, if error due to wrong password
+[√]	each actions using sudo has to be archived, both inputs and outputs
+	the log file saved in the var/log/sudo/ folder
+
+12,	The TTY mode
+[√]	the TTY mode has to be enabled for security reasons
+[√]	for security reasons too, the paths that can be used by sudo must be 
+	restricted. example:
+	/usr/local/sbin:/usr/local/:bin/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+	
+13,	create a simple script called monitoring.sh
+[√]	it must be developed in bash
+	
+14,	At server startup, the script will display some information on all terminals
+[√]	every 10 mins. The banner is optional. No error must be visible.
+	refer to page 8.
+	
+15,	Script must always display
+[√]	The architecture of your OS and the kernel version
+	The number of physical processors
+	The number of virtual processors
+	The current available RAM on your server and its utilization rate as a %
+	The current available memory on your server and its util rate as a %
+	The current utilization rate of your processor as a %
+	The date and time of the last reboot
+	Whether LVM is active or not
+	The number of active connections
+	The number of users using the server
+	The IPv4 address of your server and its MAC (Media Access Control) address
+	The number of commands executed with the sudo program
+	
+	pg 8 for how script is expected to work.
+	
+16,	The 2 commands you can use to check some of the subject's requirements:
+[√]	for Debian:
+	root@wil: ~# head -n 2 /etc/os-release
+		displays the first 2 lines of the file
+
+	root@wil:/home/wil# /usr/sbin/aa-status
+		checks the AppArmor status on the system.
+
+	root@wil:/home/wil# ss -tun1p
+		shows a list of TCP and UDP network sockets, 
+		including listening ports, with associated processes.
+
+	root@wil:/home/wil# /usr/sbin/ufw status
+		checks the status of the Uncomplicated Firewall (UFW) on the system.
+-------------------------------------------------------------------------------------------	
+17,	BONUS
+***	set up partition correctly, structure similar to pg 9.
+***	set up a functional WordPress website with the following sevices:
+	ligttpd
+	MariaDB
+	PHP
+***	set up a service of your choice that is useful
+	NGINX/ Apache 2 excluded
+	
+	to setup extra services, you may open more ports to suit your needs
+	UFW/Firewalld rules has to be adapted accordingly
+	
+18,	You only have to turn in signature.txt file at the root of Git repository.
+	paste in it the signature of your machine's virtual disk.
+	to get this signature, open the default installation folder (where your VMs
+	are saved):
+	Linux: ~/VirtualBox VMs/
+	
+	retrieve the signature from the ".vdi" file (or ".qcow2 for UTM'susers)
+	of your virtual machine in sha1 format.
+	
+***	What is command for  Debian?
+	The example of output -
+	6e657c4619944be17df3c31faa030c25e43e40af
+	
+	
+	
+
+	
+			
+
+

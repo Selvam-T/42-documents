@@ -1,0 +1,229 @@
+Socket programming - understanding sockets, text files, binary files
+
+Do not confuse listening socket with connected socket.
+
+listening socket:
+-----------------
+- Created by the server.
+- has one listening socket that handles connection requests from all clients.
+
+- Typically, the server closes the listening socket if it’s shutting down or 
+if it no longer wants to accept new client connections.
+
+connected socket:
+-----------------
+- Created by the server upon accepting a client’s connection request 
+(each connection has its own connected socket).
+- client does not have a listening socket.
+- client's role is simply to initiate a connection.
+- The client only needs a single connected socket.
+
+- you can close a connected socket on either the server or client side by 
+calling close(socket_fd);
+
+When the client connects to the server, how both sides manage their connected sockets:
+--------------------------------------------------------------------------------------
+Client's Perspective:
+
+1) The client creates its own socket with socket(AF_UNIX, SOCK_STREAM, 0); 
+which gives it a client-side socket descriptor.
+
+2) The client then calls connect() on this socket.
+
+3) After connect() is successful, the client’s socket is now connected to the 
+server’s listening socket, forming a communication channel.
+
+4) The operating system maintains the actual connection channel between the 
+client’s socket and the server’s connected socket. When data is sent from the 
+client’s socket, the OS ensures it arrives at the server’s corresponding 
+connected socket, and vice versa.
+
+5) This client-side socket descriptor is separate and independent from any descriptors 
+on the server side. 
+
+Server's Perspective:
+
+1) The server has a listening socket that continuously waits for incoming connections.
+
+2) When a client connects, the server’s accept() function creates a new connected socket
+specifically for that client. This connected socket has its own unique socket descriptor 
+on the server side, which the server then uses to communicate with this client.
+
+3) The original listening socket continues listening for more connections and is not 
+used to send or receive data to/from clients.
+
+How to read an HTTP reply:
+-------------------------
+
+1) The correct way to read an HTTP reply is to read until you have received a 
+full LF-delimited line (some servers use bare LF even though the official spec says 
+to use CRLF), which contains the response code and version, 
+
+2) then keep reading LF-delimited lines, which are the headers, until you encounter a 
+0-length line, indicating the end of the headers, 
+
+3) then you have to analyze the headers to figure out how the remaining data is encoded 
+so you know the proper way to read it and know how it is terminated. 
+
+4) There are several different possibilities, refer to RFC 2616 Section 4.4 
+for the actual rules.
+
+pseudo code:
+-----------
+// Send Request
+send(hSocket, req.c_str(), req.length(), 0);
+
+// Read Response
+std::string line = ReadALineFromSocket(hSocket);
+int rescode = ExtractResponseCode(line);
+std::vector<std::string> headers;
+do
+{
+     line = ReadALineFromSocket(hSocket);
+     if (line.length() == 0) break;
+     headers.push_back(line);
+}
+
+while (true);
+
+if (
+    ((rescode / 100) != 1) &&
+    (rescode != 204) &&
+    (rescode != 304) &&
+    (request is not "HEAD")
+)
+
+{
+    if ((headers has "Transfer-Encoding") && (Transfer-Encoding != "identity"))
+    {
+        // read chunks until a 0-length chunk is encountered.
+        // refer to RFC 2616 Section 3.6 for the format of the chunks...
+    }
+    else if (headers has "Content-Length")
+    {
+       // read how many bytes the Content-Length header says...
+    }
+    else if ((headers has "Content-Type") && (Content-Type == "multipart/byteranges"))
+    {
+        // read until the terminating MIME boundary specified by Content-Type 
+	//is encountered...
+    }
+    else
+    {
+        // read until the socket is disconnected...
+    }
+}
+
+send and receive text files
+
+1) For text files, you open them in the default mode, which is text mode. 
+	In C++, you can simply use:
+	- std::ifstream file("filename.txt");
+
+send and receive binary files properly using sockets c++
+--------------------------------------------------------
+1) First of all make sure you open the file in binary mode on both sides.
+	- std::ios::binary to open a file in binary mode
+	- ensures that the file is read or written as raw bytes, not as text.
+
+2) Secondly always check what send() and recv() returns.
+	- they return the number of bytes actually transferred.
+	- to make sure the correct number of bytes were sent or received.
+	- if return value is less than expected, you could call send() and recv()
+	again until all data is transferred.
+	
+3) Thirdly, never use string functions (like strlen) to handle the binary data.
+	- strlen() are designed for null-terminated C strings, not binary data
+	- Binary data can contain null bytes (\0), which would prematurely terminate 
+	a string in those functions. 
+	- You should handle binary data byte-by-byte instead.
+	- using char or unsigned char arrays, 
+  		char buffer[1024]; // or unsigned char for raw bytes
+		size_t bytesRead = file.read(buffer, sizeof(buffer)).gcount(); //reading
+
+		size_t bytesSent = send(sock, buffer, bytesRead, 0);//writing
+
+4) Fourthly, if you use TCP remember that it's a streaming protocol with no packet
+boundaries and that a single call to recv might receive less than was passed in a 
+single call to send, so you always need to call recv in a loop, until you’ve received 
+all the data you expect.
+	- The client can first send the size of the file (or the length of the data) 
+	to the server. This allows the server to know exactly how many bytes to expect.
+	
+	send(socket, &fileSize, sizeof(fileSize), 0);
+
+5) And lastly, most internal buffers on the sockets and into the kernel, are usually 
+not big enough to contain a whole large file. 
+	- Use smaller buffers in your application, read the file and send chunks 
+	piece by piece, and as mentioned use a loop to receive and write the data.
+
+	-  A common size might be 1024 or 4096 bytes (1KB or 4KB)
+	-  a good balance between efficiency and network buffering.
+
+	- Match the chunk size with the system’s buffer size or the maximum 
+	transmission unit (MTU) of your network.
+	- The chunk size should be small enough to fit within the socket’s buffer 
+	but large enough to minimize overhead (e.g., avoiding sending too many 
+	small chunks). 
+
+File Type Determination:
+-----------------------
+	
+	- You should identify whether the file is a text file or a binary file, 
+	as the reading and writing methods may differ.
+	- Read through the file's data and check if any byte is outside the 
+	ASCII printable character range (typically 0x20 to 0x7E).
+	- If you find bytes outside this range, it’s likely a binary file.
+	- Text files are often terminated with a newline character, whereas 
+	binary files may not have clear text delimiters.
+	- Binary files do not typically have human-readable end-of-file markers, 
+	unlike text files that may use newline characters (\n) 
+
+	bool isBinary = false;
+	for (size_t i = 0; i < fileSize; ++i) {
+  	  if (data[i] < 0x20 || data[i] > 0x7E) {  // Check for non-printable characters
+   	     isBinary = true;
+      	  break;
+  	  }
+
+	- but this is not fool proof.
+	
+	- you could files encoded in UFT-8 that contain non-printable characters,
+	that are control characters, used to control formatting, encoding etc.
+	- Examples
+		0x00: Null character (NUL)
+		0x08: Backspace (BS)
+		0x09: Horizontal Tab (HT)
+		0x0D: Carriage Return (CR, often \r)
+		Accented characters: é, ñ, ö, etc
+		Non-Latin alphabets: Cyrillic, Greek, Hebrew, Arabic, etc.
+		Emoji or symbols: 😀, ©, etc.
+	- and so although they contain non-printable characters, they are text files.
+
+Approach to Reading/Writing Binary and Text Files over TCP/IP:
+--------------------------------------------------------------
+
+Text Files - reading:
+	- you can read line-by-line or by blocks of data, checking for newline 
+	characters (\n) as the delimiter.
+	- In TCP/IP sockets, you can use a fixed-length read or split the 
+	incoming data based on the newline character.
+
+Text Files - writing:
+	- send the data in chunks and ensure that you properly encode the data as text.
+	- You may want to check for the end of the file by either using a predefined 
+	length or detecting the end of the input stream (e.g., using EOF in C++ or 
+	checking for an empty read buffer).
+
+Binary Files - reading: 
+	- You need to know the size of the file in advance or use a fixed-size 
+	read operation
+	- This requires you to either know the file length beforehand or negotiate 
+	the length of the file during the connection (e.g., send the file size as 
+	a header).
+
+Binary Files - writing:
+	- When writing binary data, you need to ensure that you send the raw bytes 
+	without any modification (i.e., no character encoding or interpretation).
+	- Again, you need to either know the length of the file beforehand or send 
+	the file size first, so the receiver can handle the correct number of bytes.

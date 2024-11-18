@@ -1,0 +1,571 @@
+Virtual Machine:
+----------------
+Virtual machine is a guest that runs on real host computer.
+A computer within a computer.
+You can install other operating systems, like older version of Windows, Linux, or an older game that doesn't run on the host computer.
+
+VirtualBox from Oracle, is a free open-source software that allows you to set up a Virtualmachine
+or virtualization software.
+
+How to Install VirtualBox:
+--------------------------
+
+1,	(Install and Set up the Virtualization software:) 
+	Virtualbox already present on local terminal.
+	
+2,	Make sure Virtualization is turned on your computer.
+
+
+3,	%>grep -E 'svm|vmx' /proc/cpuinfo
+	If this command gives output, the Virtualization support is turned on.
+	If not, it is not.AppArmor
+
+-------------------------------------------------------------------------------------
+Useful info to see information required to display using the script.
+	%>lscpu
+	displays information about the CPU
+		CPU family, number of CPUs or cores, threads per core
+		Example: 
+			Thread(s) per core: 2
+			Core(s) per socket: 12
+			 
+		It means it can handle 2 simultaneous tasks per core.
+		There is 12 physical processing cores within a single CPU package.
+		Gives 24 hardware threads in total.
+-------------------------------------------------------------------------------------			 
+	goinfre: is a shared folder.
+	20GB per person. If above 20GB, whole folder will be removed.
+-------------------------------------------------------------------------------------		
+
+4, 	Linux distribution: Virtual machine images (ISO file).
+	is a complete operating system that is built on the Linux Kernel.
+	It includes
+		the Linux kernel
+		System libraries
+		Software packages
+		Package manager for the software installation and management	
+	
+	
+	Debian known for stability, extensive software repository and open-source principles.
+	AppArmor
+	Rocky Linux is a CentOS fork of RHEL, RedHat Enterprise Linux. 
+	But Red Hat has killed CentOS, as it was known to be.
+	
+	The choice between Debian and Rocky Linux should be based on your specific use case,
+	preferences, and requirements.
+	
+	Debian offers extensive support and resources within the community.
+	Rocky doesn't have an established community.
+	
+	Debian has diverse software packages, Rocky has smaller package repository.
+	
+	Debian might have better hardware support due to its extensive testing and broad user base.
+	
+	Debian strictly adheres to free and open-source software principles.
+	Rocky might include some proprietary or non-free software.
+	
+5,	Debian GNU/Linux operating system.
+	The files are ISO images. Download files.
+	(Checksums of the images are contained in SHA512SUMS, etc.
+	check if the checksum matches that expected from the checksum file.)
+	
+6,	Create a new virtual machine: Click on 'New'
+	Name: born2beroot
+	Machine folder: other, other location, computer, sgoinfre, goinfre, perso, login_id
+	Type: Linux
+	Version: debian-64bit
+	
+	Memory size: 2048 (I chose this).
+	HD: 20GB
+	
+	create a virtual Hard disk, select VDI, dynamically allocated etc
+	
+7,	CONFIGURING YOUR VIRTUAL MACHINE
+	--------------------------------
+	
+	System Administrative account:
+		Host name: sthiagar42
+		Pwd: Born2be42*
+	For non-administrative activities:
+		User name: sthiagar
+		Pwd: Born2be42*
+		
+	setup encrypted LVM, and partition disk into /home /var /tmp paritions
+	Encryption Passphrase: Born2be42*
+	
+	don't configure package manager.
+	
+	In software selection: deselect * by pressing <space>. Nothing should be selected.
+	GNOME desktop environment is the graphical interface, which is expressly not required.
+	
+	Install GRUB boot loader.
+
+
+8,	Start using the Virtual Machine.
+
+
+	first login as root user.
+		su -
+	To add user to sudo group:
+		usermod -aG sudo user_name
+		
+------------------------------------------------------------------------------------	
+	apt-get command for handling packages on Debian-based systems. 
+	it can be used for tasks like installing, upgrading, and removing packages.
+	example: apt-get install sudo
+	or	 apt install sudo
+	
+	apt vs aptitude:
+	are both package management tools used on Debian-based Linux systems.
+	
+		apt provides simple command-line interface for package management.
+		aptitude provides and interactive text-based user interface, allows you to
+			browse and search packages.
+		apt has improved dependency handling compared to its predecessor, 'apt-get'.
+		aptitude has a reputation for resolving complex dependency problems.
+		B
+		aptitude has better history tracking and user experience than apt.
+	
+------------------------------------------------------------------------------------
+9,	Install Sudo: apt-get install sudo
+	
+	What is Sudo	(SuperUserDo) ?
+	command in Linux that allows users to run programs with the security privileges of
+	another user, typically the superuser.
+	To perform administrative task on a Linux system without needing to log in as the
+	root user.
+	
+	sudoers file: 
+	is a configuration file, to define who can run specific commands as the
+	superuser (root) or as another user.
+	allows authorised users to execute privileged commands while providing a detailed
+	level of control and security.
+		grant User privileges
+		define command aliases
+		specify from which hosts or IP addresses users are allowed to execute sudo
+		default settings, including options like whether to require a password
+	
+	
+10,	Install Git and Vim:
+	Git is a distributed version control system, used to track changes in source code.
+
+11,	Install and configure SSH:
+
+	Must not be able to connect using SSH as root: Update config file
+	/etc/ssh/sshd_config >>> PermitRootLogin no
+				>>> by default root user is not permitted, without making changes
+	
+	SSH (Secure Shell Host):
+	is a cryptographic network protocol used for secure remote access and communication
+	between computers over an insecure network.
+	provides a secure way to log into and manage remote systems and transfer data securely.
+	used for remote system administration, secure way to execute commands,
+		secure file transfers,
+		secure remote login,
+		Tunneling and port forwarding: 
+		
+		Tunneling is a technique that allows data to be transmitted securely through
+		an insecure or untrusted network. It involves encapsulating data packets within
+		other data packets.
+		
+		Port forwarding is a technique that allows data to be sent or received from 
+		one network to another through a specific network port. 
+		This can be useful for accessing a device or service on a private network 
+		from the internet.
+		
+		example of SSH Tunneling:
+		ssh -L local_port:destination_host:destination_port user@remote_server
+		sudo service sshd status
+
+-------------------------------------------------------------------------------------------
+	AppArmor:
+	is a security framework for Linux that provides mandatory access control for programs.
+	It is used to confine individual programs, defining what actions they are allowed to 
+	perform, and limiting access to system resources and files.
+		Application confinement.
+		Protection from Malicious or Misconfigured software.
+		Isolation and sandboxing webservers, database servers and other critical services.
+		
+	apparmor is running by default:	
+		sudo systemctl status apparmor
+	If not I need to do the following -
+		sudo apt-get install apparmor
+		sudo systemctl enable apparmor
+		sudo systemctl start apparmor
+		sudo reboot
+
+	AppArmor vs SELinux:
+		are both securty frameworks used on Linux systems. However, they have different
+		approaches and design philosophy.
+	
+	Apparmor when enabled starts in a permissive mode by default.
+	SELinux starts with enforcing mode of default policies.
+	
+	Apparmor prioritizes simplicity and ease of use, suitable for environment where
+		simpler security profiles are sufficient.
+	SELinux offers more fine-grained control, highly flexible, potentially complex to
+		setup and manage.
+-------------------------------------------------------------------------------------------
+12,	UFW (Uncomplicated Firewall):
+	command-line interface for managing iptables, default firewall management tool
+	designed to simplify the process of configuring and managing firewall rules
+	
+	install ufw: 	apt-get install ufw
+	
+	enable ufw: 	sudo ufw enable
+	activate UFW and start the UFW services on debian based system.
+	applies default policies for incoming and outgoing network traffic. deny incoming.
+	
+	Allow or deny incoming connection to a specified port or IP Address.
+			sudo ufw allow <port>
+			sudo ufw deny <port>
+			
+			sudo ufw allow from  <IP_address>
+			sudo ufw deny from  <IP_address>
+			
+			sudo ufw allow from <IP_addres> to any port <port>
+	reset rules:	sudo ufw reset	
+	
+	(For this purpose of this deny and delete port 22 from UFW.
+			sudo ufw deny 22
+			sudo ufw delete deny 22
+	To add back on port 22
+			sudo ufw allow 22
+	)
+
+-------------------------------------------------------------------------------------------
+
+SysV init system vs systemd init system
+----------------------------------------
+
+to enable AppArmor, I use systemd as the init system, whereas
+to enable UFW, I use SysV init system, why?
+
+	sudo systemctl enable apparmor 
+	vs
+	sudo ufw enable
+
+AppArmor is a Linux security module that requires a deeper integration with the init system
+for profile enforcement. Uses systemd init system. This also ensures AppArmor is started 
+during the system boot.
+
+UFW doesn't integrate tightly with the init system, it is designed to be user-friendly.
+On systems using systemd, you don't mention init system in the command, because UFW
+can work independently of the init system.
+
+-------------------------------------------------------------------------------------------
+13,	Connecting to SSH
+	-----------------
+	Port Forwarding rules -	Change the Host port to 4243 and Guest port to 4242
+	
+	Restart SSH Server:	sudo systemctl restart ssh
+	
+		systemctl is the standard service management utility.
+		used for various tasks, including starting, stopping, restarting, enabling,
+		and disablining system services.
+		
+	Check your SSH Status:	sudo service sshd status	
+		
+		After running sudo service sshd status and viewing the status messages, 
+		press "q" to exit the pager and return to the command prompt.
+		
+	To connect to VM from host terminal: 
+		ssh sthiagar@localhost -p 4243
+		
+	If I try to connect as root user, it should not allow.
+		ssh sthiagar42@localhost -p 4243
+		
+	Although it doesn't eventually allow, it asks for password, why?
+	Because SSH initiates the connection.
+	
+	The purpose of disabling direct root logins is to enchance security.
+	
+	How to not allow root user to login using SSH ?
+	/etc/ssh/sshd_config  >>> Permitrootlogin no
+	
+--------------------------------------------------------------------------------------	
+	Difference between 'systemctl' and 'service' commands:
+		systemctl command is part of 'systemd' init system.
+		service command is used with older SysVinit init system.
+		To find out which to use, find out what the init process is:
+			ps -p 1 -o comm=
+--------------------------------------------------------------------------------------
+	
+14,	Setting Password Policy:
+	-----------------------
+	
+	Install Password Quality Checking Library:
+		sudo apt-get install libpam-pwquality
+		
+	pam (Pluggable Authentication Module);
+	provides support for password quality checking and enforcement
+	configuring password policies for user accounts
+	edit PAM configuration files located in the '/etc/security' dir
+		
+	The requirement is -
+	1) Password has to expire every 30 days
+	2) minimum number of days allowed before password modification is 2
+	3) user receive a warning message 7 days before their password expires.
+	4) Password must be at least 10 characters long. 
+	5) atleast 1 UPPERCASE 
+	6) 1 lowercase 
+	7) a number
+	8) must not contain more than 3 consecutive identical characters
+	9) must not include the name of the user
+	10) have at least 7 characters that are not part of the former password
+	
+	It looks like, this is updated in 2 different files.
+		- /etc/pam.d/common-password
+		- /etc/login.defs
+		
+	How do I know where to update what password policy?
+	Use /etc/login.defs 
+		for system-wide defaults that should apply to all users and services.
+	Use /etc/pam.d/common-password
+		managing password policies on a per-service or per-user-group basis.
+		PAM is used for authentication and pwd management in Linux sytems.
+	
+	In /etc/login.defs, the keywords and value are as follows-
+	1) PASS_MAX_DAYS 30
+	2) PASS_MIN_DAYS 2
+	3) PASS_WARN_AGE 7
+	4) PASS_MIN_LEN 10
+	5) PASS_MIN_UPPER 1
+	6) PASS_MIN_LOWER 1
+	7) PASS_MIN_DIGIT 1
+	8) PASS_MAX_REPEAT 3
+	9) PASS_BADNAME
+	10)PASS_MIN_DIFF 7 (I must include exclude this rule for root user)
+	
+	Although 3) to 10) can be set in /etc/login.defs, 
+	I assigned them in /etc/pam.d/common-password.
+	
+	I assigned the following in /etc/login.defs:
+	1) PASS_MAX_DAYS 2) PASS_MIN_DAYS 3) PASS_WARN_AGE
+	
+	The rest in /etc/pam.d/common-password
+	
+15,	CREATING A GROUP:
+	----------------
+	Groups are used to manage and organize users with similar permissions or access rights.
+	
+	Create a group with the name evaluating:	
+		sudo groupadd user42
+	
+	Create a user and assign them into the Group:	
+		sudo adduser new_username
+			type password, retype password, type details
+		sudo usermod -aG evaluating new_username
+		
+	Check if the group has been created
+		getent group
+		
+	Check only users, without group
+		cut -d: -f1 /etc/passwd
+	
+	Check if the password rules are working in users:
+		chage -l new_username
+		
+		chage permission will be denied, if logged in as normal user.
+		Change to superuser, type sudo chage -l new_username.
+	
+--------------------------------------------------------------------------------------	
+	Difference between add user to sudo vs add user to group
+	
+	To add user to sudo group:
+		usermod -aG sudo user_name
+		followed by configure sudoers group, below
+	
+	To add user to a group your created:
+		sudo usermod -aG evaluating new_username	
+		
+--------------------------------------------------------------------------------------	
+
+16,	Creating a sudo.log
+
+	This is created inside /var/log/sudo
+	/var/log/sudo/sudo.log
+	
+17,	Configuring Sudoers Group
+	-------------------------
+	
+	edit the file to add bad password message, password tries, logfile information.
+	It also turns on log_input and log_output, meaning it logs stdin commands and 
+	streout, strerr all run with sudo in the logfile.
+	
+	sudo vim /etc/sudoers
+	Add line: newuser ALL=(ALL:ALL) ALL 
+	-->As a target user = (from any terminal: on any host)  have sudo priveleges
+--------------------------------------------------------------------------------------	
+	visudo vs vim /etc/sudoers
+	
+	visudo is a wrapper for editing the sudoers file and includes syntax checking 
+	before saving changes. It will prevent saving changes, if you make syntax error.
+--------------------------------------------------------------------------------------
+18,	Crontab configuration
+	---------------------
+	
+	Crontab command is used to manage and schedule tasks run at specific times, or
+	recurring basis, called "cron jobs".
+	
+	Netstat is a command-line network utility used for displaying network-related
+	information, Network connections, routing tables, iterface statistics etc.
+	
+	Install netstat tools, create a monitoring.sh script.
+	
+	1)Script to generate system information, monitoring.sh
+	----------------------------------------------------
+	create a monitoring.sh script
+	
+	2)Update /etc/sudoers file to execute the script
+	----------------------------------------------
+	#user privilege specification
+	sthiagar ALL=(ALL:ALL) ALL
+	
+	#allow sudo group member to execute command
+	sthiagar ALL=(root) NOPASSWD: /usr/local/bin/monitoring.sh
+	
+	meaning, sthiagar is allowed to execute the script as the root user without 
+	entering a password
+	
+	3)Schedule the cron jon to display the information every 10 mins
+	--------------------------------------------------------------
+	sudo crontab -u root -e
+	to edit the crontab of the root user.
+	
+	*/10 * * * * /usr/local/bin/monitoring.sh
+	10 means 10th minute, */10 means 10 minute interval from starting point
+--------------------------------------------------------------------------------------
+	Cron Job schedule is defined using a cron expression:
+	minute hour dayofthemonth month dayoftheweek 
+	10 23 29 1 *
+	23:10 hr 29 Jan wildcard-day of week	
+--------------------------------------------------------------------------------------	
+19,	Connect from Host terminal to Virtual machine:
+	
+	ssh sthiagar@127.0.0.1 -p 4243
+	
+	virtual machine settings, port forwarding rules:
+	Host Port: 4243, Guest Port: 4242
+
+--------------------------------------------------------------------------------------	
+	What is host port?
+	Port on the host machine used for communication.
+	Incoming traffic is directed to this port. 
+	
+	What is guest port?
+	Port on a virtual machine(guest) running on host system.
+	Guest port is the destination port on the VM.
+	
+	Incoming traffic in Host port is directed to the Guest port.
+	
+	Why Host port: 4243, because port 4242 is not available.
+	Run script to check what ports are available, between 4240 and 4245.
+
+	#!/bin/bash
+	
+	for port in {4240..4245}; do
+		(echo >/dev/tcp/localhost/$port) &>/dev/null
+		if [ $? -ne 0 ]; then
+			echo "Port $port is available"
+		fi
+	done 		
+--------------------------------------------------------------------------------------	
+	The root directory consists of directories-
+	
+	/etc
+	contains system-wide configuration files and scripts.
+	
+	/usr
+	user system resources. user-installed programs, libraries, documentation, other
+	resources.
+	a large directory, and its structure mimics that of the root directory, with 
+	subdirecotries like /usr/bin
+	
+	/bin
+	essential binaries and executable files
+	example, basic command-line tools
+	
+	/sbin
+	similar to /bin, contains system binaries that are primarily used by the system
+	administrator for system maintenance and recovery
+	
+	/var
+	variable data that can change during the system's operation.
+	includes log files, spool files, temporary files and other data that may grow
+	or change in size over time.
+	
+	/tmp
+	temporary files that can be created and used by various programs and users.
+	files that do not persist across system reboots.
+	
+--------------------------------------------------------------------------------------
+	File updated in this project related to services -
+	
+sudo:
+	a) /var/log/sudo/sudo.log 
+	create this file in the log directory, for sudo to keep log
+	update /etc/sudoers --> add log file
+	add log_file
+	
+	b)update /etc/sudoers -->general sudo user directives
+	update sudoers file using sudo visudo.
+		secure_path, log_input, log_output, requiretty
+		badpass_message, passwd_tries, log_file (as above)
+	
+	what is requiretty?
+	It means the user can run a command with sudo, only from an
+	active interactive shell. For example, the person cannot 
+	run sudo from a cronjob.
+	
+	c)update /etc/sudoers -->for new sudo user
+		add line: username ALL=(ALL:ALL) ALL
+		
+	d)Update /etc/sudoers -->to allow script
+	#allow sudo group member to execute command
+	sthiagar ALL=(root) NOPASSWD: /usr/local/bin/monitoring.sh
+	
+	sudo cronntab -u root -e
+	to edit the crontab of the root user.
+	
+	*/10 * * * * /usr/local/bin/monitoring.sh
+	
+SSH:
+	/etc/ssh/sshd_config
+	port 4242
+	PermitRootLogin no
+	
+UFW:
+	no confiq files update required.
+	
+	In the /etc/ufw/ufw.conf file you can't specify allow, deny, or delete ports.
+	Port rules are typically managed in the 'ufw' command-line tools, and they are
+	typically stored in /etc/ufw/user.rules and /etc/ufw/user6.rules for IPv4 and IPv6.
+
+Password:
+	/etc/pam.d/common-password
+	password requisite pam_pwquality.so
+		retry=3 minlen=10 ucredit=-1 dcredit=-1 lcredit=-1
+		maxrepeat=3 reject_username enforce_for_root	
+		difok=7 !root
+	the keyword, enforce_for_root means the preceeding rules are applied to root
+	!root means the preceding rule is not applied to root.
+	the rules are applied to regular users by default.
+	
+	/etc/login.defs
+	PASS_MAX_DAYS 30
+	PASS_MIN_DAYS 2
+	PASS_WARN_AGE 7
+	
+	/etc/passwd
+	you don't update anything here.
+	
+	to check all local users from the command line.
+	cut -d: -f1 /etc/passwd
+	
+--------------------------------------------------------------------------------------
+	
+
+
+
+	

@@ -1,0 +1,30 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: sthiagar <marvin@42.fr>                    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/09/07 19:52:13 by sthiagar          #+#    #+#              #
+#    Updated: 2023/09/07 20:03:37 by sthiagar         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+# _*_ Makefile _*_
+
+all: ft_isalnum
+
+ft_isalnum: ft_isalnum.o ft_isalpha.o ft_isdigit.o
+	cc ft_isalnum.o ft_isalpha.o ft_isdigit.o -o ft_isalnum
+
+ft_isalnum.o: ft_isalnum.c libft.h
+	cc -c ft_isalnum.c
+
+ft_isalpha.o: ft_isalpha.c
+	cc -c ft_isalpha.c
+
+ft_isdigit.o: ft_isdigit.c
+	cc -c ft_isdigit.c
+
+clean:
+	rm *.o ft_isalnum

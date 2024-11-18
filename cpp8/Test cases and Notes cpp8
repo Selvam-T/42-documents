@@ -1,0 +1,138 @@
+This project is about Templated containers, iterators and algorithms.
+
+1) associative containers:
+--------------------------
+
+associative containers are part of the Standard Template Library (STL). 
+They store data in key-value pairs, providing fast lookups, insertions, and deletions. 
+The key types of associative containers are:
+
+std::set 		A collection of unique keys, sorted by the keys.
+std::multiset 		Like set, but allows duplicate keys.
+std::map 		A collection of key-value pairs, where keys are unique.
+std::multimap 		Like map, but allows duplicate keys.
+
+They are implemented as balanced binary trees (usually red-black trees) 
+for efficient operations.
+
+2) Sequence Containers:
+-----------------------
+
+std::vector
+std::deque
+std::list
+std::string
+std::stack	//Stack uses an encapsulated object of vector/ deque / list as underlying class
+std::queue	//Queues uses an encapsulated object of deque / list as underlying class
+
+** std::valarray		//** technically not a container
+** std::array	 		//** not in c++98
+** std::forward_list		//** not in c++98
+** queue::priority_queue	//** not in c++98
+
+std::vector in C++ 
+	- is the class template that contains the vector container and 
+	- its member functions. It is defined inside the <vector> header file. 
+	- The member functions of the std::vector class provide various 
+	  functionalities to vector containers.
+
+3) Iterators:
+-------------
+Operations of iterators :- 
+
+begin()
+end()
+advance()
+next()
+prev()
+inserter()
+	
+4) 'const' element type  (vs)  b) 'const' container type:
+---------------------------------------------------------
+
+a) std::vector< const int> v = { 1, 2, 3 };  (vs)  
+	        ------                            
+b) const std::vector<int> v = { 1, 2, 3 };
+   -----
+
+a) std::vector<const int> v = {1, 2, 3, 4, 5};
+ - Error: You cannot declare a std::vector with a const element type.
+ - The issue here is that std::vector needs to modify the elements internally 
+   (like reallocating memory or assigning new values), but with const int as the type, 
+   it cannot modify the elements, leading to a compilation error.
+
+b) const std::vector<int> v = {1, 2, 3, 4, 5};
+ - This declares a constant vector, meaning the vector itself cannot be modified 
+   after initialization (you can't add or remove elements or change the size).
+ - The elements inside the vector (int) are still modifiable internally. 
+   You can update the values of the elements, but you can't perform operations 
+   like v.push_back(), v.clear(), etc.
+   
+5) Standard container exceptions and related error conditions
+-------------------------------------------------------------
+
+- std::bad_alloc: Memory allocation failure (all containers).
+
+- std::out_of_range: Out-of-bounds access or invalid key in map (e.g., at(), front(), back()).
+
+- Undefined behavior: Iterator invalidation, 
+	accessing elements in empty containers, or modifying const containers.
+
+- std::invalid_argument: Invalid comparators in associative containers.
+
+- Element constructor exceptions: Containers can throw when element constructors or assignments throw.
+	
+✅ ex 00:
+---------
+0)	As suggested in Pg 6, I write template declarations in the header files 
+	and write their implementations in .tpp files.
+
+1)	don't need to handle associative containers
+	std::set, std::multiset, std::map, std::multimap
+ 
+2)	Argument1 = Container of integers
+	Argument2 = integers.
+
+3)	PDF doesn't say easyfind() has a return type.
+	It returns error message by choice.
+	
+4)	I am not testing std::stack, std::queue, because they are container adapters
+	They have an underlying container. My interpretation is that Pg 7. is looking for containers.
+	
+✅ ex 01:
+---------
+
+1)	Make sure the member variable is a container. (Although you can work with int*).
+	Pg 6. specifically asks you to use container.
+	
+2)	The largest span possible is unsigned max - unsigned min.
+	which is no larger than unsigned int.
+	q
+3)	default constructor - is an empty container.
+
+4)	Param constructor of N = 0, I will treat as an empty container.
+
+5)	I accept duplicates. PDF does not say anything about unique numbers.
+
+6)	Shortest span mean, the distance between the first 2 shortest numbers.
+	It means between any 2 numbers, that has the shortest distance.
+	
+7)	for_each(range of iterators, addNumber); to add range of random numbers.
+
+	
+✅ ex 02:
+---------
+
+1)	Class MutantStack inherits from std::stack<T> /(where T is the template typename)
+	Pg 6. 	Yes, you can use the Containers ... 
+		Moreover, you should use them as much as you can.
+	Pg 5.	You are given a certain amount of freedom to complete the exercises.
+	
+2)	MutantStack class performs all std::stack member function operations?
+	Example; empty, size, top, push  pop
+	
+3)	Justification for exposing the stad::stack protected member 'c' container.
+	As well as for using std::stack iterator type.
+	Pg 9. 	Especially if we can take the liberty of butchering the original stack 
+		to create missing features.
+	

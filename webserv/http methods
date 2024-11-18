@@ -1,0 +1,83 @@
+HTPP Methods
+------------
+
+GET
+---
+
+Examples for GET request interactions
+
+1)	Tree of Content Objects:	//static page retrieval
+	------------------------
+	Imagine a website like an online library where the URL 
+	https://library.com/books/fiction/novel-title leads to a page for a specific novel. 
+	The server has a directory with content files structured by genre and title, 
+	and it retrieves the file for that novel to display its content or metadata when you 
+	access this URL.
+	
+2)	Programmatic View on Database Records:	//SQL query
+	--------------------------------------
+	Consider an e-commerce site where 
+	https://shop.com/products?category=electronics&sort=price 
+	retrieves a list of electronics sorted by price. This page isn't pulling from 
+	static files; instead, it’s querying a database to retrieve products in 
+	the "electronics" category, sorting them by price, and then sending the results 
+	back to the client.
+	
+3)	Gateway to Other Information Systems:	//running PHP or python script
+	-------------------------------------
+	Suppose you’re using a weather app, and you visit 
+	https://weatherapp.com/current?city=NewYork. 
+	The server for this app may not store weather data itself; instead, it could act 
+	as a gateway, reaching out to a third-party weather service API to fetch current 
+	weather data for New York, which it then returns to you in a custom format or UI.
+
+	1. PHP as a Gateway:
+	--------------------
+	Suppose you access https://weatherapp.com/current?city=NewYork. When this GET request 
+	reaches the server, instead of simply serving a static page, the server might execute 
+	a PHP script.
+	
+	This PHP script acts as a gateway to an external weather API. It reads the city parameter 
+	(e.g., "NewYork") from the request, constructs a request to a third-party weather service 
+	(such as OpenWeather or WeatherStack), and retrieves the latest weather data for that city.
+	Once it receives the data, the PHP script formats it (maybe adding custom styling or
+	calculating extra information), and then sends this custom response back to the client. 
+	The user ends up receiving a dynamic, custom-built page with current weather data instead 
+	of static, pre-stored content.
+	
+	2. Python as a Gateway:
+	-----------------------
+	Now imagine a URL like https://exchangeapp.com/rates?base=USD. 
+	When this GET request is made, the server runs a Python script instead of simply 
+	returning a static HTML page.
+	
+	The Python script, like the PHP example, acts as a gateway to an external service, 
+	perhaps a foreign exchange rate API (e.g., Forex or ExchangeRatesAPI). The script takes 
+	the base currency parameter (USD in this case), makes a request to the third-party service 
+	to fetch current exchange rates, and retrieves the response.
+	
+	After getting the data, the Python script might process it further (perhaps filtering 
+	specific currency rates or adding custom calculations) and format the output as an 
+	HTML or JSON response to return to the user.
+	
+	The end user, when visiting https://exchangeapp.com/rates?base=USD, sees the latest 
+	exchange rates in real time, rather than seeing a static page that might be outdated.
+	
+POST
+----
+
+POST is used for the following functions (among others):
+
+1)	Providing a block of data, such as the fields entered into an HTML form, 
+	to a data-handling process;
+	
+2)	Posting a message to a bulletin board, newsgroup, mailing list, blog, or 
+	similar group of articles;
+	
+3)	Creating a new resource that has yet to be identified by the origin server;
+
+	For example, if you POST data to create a new blog post, the server will generate 
+	a unique ID and location for that blog post, which wasn't known beforehand. 
+	The server might then return this ID and location in the response.
+
+4)	Appending data to a resource’s existing representation(s).

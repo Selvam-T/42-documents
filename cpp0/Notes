@@ -1,0 +1,363 @@
+C++
+---
+https://en.cppreference.com/
+login:	Selvam42
+pwd:	?
+
+✅ Namespaces
+-------------
+	Allow you to organize code and prevent name collisions.
+	group related classes, functions, and variables under a single name.
+
+	The standard library definitions are inside the namespace std.
+
+	Namespace is part of C++98 standard. 
+
+✅ classes
+----------	
+	Sample.class.hpp
+	S - CamelCase
+	class - denote this is header file for class
+	.hpp - header* file in c++
+		* you can reconfigure editor to .h as the header for c++
+		
+	class Sample {}; - is interchangeably considered a data structure.
+		; - if you don't add ; compiler will throw long complicated error message
+		
+	class Sample {
+		Sample();  - constructors
+		~Sample(); - destructors
+		
+		constructors and destructors don't have a return type.
+		but you have a return ; to show that you are done.
+	}
+	
+	Note: Although class Sample does not specify visibility,
+		It is 'public' by default.
+		constructor and destructor of a class may be a 'public' attribute.
+		
+✅ class visibility
+-------------------
+public:
+	place constructor and destructor attributes in public.
+	
+private:
+	suggested naming convention for private attributes, prefix with _
+	ex:
+	int	_foo;
+	void	_foobar( void ) const;
+	
+✅ struct vs class
+------------------
+Everything you can do with 'struct' in C can be done with 'class' in C++.
+The advantage is you have better control over its attributes, and you can
+add member functions, constructor, destructor etc.
+
+Major difference:  class members are private by default, 
+		while struct members are public by default.
+
+struct can also have constructor and destructor.
+
+Then why do you need a class?
+Matter of convention and clarity. 
+class is typically used for complex data structures with both data and behavior, 
+while struct is used for simpler data containers.
+	
+✅ member functions
+-------------------
+Header file should contain member variable and member function declarations. 
+cpp file, or implementation file, should contain member variable and member function definitions.
+member variable definitoin is initialization of the variable.
+
+✅ stdio streams
+----------------
+	c++ solves the problem of read() and write() functions.
+	c++ provides << >> operators.
+		<< insertion operator (std::cout)
+		>> extraction operator (std::cin)
+
+✅ initialization lists
+-----------------------
+
+In .cpp file/ constructor definition you can initialize variables with parameter values.
+
+example:
+	Sample2::Sample2( char p1, int p2, float p3) : a1(p1), a2(p2), a3(p3) {}
+
+✅ static
+---------
+Keyword static allocated variable in a particular memory location, have it locally available in compilation unit.
+
+static keyword assigned to class attributes, variables and functions, 
+	- will make it NON member variable or NON member function.
+	- available to all instances of the class
+	- is not an instance variable or a instance function
+	- You can't use 'this' on NON-member attribute. 
+	- It be public or private. 
+	- Example the variables are private. 
+	- The getter and setter functions are public, to be able to access from main()
+
+example of declaration:
+	static int	foo;
+	static int	getfoo(void);
+
+✅ const
+--------
+function with const keyword example:
+In sample.hpp file, you declare a member function as follows -
+	void	bar(void) const;	//notice keyword const
+In sample.cpp file, you define member function as follows -
+	void	Sample::bar(void) const {}
+	
+What does it mean?
+It means the instance of the class should never be altered. It is read-only.
+So you place a const keyword by declaring and defining.
+Suppose you tried the assign value to variable within the function it will throw compiler error.
+--------------------------------------------------------------------------------------
+
+✅ Compliance
+-------------
+comply with C++98 standard
+	The key features of the C++98 standard are Classes: 
+	The ability to define classes and objects.
+
+✅ Compile
+----------
+
+c++ 
+flags -Wall -Wextra -Werror -std=c++98
+	-std=c++98 means, include C++98 standard. ✅
+	If you didn't specify it uses c++17 by default.
+
+	How do I know what is the default standard on my system?
+	Compile and run this code. The output 201703L indicates C++17.
+
+	#include <iostream>
+
+	int main() {
+	    std::cout << __cplusplus << std::endl;
+	    return 0;
+	}
+	
+-std=c++98, example where this compiler flag throw compiler error:
+
+	In Contact class, I tried to dynamically allocate array of size 8.
+		Contact **c = new Contact[8];
+		
+	This is only allowed in c++11 and above. Not allowed in c++98.
+	error: default member initializer for non-static data member is a C++11 extension
+
+✅ Naming convention
+--------------------
+ClassName.hpp/ClassName.h, ClassName.cpp, or ClassName.tpp.
+
+✅ Output messages
+------------------
+
+std::endl
+end with \n
+
+✅ Norminette - No need
+-------------
+
+✅ Forbidden libraries
+----------------------
+
+1// C++11 and derived forms (C++14, C++17, c++20)
+2// Boost libraries
+
+1//
+Use -std=c++98 flag to instruct the compiler to strictly adhere 
+		to the rules and features defined in the C++98  
+		
+		and combine -Wall with -std=c++98 to ensure 
+		you are warned about modern C++ features
+
+C++98 (1998) is the original standard
+C++11 (2011) introduced significant new features and enhancements
+C++23 (upcoming)
+
+2//
+Look for specific Boost headers being included in your source files or headers.
+such as <boost/...> or <boost/xyz.hpp>.
+
+✅ Forbidden functions
+----------------------
+
+*printf()
+*alloc()
+free()
+
+✅ Forbidden access control specifiers and scoping mechanism
+------------------------------------------------------------
+namespace <ns_name>
+
+friend
+
+✅ Forbidden STL (except in Module 08 and 09)
+---------------------------------------------
+Containers (vector/list/map/set/queue/stack)
+	Therefore, you can't have C++ equivalent of char** ?
+Algorithms (<algorithm> header)
+
+✅ Memory Allocation. Allowed
+-----------------------------
+char** requires memory allocation and deallocation.
+(malloc and free works just as in C, does not call constructor or destructor)
+
+new keyword - allocates memory and calls the constructor.
+
+(delete) - deallocates memory and calls the deconstructor.
+
+
+✅ Class design (from Module 02 to 09)
+--------------------------------------
+
+Orthodox Canonical Form
+
+- A default constructor: 
+	- used internally to initialize objects and data members 
+		when no other value is available.
+
+- A copy constructor: used in the implementation of call-by-value parameters.
+	- The copy constructor in C++ is used to create a new object 
+		as a copy of an existing object. 
+	- It initializes the new object with the values of an existing object.
+	ex: Sample( Sample const & src);
+
+- Virtual assignment operator:
+	ex: you declare in header file:
+	- Sample & operator=( Sample const & rhs);
+	- allows to make assignment from an instance of this class
+		we only have an update of the current instance
+	- The behavior is close to the Copy constructor.
+
+- A destructor: Invoked when an object is deleted.
+
+🟨 Header file 🔍
+--------------
+
+Any function implementation put in a header file [ ✔ ]
+(except for function templates) is forbidden
+
+Be able to use each of your headers independently from others. 🔍
+They must include all the dependencies they used.
+
+Avoid double inclusion by adding include guards. 🔍
+
+✅ Additional files
+-------------------
+To split code, additional files allowed
+
+---------------------------------------------------------------------------------
+✅ Vector
+---------
+	Unlike arrays the size can change dynamically, 
+iterator
+	begin
+	end
+	
+push_back()
+
+
+✅ Pair
+-------
+	This class couples together a pair of values, 
+	which may be of different types (T1 and T2).
+
+✅ typedef
+----------
+	typedef int hello;
+	
+	I am using 'hello' as a alias for int.
+	So I can declare a variable of Type int as follows -
+		hello b;
+		
+	So effectively, 
+		hello b ;
+		int b;
+	are same int type.
+	
+✅ std::for_each()
+------------------
+	Function for_each(InputIterator first, InputIterator last, Function fn)
+
+✅ Protected:
+-------------
+	- is a Access specifier like 'private' and 'public' of a class.
+	- protected member of base class is accessible to the derived class
+	
+What to keep in base classes as private and what to use protected for ?
+	- 'private' for strict encapsulation and 
+	- 'protected' for controlled access by derived classes.
+
+Encapsulation:
+--------------
+	- refers to bundling data and methods that operate on that data 
+	within a single unit (an instance) or class.
+
+	- involves restricting direct access to some of the object's components, 
+	which is intended to protect the integrity of the data and 
+	prevent unintended interference.
+	
+Inheritance Hierarchy:
+----------------------
+	- Inheritance Hierarchy refers to the structure of classes organized 
+	in a parent-child relationship where a derived class inherits from a base class. 
+	
+	- This hierarchy defines how classes are related and how they inherit properties 
+	and behaviors from each other.
+	
+Multiple Inheritance:
+---------------------
+	- where a class can inherit from more than one base class. 
+	This allows a derived class to combine behaviors and 
+	attributes from multiple base classes.
+
+	Example:
+	class Derived : public Base1, public Base2 {
+   	 // Derived members
+	};
+	
+Diamond Problem: 
+	Multiple inheritance can lead to ambiguity, 
+	especially when two base classes have a common base class. 
+	This is known as the diamond problem. 
+	C++ provides solutions like virtual inheritance to address this issue.
+
+virtual:
+--------
+	- keyword used in the context of inheritance and polymorphism.	
+	- used to declare a function in a base class that can be overridden 
+	in a derived class.
+	
+	Example:
+	class Base {
+	public:
+		virtual void show();
+	}
+	
+	class Derived : public Base {
+	public:
+		void show();
+	}
+	
+	int main() {
+		Base* ptr = new Derived();
+			//static type of ptr is Base*,
+			//dynamic type is Derived
+		ptr->show();
+			//because it is a virtual function the Derived version of show() 
+			//is called at runtime, even though ptr is of type Base*.
+		delete ptr;
+	}
+
+'Function Over riding': 
+	- When derived class provides a specific implementation
+	of a function that is already defined in its base class.
+	- The function in the derived class must have the same name, 
+	return type, and parameter list as the function in the base class.
+	- Achieved using the virtual keyword in the base class and 
+	optionally using the override keyword in the derived class
+
+	

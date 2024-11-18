@@ -1,0 +1,296 @@
+GLOBAL VARIABBLE: pg 5
+----------------------
+
+"norm" type structure in the global scope is forbidden.
+
+	My understanding is that you cannot use struct as a global variable 
+	to represent more than 1 variable. Global variable in this project can only 
+	represent 'received signal' information.
+---------------------------------------------------------------------------------
+
+Readline library provides line-editing fucntionality for command-line interfaces.
+It allows users to edit command lines as they are typed in, providing features
+such as history, tab completion, and customizable key bindings.
+
+1,✅	readline()
+	reads a line of input from the user, providing line editing capabilities
+	such as cursor movement, editing, and history recall
+	
+	/* pdf pg. 7, says readline() can cause memory leak, not required to fix it. */
+
+2,✅	rl_clear_history()
+	clears the history list maintained by Readline.
+
+3,	rl_on_new_line()
+	notifies Readline that the current line has been completed and a new line 
+	is starting. It's typically called after processing user input and before
+	prompting for the next command. This function moves the cursor to the 
+	beginning of a new line. It's typically used when you want to ensure that 
+	the cursor is positioned at the start of a new line before displaying output.
+	
+4,	rl_replace_line()
+	this function replaces the current line of input with a new string. It's often
+	used to update the input line dynamically in response to user actions or program
+	logic. For example, it can be used to implement inline editing or to display progress
+	information without cluttering the terminal with additional output lines.
+	
+5,	rl_redisplay()
+	this function function is commonly used for command-line editing. 
+	This function refreshes the display to reflect any changes made to the input line. 
+	It's particularly useful when you've modified the contents of the input line 
+	programmatically and need to update the display accordingly.
+	
+6,✅	add_history()
+	adds a line to the history list maintained by Readline. This allows to 
+	recall previous commands using the up arrow key.
+
+7,	printf
+8,	malloc
+9,	free
+10,	write
+11,	access
+12,	open
+13,	read
+14,	close
+
+15,	fork
+16,	wait
+17,	waitpid
+18,	wait3
+19,	wait4
+
+---	signal functions
+
+20,	signal()
+	used to set up signal handling for a specific signal.
+	It associates a signal handler function with a signal, 
+	specifying what action should be taken when the specified signal occurs.
+	
+	signal(signal_constant, signal_handler);
+		Examples of signal_constant
+		SIGINT - int value 2 - keys pressed CTRL+ C
+		SIGSTOP - int value 19 - keys pressed CTRL + Z
+		signal_handler is a user created function associated with signal_constant.
+		
+21,	sigaction()
+	used to examine and change the action to be taken when a signal is delivered.
+	It provides more control and flexibility over signal handling compared to the 
+	signal function.
+	It is used to establish a signal handler function for a specific signal.
+	
+	The function takes 3 arguments: 
+		- The signal number
+		- A pointer to a struct 'sigaction' that specifies the new action to be
+		  taken for the signal.
+		- A pointer to a struct 'sigaction' where the old action for the signal
+		  will be stored (if not NULL).
+	sigaction() and struct sigaction are not be confused with each other.
+	So the sigaction() function is used to work with instances of the struct 'sigaction'
+	setting up signal handlers and configuring signal behavior in a program.	
+	
+22,	sigemptyset()
+	initializes an empty signal set, clears all signals from the set.
+	opposite of sigaddset()	
+	
+23,	sigaddset()
+	adds a specified signal to a signal set.
+	example: sigaddset(&set, SIGINT);
+	where, sigset_t set; is previously declared.
+---
+
+24,	kill
+	sends a signal to a process or a group of processes.
+	
+25,	exit
+	terminates the program execution and exits to the operating system.
+
+26,✅	getcwd()
+	returns current working directory of the calling process.
+	takes 2 arguments. Buffer and Size of Buffer.
+	It null terminates the string stored in Buffer.
+	
+	
+27,✅	chdir()
+	changes the current working directory to the specified path
+	It achieves this by updating the process's file system state to reflect 
+	the new working directory path.
+	
+28,✅	stat()
+	retrieves information about a file specified by its pathname, stores it in a struct
+	
+	struct stat	filestat;
+	stat("/home/sthiagar/Practice/",&filestat);
+	don't confuse struct stat with stat() function.
+	
+29,	lstat()
+	similar to stat(), if the specified pathname is a symbolic link, it returns
+	information about the link itself rather than the file it points to.
+	
+	symbolic link is a special type of file that serves as reference or shortcut to 
+	another file or directory in a file system.
+	
+30,	fstat()
+	retrieves information about an open file descriptor and stores in a structure.
+	
+	struct stat fdstat;
+	
+<>	stat() vs lstat() vs fstat()
+	- stat() follows symbolic links and returns information about the target of the link.
+	- lstat() does not follow symbolic links and returns information about the link itself.
+	- fstat() operates on a file descriptor rather than a filename and returns information 
+
+31,	unlink
+32,✅	execve
+33,✅	dup
+34,✅	dup2
+35,✅	pipe
+
+36,✅	opendir()
+	opens a directory stream corresponding to the directory given by the path name.
+	returns a pointer to a 'DIR' stream.
+	
+	DIR *dir;
+	dir = opendir("."); open the current directory
+	
+37,✅	readdir()
+	using the pointer returned by opendir(), readdir() function reads the next entry
+	from the directory stream.
+	It returns a pointer to a 'dirent' structure representing the next directory entry,
+	or NULL if there is no more entries, or if an error occurs.
+	
+	struct	direent	*entry;
+	entry = readdir(dir);
+	
+38,✅	closedir()
+	closes the directory stream associated with the directory pointer returned by opendir().
+	it frees teh resources associated with the directory stream.
+	
+	closedir(dir);
+
+39,	strerror
+40,	perror
+
+41,	isatty()
+	used to determine whether a file descriptor refers to a terminal.
+	it takes a fd as an argument and returns 1 if fd refers to terminal,
+	or 0 otherwise. 
+	this function is often used to determine if a program is running in an interactive mode
+	or if its output is being redirected.
+	
+42,	ttyname()
+	this function returns the name of the terminal associated with a given fd.
+	returns a string, name of the terminal.
+	if the fd does not refer to a terminal, ttyname returns NULL.
+
+<>	isatty() vs ttyname()
+	- isatty() simply returns a boolean indicating whether a file descriptor refers 
+	to a terminal device.
+	- ttyname() provides more specific information by returning the name of the 
+	terminal device associated with a file descriptor,
+
+43,	ttyslot()
+	used to determine the number of the entry in the password file for the current terminal.
+	it returns the index of the terminal entry in the password file.
+	
+	ttyslot(void);
+	
+	return values:
+	-1	means error occured while attempting to retrieve the slot number of the 
+		controlling terminal.
+	0	means the process does not have a controlling terminal.
+	
+	> 0	A valid slot number of the current process's controlling terminal.
+	
+44,	ioctl()
+	used to manipulate the behavior of devices and device drivers in Unix OS.
+	used for device-specific input/output operations and system calls.
+	It allows programs to send control messagess to device to configure their operation.
+	
+	int ioctl(int fd, unsigned long request, ...);
+		-fd refering to the device
+		-a command specifying the operation to perform
+		-a pointer to the additional data required for the operation
+	example:
+		struct winsize ws;
+		ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+		
+		printf("%d\n",ws.ws_col); --> terminal window size
+		
+45,✅	getenv()
+	retrieves the value of an environment variable.
+	it takes the name of the environment variable as an argument and returns
+	a pointer to the value of the variable as a null-terminated string.
+	If the specified environment variable is not defined, getenv() returns NULL.
+	
+	Example:
+	char *path = getenv("PATH");
+
+---	These functions are typically used in Unix OS for terminal manipulation,
+	terminal control, and building terminal-based user interfaces.
+	They provide a way to interact with and control terminal devices programmatically,
+	allowing applications to perform various terminal-related tasks
+	
+46,	tcsetattr()
+	used to set the attributes of a terminal device.
+	modify terminal attributes such as baud rate, input/output modes, control characters etc
+	
+47,	tcgetattr()
+	used to get the current attributes of a terminal device.
+	It retrieves the current settings of the terminal's attributes, or the current
+	configuration of the terminal.
+	
+48,	tgetent()
+	used to initialize the terminal database and to retrieve terminal capability information.
+	In order to use 'tgetent()', curses library provides an implementation of the terminal
+	database lookup mechanism.
+	
+	
+49,	tgetflag()
+	used to retrieve boolean terminal capabilities from the terminal database.
+	It returns the value of the specified boolean capability for the curret terminal type.
+	
+	The curses library provides an interface to access capabilities in a terminal-independent
+	manner.
+	
+50,	tgetnum()
+	used to retrieve numeric terminal capabilities from the terminal database.
+	It returns the value of the specified numeric capability for the current terminal type.
+	
+	The curses library provides an interface to access capabilities in a terminal-independent
+	manner.
+	
+51,	tgetstr()
+	used to retrieve string terminal capabilities from the terminal database.
+	It returns a pointer to the specified string capability for the current terminal type.
+	
+	The curses library provides an interface to access capabilities in a terminal-independent
+	manner.
+
+52,	tgoto()
+	used to generate a cursor motion string for a given cursor position using the 
+	specified capability string. It formats the cursor motion string using the specified
+	capability string and the given parameters, allowing you to move the cursor to a
+	specific position on the terminal.
+
+53,	tputs()
+	used to output a terminal capability string to the terminal. 
+	It sends the specified terminal capability string to the terminal, allowing you to 
+	perform terminal control functions such as clearing the screen, moving the cursor, 
+	changing text attributes, and more.
+	
+---	The curses library provides functions for controlling terminal input and output in a 
+	terminal-independent manner. While it's possible to use other methods to interact 
+	with the terminal database, such as directly reading from the terminfo files or using
+	system-specific libraries, the curses library provides a portable and standardized way 
+	to perform these tasks across different Unix-like systems. It abstracts away 
+	the underlying details of terminal handling, allowing developers to write 
+	terminal-independent code.
+	
+	If the code uses the curses library, you need to link against it during compilation 
+	(e.g., using -lcurses flag). 
+	Additionally, the actual capability names may vary depending on the terminal type 
+	and the terminal database being used.
+	
+----------------------------------------------------------------------------------
+
+

@@ -1,0 +1,54 @@
+Encoding image
+
+1, 	refer to XPM manual
+
+2,	how to put an image into an xpm format?
+	gimp (free image editing software)
+	convert png to xpm
+
+3,	but before that, resize png to 50 X 50 pixel
+	cut out the image using online software
+	
+4,	view xpm file in text editor
+5,	A char** array is pointing to the image content.
+
+6,	example of an image with following attributes.
+	first string is "98 100 7779 2"
+	98 pixels wide
+	100 pixels high
+	7779 colors that appear
+	2 I don't know
+
+7,	the next 7779 strings define the color
+	";  c #FFF59E"
+	first character pair is ;+<space> encodes RGB color represented by #FFF59E
+	look for RGB color codes on the internet, not essential
+
+8,	after the character pair definitions, we get the image itself
+9,	there will be 100 lines of strings, containing 98 character pairs each.
+	100 lines of strings represent 100 pixels high
+	98 character pairs on each line represent 98 pixels wide
+
+10,	Image manipulation in c program.
+	# include "someimage.xpm"
+	
+	---------------------------------
+
+Steps to Download JPEG to convert to XPM file using free online tools
+
+1,	Download JPEG convert to PNG
+	or Download PNG format images
+	
+2,	Edit background to isolate the image
+	(standard quality is inferior than paid premium quality)
+
+3,	Resize PNG format to 100 X 100 pixels
+
+4,	Convert PNG to XPM
+
+5,	place the XPM files in a folder.
+
+6,	use mlx_xpm_file_to_image() to convert XPM to image
+
+	image.img_ptr = mlx_xpm_file_to_image(window.mlx_ptr,\
+		"./image/hut.xpm", &image.w, &image.h);

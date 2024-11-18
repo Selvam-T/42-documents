@@ -1,0 +1,330 @@
+CUBE3D PDF requirement:
+
+Wolfenstein 3D game
+explore ray-casting
+make a dynamic view inside a maze, in which you’ll have to find your way
+graphic design project
+improve your skills in these areas: 	
+	windows, colors, events, fill shapes, etc.
+explore the playful practical applications of mathematics 
+	without having to understand the specifics
+use mathematics as a tool to create elegant and efficient algorithms.
+
+Wall texture: Different for North, South, East, West
+Floor and Ceiling color: two different ones
+
+You will be able to create better games later do not waste too much
+time
+
+
+RAY CASTING vs RAY TRACING:
+--------------------------
+Ray-Casting is regarded as a special implementation (subclass) of Ray-Tracing.
+
+Ray casting is a method of collision detection in a 2D grid.
+It sends out a ray from the starting point on a grid towards the facing direction.
+The number of rays cast equals the number of pixels of the width of the screen.
+
+Technically, checking every cell value in the direction of the ray, if the cell 
+contains a 1 it is wall, else it advances to the next cell. The length calculated
+between the starting point and obstacle is later used to determine the height of the
+wall in 3D rendering of the player point of view scene.
+
+Ray tracing is an advancement on Ray casting in that it is used 
+in determining the secondary light effects such as 
+shadows, reflections and refractions in realistic 3D rendering.
+
+DDA Algorithm:
+-------------
+The purpose of the DDA (Digital Differential Analyzer) algorithm in raycasting is to 
+calculate the points of intersection along a ray path with a grid, which is used for 
+rendering scenes in computer graphics, particularly in 2D grid-based games.
+
+The components of the DDA algorithm include:
+    Start and end points of the line or ray.
+    Step increments for x and y coordinates.
+    Calculation of the distance and direction to step through the grid.
+
+An alternative to the DDA algorithm is the Bresenham's line algorithm, which is also 
+used for drawing lines and can be adapted for raycasting purposes.
+
+Understanding Vector:
+--------------------
+Vector is represented by x and y co-ordinates, to denote how many steps it will move
+along x-coordinate, as well as how many along y-coordinate.
+
+Understanding the Camera Plane:
+------------------------------
+The plane perpendicular to the direction vector / or the direction the player is facing.
+It is initialized to 0.66.
+
+example: planeX = 0, planeY = 0.66, where dirX = -1, dirY = 0.
+In this case, the player is facing left on X axis. 
+The camera plane is planeY, which is perpendicular to dirX.
+
+What does planeY = 0.66 mean?
+This value is chosen by user. This value is used to approximate a 66-degree FOV.
+i.e FOV = 66
+therefore, tan (FOV / 2) = tan (66 / 2) = 0.66
+
+This value determines the width of the camera plane. If planeY = 0.9 it means the
+FOV is wider. 
+
+What does planeY = 0.66 represent?
+
+It is not a percentage, but a scaling factor related to the direction vector and the FOV.
+It can be thought of as part of a proportional relationship that sets the camera plane's
+width relative to the direction vector.
+
+The values of planeX and planeY are chosen such that they determine the extent of the
+camera's view to the left and right.
+
+To understand how the values of planeY and planeX would change if we rotated 
+counter-clockwise direction:
+A snapshot of 5 successive moves from dirX = -1, dirY = 0 to dirX = 0, dirY = -1
+
+1. `planeX = -0.204`, `planeY = 0.627`
+2. `planeX = -0.365`, `planeY = 0.533`
+3. `planeX = -0.534`, `planeY = 0.388`
+4. `planeX = -0.627`, `planeY = 0.204`
+5. `planeX = -0.66`,  `planeY = 0` 
+
+tan (FOV / 2) explained
+-----------------------
+planeY = tan⁡(FOV/2)
+
+In a right triangle, the tangent of an angle is the 
+ratio of the opposite side to the adjacent side. 
+
+For our purposes, we use the tangent of the half-angle (FOV/2).
+
+tan(FOV/2) = opposite​ / adjacent = c / 1
+therefore, planeY = tan(FOV/2)
+
+If the FOV is 66 degrees:
+FOV / 2 = 33 degrees
+planeY = tan(33∘) ≈ 0.66
+
+Shooting Rays from starting point through Camera plane end to end.
+------------------------------------------------------------------
+Assume screen width = 640, screen height = 480
+Therefore, at somepoint we need to interpolate the FOV into screenwidth  = 640
+
+    Camera Plane Endpoints (A and B):
+        Point A (left end of the camera plane) is calculated by adding the 
+        negative of the plane vector to the direction vector.
+        Point B (right end of the camera plane) is calculated by adding the 
+        plane vector to the direction vector.
+
+    Given your direction and plane vectors, the endpoints are:
+        A = (dirX − planeX, dirY − planeY) 
+          = (−1 − 0, 0 − 0.66)
+          = (−1, −0.66)
+        
+        B = (dirX + planeX, dirY + planeY) 
+          = (−1 + 0,0 + 0.66)
+          = (−1, 0.66)
+
+    Ray Calculation:
+        You shoot rays from your starting position (posX, posY) 
+        through every point on the camera plane from A to B.
+        
+        Each ray corresponds to a column of pixels on the screen, 
+        where you calculate the ray direction based on the interpolation between A and B.
+
+Ray Direction Calculation
+-------------------------
+For each pixel column x on the screen (from 0 to screenWidth - 1), 
+you calculate the ray direction as follows:
+
+    Compute the camera's x-coordinate for the current pixel column:
+    (remember, x goes from 0 to screenWidth - 1)
+    cameraX = (2 * x / screenWidth) − 1
+		This formula normalizes the range to [-1 to +1]
+    This value ranges from -1 (left side of the screen) 
+    	to 1 (right side of the screen).
+
+    We calculate cameraX in order to compute ray direction, which is denoted by
+    how many steps it moves along X coordinate and how many along Y coordinate.
+    
+    Compute the ray direction for the current pixel column:
+    
+    rayDirX = dirX + planeX * cameraX   
+    rayDirY = dirY + planeY * cameraX
+
+Given your initial conditions, the calculations for each pixel column x are:
+(again remember, x goes from 0 to screenWidth - 1)
+
+rayDirX = −1 + 0 * cameraX ; rayDir = −1
+
+rayDirY = 0 + 0.66 * cameraX
+
+Since planeX = 0, the ray direction x-component remains -1 for all columns, 
+indicating all rays are shot horizontally to the left but vary in the y-component 
+from -0.66 to 0.66.
+
+Cast ray to detect collision:
+----------------------------
+
+After computing the ray direction in ray casting, the next step typically involves 
+casting the ray into the scene to determine what it intersects with. 
+This process involves several sub-steps:
+
+Ray-Scene Intersection:
+        Cast the ray from the player's position (or camera) into the scene.
+        Check for intersections between the ray and the objects in the scene 
+        (walls, sprites, etc.).
+
+Collision Detection:
+        Determine the first object or wall that the ray intersects with.
+        Calculate the distance from the player to the intersection point.
+
+Depth Buffering:
+        Keep track of the distance of each intersection point from the player.
+        Update the depth buffer with the distance values for each pixel on the screen.
+
+Texture Mapping:
+        If an intersection occurs, determine the texture or color of the 
+        surface at the intersection point.
+        Map this texture/color onto the corresponding pixel on the screen.
+
+Rendering:
+        Repeat the above steps for each ray cast through the camera plane, 
+        covering the entire screen.
+
+Post-Processing:
+        Apply any additional effects or post-processing techniques, such as 
+        lighting, shading, or special effects.
+
+Display:
+        Finally, display the rendered scene on the screen.
+
+By following these steps, a raycasting engine can simulate a 3D environment on a 
+2D screen, providing the illusion of depth and perspective. Each step plays a 
+crucial role in creating a visually compelling and interactive experience 
+for the player.
+
+Preparation to cast the ray:
+-------------------------------
+1) Determine the direction of the ray from the player's position (or camera) 
+toward point A, the left end point of the Camera plane.
+	
+The direction vector represents the line along which the ray will be cast.
+
+It's the vector from the player's position (or camera) to the endpoint A.
+
+This direction vector can be computed by subtracting the player's position 
+(posX, posY) from the coordinates of point A:
+rayDirX = A * x − posX
+rayDirY = A * y − posY
+
+Normalize Ray Direction (Optional):
+In many raycasting implementations, it's common to normalize the direction vector 
+to ensure that its length is 1.
+This normalization ensures consistent ray lengths and simplifies distance 
+calculations later on:	
+	
+rayLength = SQRT(rayDirX^2 + rayDirY^2)
+rayDirX = rayDirX​ / rayLength
+rayDirY = rayDirY​ / rayLength	
+
+What is the difference between the 2 different rayDirX formulas discussed above
+--------------------------------------------------------------------------------
+a) rayDirX = dirX + planeX * cameraX 
+b) rayDirX = A * x − posX
+
+a)  rayDirX is computed as the sum of dirX (the direction the player is facing),
+    and planeX × cameraX. 
+    Here, planeX represents the 2D plane perpendicular to the player's view 
+    (often used in raycasting for field of view calculations), and cameraX is 
+    the normalized horizontal screen position of a pixel.
+
+b)  Here, rayDirX is computed as A × x−posX, 
+    where A represents the left endpoint on the camera plane. 
+    This equation is typically used in contexts like ray tracing or projection calculations, 
+    where x is the pixel column position, and posX is the player's or camera's x-position.
+
+Cast the ray:
+-------------
+Iterate along the ray's path and check for intersections with objects in the scene.
+Determine the first intersection point and calculate its distance from the player.
+	
+	Determine Ray's position:
+	This position is typically represented by a pair of floating-point 
+	coordinates (rayPosX, rayPosY).
+	
+	Shift Ray's position by moving n pixels along X coordinate and Y coordinate.
+	
+	rayPosX = rayPosX + 32
+	rayPosY = rayPosY + 24
+	
+	Convert rayPosX and rayPosY to Grid indices.
+	i = round(rayPosX / 64)
+	j = round(rayPOsY / 48)
+	
+	Check if (i,j) value is 1, which means there is collision.
+
+Fishbowl Effect:
+----------------
+Fishbowl effect happens because ray-casting implementation mixes polar coordinate and Cartesian coordinate together. Therefore, using the above formula on wall slices 
+that are not directly in front of the viewer will gives a longer distance.
+
+Correction: 
+First note that cos b = correct distance / distorted distance
+
+meaning the line intersecting the camera plane at 90 deg has the correct distance
+the line intersecting at other angles is considered having the distorted distance
+
+Therefore, it follows -
+correct distance = distorted distance * cos b
+	
+Rotation: 
+How the values of direction vectors and camera plane change with rotation:
+--------------------------------------------------------------------------
+
+Initial conditions:
+
+    dirX = -1, dirY = 0
+    planeX = 0, planeY = 0.66
+
+Rotation steps:
+
+Each step is a rotation by π/10​ radians (approximately 0.314 radians).
+
+    Step 1: Rotation by π10 ≈ 0.3141 radians
+        New dirX: −cos⁡(0.314) ≈ −0.951 
+        New dirY: −sin⁡(0.314) ≈ −0.309 
+        New planeX: −0.66⋅sin⁡(0.314) ≈ −0.204 
+        New planeY: 0.66⋅cos⁡(0.314) ≈ 0.627 
+
+    Step 2: Rotation by 2π/10 ≈ 0.62810 radians
+        New dirX: −cos⁡(0.628) ≈ −0.809 
+        New dirY: −sin⁡(0.628) ≈ −0.588 
+        New planeX: −0.66⋅sin⁡(0.628) ≈ −0.365 
+        New planeY: 0.66⋅cos⁡(0.628) ≈ 0.533 
+
+    Step 3: Rotation by 3π/10 ≈ 0.94210 radians
+        New dirX: −cos⁡(0.942) ≈ −0.588 
+        New dirY: −sin⁡(0.942) ≈ −0.809 
+        New planeX: −0.66⋅sin⁡(0.942) ≈ −0.534 
+        New planeY: 0.66⋅cos⁡(0.942) ≈ 0.388
+
+    Step 4: Rotation by 4π/10 ≈ 1.257104 radians
+        New dirX: −cos⁡(1.257) ≈ −0.309 
+        New dirY: −sin⁡(1.257) ≈ −0.951 
+        New planeX: −0.66⋅sin⁡(1.257) ≈ −0.627
+        New planeY: 0.66⋅cos⁡(1.257) ≈ 0.204
+
+    Step 5: Rotation by 5π/10 = π/2 ≈ 1.57110 radians
+        New dirX: 0
+        New dirY: −1 
+        New planeX: −0.66 
+        New planeY: 0 
+
+Summary of Intermediary planeX and planeY values:
+
+    planeX = -0.204, planeY = 0.627
+    planeX = -0.365, planeY = 0.533
+    planeX = -0.534, planeY = 0.388
+    planeX = -0.627, planeY = 0.204
+    planeX = -0.66,  planeY = 0

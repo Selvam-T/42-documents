@@ -1,0 +1,270 @@
+Project Requirement
+-------------------
+2D game - 
+character - dolphin 
+collectible - fish?
+place - Earth
+
+eat fish
+escape - escape from who?
+
+move the character
+
+	Use of keys: map closed/surrounded by wall? 
+		W,A,S,D keys --> up, left, down, right
+		or Z,Q,S,D or arrow keys
+	No requirement for use of Mouse.
+	
+	Movement restriction:
+	player should not be able to move into walls
+	meaning player cannot step into the cell represented by wall image
+	
+	Count moves:
+	at every move, the current number of movements must be displayed 
+	in the shell
+
+Graphic management
+	
+1,[✓]	display the image in the window
+	
+2,	able to change to another window (smoothly) pg 7.
+3,	minimizing (smoothly) pg 7.
+	
+4,	close and quit: 
+		press ESC key or
+5,		clicking on the cross on the window's frame
+
+6,[✓]	Use of the images of the MiniLibX is mandatory
+ 	
+7,[✓]	Arguments: A map in format *.ber
+	take as parameter a map description file ending with the .ber extension
+
+8,	use Functions of the math library
+	look up using man or man 3 math lib function
+	example: man sqrt or man 3 sqrt
+
+9,[✓]	compile with flag -l to link external libraries during 
+	the compilation process. If you are using the math library('libm'),
+	you compile by adding -lm
+
+All functions of the MiniLibx
+	use the MiniLibx available on the school machines
+	or install it using its sources
+
+----------------------------------------------------------------------------
+MiniLibX
+	simplified library used for basic graphics programming in C.
+	used in conjunction with the X Window System on unix-based OS
+	to creae graphical applications
+	
+	Initialization Functions:
+		Initialize the connection to the X server
+		Create a new window
+		Create a new image
+		Clears the window with a specified color
+		Destroys a window and its associated resources
+	
+	Drawing Functions:
+		Puts a pixel on the window at a specified position
+		Displays an image in a window
+		Displays text in a window at a specified position
+		
+	Image Manipulations
+		- Gets the address of the image data
+		- Loads an XPM file into an image structure
+		- XPM file is a text image file format used to 
+		  represent bitmap graphics, in the X Window System
+	
+	Event Handling
+		Associates a function with a specific event 
+		(like key presses or mouse movement)
+	
+	Color Manipulation map closed/surrounded by wall? 
+		Gets the color value based on RGB components
+		Creates a new color
+
+-------------------------------------------------------------------------------
+Install MiniLibX package
+	sudo apt-get update
+	sudo apt-get install libext-dev libx11-dev
+
+Clone MiniLibX
+
+Compile
+	cc *.c -L/path/to/minilibx -lmlx -lXext -lX11 -lm
+		links the MiniLibX library
+		links additional system libraries
+		links math library
+	
+Set Library Paths before running the compiled program
+	export LD_LIBRARY_PATH=/path/to/minilibx:$LD_LIBRARY_PATH
+-------------------------------------------------------------------------------	
+X Window System
+	framework used to create graphical user interfaces in Unix
+	provides basic infrastructure and protocols for displaying
+	graphical elements such as windows, icons, buttons, and menus
+	
+	Infrastructure refers to the fundamental framework that enables 
+	communication between the various elements, such as applications,
+	display servers, and input devices.
+	
+	Protocols are the rules and conventions that define how these elements
+	communicate with each other, specifying the format and sequence of messages
+	exchanged between the client(application) and the server (display server) to
+	achieve tasks like drawing graphics, managing windows, and handling user input.
+	
+	Client-Server Architecture
+		X server manages Monitor (output) and Keyboard, Mouse (input)
+	Window Management
+		windows creation, manipulation and management
+		resizing, moving, and stacking windows
+	Graphics and Rendering
+		drawing lines, rectangles and other shapes
+	Event Handling
+		manages user input events 
+		(such as mouse clicks and keyboard input) 
+		and delivers them to the appropriate applications
+	Modernization
+		X.Org Server, a popular implementation of the X Window System
+
+-------------------------------------------------------------------------------
+maps
+	layout or environment of a game
+	defines the terrain, obstacles, objects that make up the playable area
+	
+	represented through arrays or data structures that hold the information
+	about the layout of the game world
+
+Map composition:
+	0 - empty space
+	1 - wall
+	C - collectible		--> must contain atleast 1
+	E - exit		--> must contain only 1
+	P - starting position	--> must contain only 1
+	--> must not have any other characters
+
+Error:
+	1, Map must be rectangular (square is a rectangle)
+	2, If the map contains a duplicate character (exit/start) display error message
+	3, If the map is not closed/surrounded by wall, return error message
+	4, Check if there's a valid path
+	5, Any misconfiguration encountered, exit smoothly and return 'Error\n' followed by
+	explicit error message of your choice.
+	6. All collectibles 'C' must be accessible to user, meaning all collectibles
+	must be on the path.
+	
+-------------------------------------------------------------------------------
+textures
+	images used to cover surfaces of 3D models of backgrounds in games
+	OpenGL or DirectX are often used to handle textures, provides
+	functions to load image files (like PNG, JPEG), manipulate them,
+	and apply them as textures onto game environments
+	
+	OpenGL is an open-source graphics library that allows developers to create
+	high-performance 2D and 3D graphics. It provides a set of functions to 
+	load image data configure texture properties. (and more, out of scope for 2D).
+	
+	DirectX is a collection of APIs developed by Microsoft, primarily used for
+	multimedia tasks in Windows-based systems. It provides a range of functions
+	for handling tasks related to graphics, audio, input, and multimedia.
+-------------------------------------------------------------------------------
+Bonus:
+	1, Make the player lose when they touch an enemy patrol
+	2, Add some sprite animation. Meaning, displaying a sequence of sprite images 
+	in a rapid sequence to create the illusion of movement or animation.
+	3, Display the movement count directly on screen instead of writing it in the shell.
+	
+-------------------------------------------------------------------------------
+code explained:
+
+mlx.h 
+-----
+is a header file used with the MiniLibX library, often used for graphics programming in C. It provides functions to create and manage windows, as well as to handle user input and draw graphics using simple shapes and colors.
+
+mlx_init() 
+----------
+is a function used in the MiniLibX library to initialize a connection between the program and the graphical system. i.e. X Window System (X11).
+
+It sets up the necessary structures and resources required for creating windows, handling user inputs, and drawing graphics.
+i.e. data structures to manage window properties, such as dimensions, title etc
+i.e. event handling mechanisms to capture and respond to keyboard or mouse events
+i.e. managing buffers, color spaces, drawing contexts, rendering shapes, colors
+and images on the window
+
+mlx_new_window(mlx_ptr, 500, 500, "My Window");
+------------------------------------------------
+is a function from the MiniLibX library used to create a new window for graphics output. It takes parameters such as the connection pointer, window size, and title, and returns a unique identifier for the created window, which is then used for drawing graphics and handling user input within that window.
+
+mlx_loop(mlx_ptr) 
+-----------------
+is a function from the MiniLibX library used to start an event loop, which continuously listens for and handles user inputs, such as keyboard or mouse events, and manages the rendering process for the windows created using MiniLibX. It keeps the program running and responsive to user interactions.
+
+<discontinued.. refer to the spreadsheet in Documents/so_long folder>
+-----------------------------------------------------------------------------------------
+Test cases
+----------
+0,	Valgrind - Memory Leak immediate failure
+	valgrind --leak-check=full --show-error-list=yes ./so_long map.ber
+	a. with Valid data
+	b. with Error data
+
+	Map
+1,	Open error?
+		provide Invalid map.ber file.
+2,	Should only accept a map in format *.ber
+
+3,	Read() or get_next_line() has error handling?
+		My error handling is done in get_next_line_utils.c: free_lst()
+		It is not handled in so_long.
+4,	Malloc error?
+		say n rows already mallocd, if n+1 malloc fail, do you free n mallocs?
+		error message?
+		
+5,	Empty map. Throw error?
+6, 	Map is rectangular? (square is a rectangle) 
+7, 	Is map closed/surrounded by wall?
+8, 	Is there a valid path? 
+9,	If there is more than one valid path? Shouldn't throw error.
+				
+10,	Map contains at least 1 collectible C?
+11, 	All collectibles 'C' located on the path? 
+12, 	Map does not allow more than 1 character (P & E)?
+13,	No (P) on the map, throw error?
+14,	No (E) on the map, throw error?
+	11111
+	1PEC1  --> must get past E to C, not valid
+	11111
+15,	Must not have other character? (except enemy in BONUS)
+
+		Error\n 
+		Explicit error message?
+
+	Window
+16,	If display connection failed, does it have error msg?
+	You don't have to free the mlx->ptr, because it is not created.
+17,	If window failed to create, does it have error msg?
+	In this case, it must free mlx->ptr from above.
+18,	Does it display moves on shell?
+	I think not counting last move can be accept. Who cares right?
+19,	Must not count attempted move into wall?
+20,	Does the program exit on 'ESC'?
+	Free memory of map + free mlx ptrs?
+	Run it with valgrind.
+21,	If mlx_xpm_file_to_image() failed, is there error handling?
+	Do you free map + free other images + free mlx poointers before exit?
+	Test by providing a non-existent xlm file, run with Valgrind.
+22,	Does it count final move into Exit?
+
+23,	Does not Exit unit all collectibles are not scored?
+	Or if it did, it must display message to say the player lost.
+	If not justify the action. Refer to pdf pg 7.
+
+24,	All images freed?
+25,	If image->ptr failed to create, does it free everything before exit?
+
+------------------------------------------------------------------------------
+Improvements on Mandatory part
+------------------------------
+1, Error handling for mlx_xpm_file_to_image()
+2, Error handling for mlx_new_window()
+3, Should only accept a map in format *.ber

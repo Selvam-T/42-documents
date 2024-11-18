@@ -1,0 +1,331 @@
+Push swap
+----------
+
+1,✅	Makefile, include 
+		libft 
+2,✅	push_swap.c
+3,✅	sort integer in the sortest number of steps
+4,✅	Display the instructions as output, separated by \n
+	example:
+		sa
+		pb
+		pa
+5,✅	The number of instructions will be compared against a limit:
+	the maximum number of operations tolerated.
+6,✅	If the number of operations exceeds limit or not sorted correctedly.
+	grade 0.
+-----------------------------------------------------------------------------
+	
+7,✅	if no parameters are specified.
+	output nothing. Just return.
+8,✅	If error. Display "Error" followed by "\n"
+	example of errors - 
+		1,✅ non-integers
+			I expect preceding space is an ERROR.
+			example: <space>1 or <space>-1 is invalid
+		2,✅ > INT_MAX, what about < INT_MIN ?
+		3,✅ duplicates
+9,✅	check against checker_os
+
+10,✅ 	sa	swap_a 
+	swap first 2 elements at the top of the stack a
+	do nothing if elements < 2
+
+11,✅	sb	swap_b
+	as above for b
+	
+12,✅	ss	swap_a_b
+	swap_a
+	swap_b
+
+13,✅	pa	push_a
+	if b empty, do nothing
+	if b not empty, move 1st element of b to 1st position of a
+
+14,✅	pb	push_b
+	if a empty, do nothing
+	if a not empty, move 1st element of a to lst position of b
+	
+15,✅	ra	rotate_a
+	first element of a becomes last.
+		use libft/ft_lstadd_back() ?
+
+16,✅	rb	rotate_b
+	first element of b becomes the last one
+		use libft/ft_lstadd_back() ?
+		
+17,✅	rr	reverse_rotate_a_b
+	reverse_rotate_a
+	reverse_rotate_b
+
+18,✅	rra	reverse_rotate_a
+	the last element of a becomes the first
+		use libft/ft_lstadd_front() ?
+		use libft/ft_lstlast() ? --> to find the last element
+
+19,✅	rrb	reverse_rotate_b
+	the last element of b becomes the first
+		use libft/ft_lstadd_front() ?
+		use libft/ft_lstlast() ? --> to find the last element
+
+20,✅	rrr	reverse_rotate_a_b
+	reverse_rotate_a
+	reverse_rotate_b
+----------------------------------------------------------------------
+🚫 How to determine the suitable sorting algorithm? --> This is not helpful for this project.
+
+Variability is determined based on range and standard deviation.🗑️
+	--> When you rank the numbers, the variability becomes constant.
+
+If the  stdDev < (range /2) --> low variability
+	stdDev > (range /2) --> high variability
+
+Chatgpt suggested the following choice of sorting algorithm:
+
+1,	High Variability, Large Dataset:
+	-------------------------------
+	Radix Sort
+	Quick Sort / Merge Sort / Heap Sort
+	
+2,	High Variability, Small Dataset:
+	-------------------------------
+	Radix Sort
+	Quick Sort / Merge Sort / Heap Sort
+	Insertion Sort
+
+3,	Low Variability, Large Dataset:
+	------------------------------
+	Quick Sort / Merge Sort / Heap Sort
+	Radix Sort
+	Insertion Sort
+
+4,	Low Variability, Small Dataset:
+	------------------------------
+	Quick Sort / Merge Sort / Heap Sort
+	Insertion Sort
+	Bubble Sort / Selection Sort
+
+Quick Sort: --> I use Quicksort to sort 6 elements and below only.
+
+In array context, picking the last element is efficient in terms of
+accessing the last index, and partitioning the array. The same is true
+if first element is picked. But picking first element can have the worst-case
+scenario if the list was already sorted or nearly sorted in asc order, because 
+the partitioning with always be lopsided, leading to the worst-case scenario.
+
+In linked list, picking the first element can be easier, but one must contend
+with the worst-case scenario of the list being already sorted in asc order.
+---------------------------------------------------------------------------
+test cases:
+
+0,	Makefile
+	all clean fclean re
+	Check that it doesn't relink.
+	If you make again without changes, it should say,
+	make: Nothing to be done for 'all'
+	
+1,✅	valgrind --leak-check=full --show-error-list=yes ./push_swap 1 2 3
+	//may need to cc with -g
+	IMMEDIATE FAILURE
+
+In case of error, it must display "Error" followed by a ’\n’ on the standard error. [Pg 10].
+
+2,✅	no input parameters
+	no return value expected
+
+3,✅	NULL value input. 
+	Example ./push_swap ""
+	Error.
+
+4,✅	non-integer
+	ex: ./push_swap 1 2 m
+
+5,✅	> INT_MAX: 2147483647 + 1
+	< INT_MIN: -2147483648 - 1
+
+6,✅	duplicate
+	ex: ./push_swap 1 1 1
+
+7,✅	accepts input string as "5 8 12" -->pg 11
+	In my defence I will accept the following patterns of arguments
+	"1 4 5 9"
+	1 4 5 9
+	1 "4 5" 9
+	
+	I will return error on the following
+	1 "4hello" 
+	my atoi will not recognize any non numeral ascii values that follows an integer.
+	
+8,✅	1 parameter
+	no instructions should be displayed
+
+9,✅	2 parameters
+	ex: 2 1
+	2 or 3 instructions?
+	
+10,✅	sorted list 
+	no instructions should be displayed
+	
+11,✅	3 parameters
+	2 or 3 instructions
+
+12,✅	Paremeters between 0 and 3. Meaning max 4 paremeters?
+	Between 0 and 3 instructions. Meaning max 4 instructions?
+
+13,✅	5 parameters
+	12 instructions max
+	 
+14,✅	100 parameters
+	<700 	5 points ---> average 570
+	<900 	4
+	<1100 	3
+	<1300 	2
+	<1500 	1
+
+15,✅	500 parameters
+	<5500	5 points ---> average 4900
+	<7000	4
+	<8500	3
+	<10,000	2	
+	<11,500	1
+	
+------------------------------------------------------------------------
+My Accepted Input arguments
+
+1 5 6
+"1 5 6"
+1 "5" "6" 7
+
+-------------------------------------------------------------------------
+Error handling -
+
+1,✅	When linked list fails to add a new node 
+	is all the preceding nodes created freed?
+	does it throw error message?
+	
+	Error handling is done in push_swap.c / make_lst();
+	
+2,✅	If current str is not digit
+	free preceeding items added to linked list?
+	throw error message?
+	
+	Error handling is done in push_swap.c / error_check();
+
+3,✅	If num out of range INT_MAX to INT_MIN
+	free preceeding items added to linked list?
+	throw error message?
+	
+	Error handling is done in push_swap.c / error_check();
+	
+4,✅	If num is duplicate
+	free preceeding items added to linked list?
+	throw error message?
+	
+	Error handling is done in push_swap.c / error_check();
+
+5,✅	If input is NULL
+	Error.
+	Don't throw segmentation fault.
+	Why Error? Because this is not the same as no input.
+	There is input, because argc == 2, and the input arg is not a num.
+		
+6,✅	I don't need to malloc() stkb.
+
+7,✅	I need to malloc() linked list pointed to by stka.
+	Upon successful exit, free linked?
+	Yes in main()
+	
+8,✅	Consider check if digit using ascii value together with check for duplicate
+	I considered this, problem with return value. Is -1 error or num?
+
+9,🚫	Delete unused functions in libft
+
+10,✅	Error handling function to be modified.
+	It must only print 'Error'. No cause of error to be displayed.
+	
+11,❌	I fail if the input is as follows -
+	"1 2" "" or 1 3 ""
+	There is a NULL input, which should throw an error.
+	
+	correction in *get_lst();
+	str_arr = ft_split(argv[i], 32);
+		if (str_arr == NULL || str_arr[0] == NULL)
+			handle_error(head, str_arr);
+-----------------------------------------------------------------------------
+What I could do to improve my algorithm.
+---------------------------------------
+
+1, 	After I get the least cost pair, I would move members in stka and stkb to the top.
+	Before pushing the top of A to top of B, I could check the value (not rank) of 
+	the last member in stka. If it is the next higher sequential number, then push I could
+	also push it after. Say the top of A is 7, the bottom of A must be 8. It cannot be 9 or
+	whatever, although it is bigger than 7. 
+	
+	So how do we execute this.
+	(Assume 7 being the least costly member is brought to the top of A,
+	after it was determined it is the least costly member-pair. Don't care
+	what is on top of B).
+	Assume 7 is on top of A. 8 is at the bottom. (It must only be 8).
+	Set bottom = (*stka)->prev.
+	"pb" the top stka member.
+	call function that moves the bottom member.
+	In order to move bottom member of stka, if qualified, stka must have a min 4 members.
+	"rra" to bring bottom member to top of A.
+	"pb".
+	In fact, you can again continue to check if the current bottom qualifies.
+	This can be done in a loop.
+	
+	This works in case as follows
+	 A      B
+	---    ---
+	 7      5
+         XX     YY
+         XX     YY
+         10     YY
+         9
+         8
+
+2,	Additionally, we do not want to concern ourselves with the next members in stka
+	to see if they satisfy conditions like above. Because the natural order of excution
+	of the functions will take care of that.
+
+-------------------------------------------------------------------------------
+Why I am doing what I am doing!
+-------------------------------
+
+1,	(t_list) 
+	bcrank --> base case rank
+	in sort3, if condition evaluates '1', '2', '3' only
+	
+2,	(t_list)
+	*prev
+	the access the last element in a list, after rotation.
+	the last element is the prev element of top element in a circular list
+
+3,	Why do I have rank_nums(t_list *lst)?
+	I cannot rank the numbers, as I am adding to the list. 
+	I must have a full list, before I can rank them. And the 
+	ranking function is called right after the list is fully created.
+	
+
+----------------------------------------------------------------------------------------------------
+500 input:
+---------
+
+38 695 -176 773 -896 845 903 615 506 452 -230 986 -999 -273 431 -130 325 82 527 91 282 393 814 -531 197 -116 -405 932 227 595 -368 -331 -573 770 320 -356 -319 662 -67 464 879 522 76 167 -24 272 298 -306 1000 -233 -451 -340 570 489 -321 -218 127 -241 -105 606 404 -875 130 694 -990 75 -742 423 -596 802 -99 5 46 -773 526 144 -58 744 -256 -449 -113 -608 283 -395 274 -553 836 -925 124 542 -986 535 -520 634 -300 -299 205 958 -370 123 449 561 478 594 162 -128 -804 848 -819 521 102 219 -886 996 -149 -314 2 680 692 -578 -324 826 998 979 -376 -617 -548 852 336 -501 -989 -838 -205 -855 601 49 687 414 -354 -766 -125 776 45 -81 -181 -747 755 -816 -510 629 -51 -731 -794 -493 329 -772 363 -402 620 277 -429 -570 278 -522 -412 -359 -724 430 -392 -74 738 -269 -729 -165 -788 -796 -373 -39 494 -677 -185 -349 -100 -160 457 -47 300 407 -97 865 591 -432 -161 -599 -808 217 418 -856 -797 -499 827 271 800 759 495 -707 -244 96 352 971 -379 293 291 323 646 529 -484 -59 -201 -318 -158 563 296 965 491 -409 56 -492 -68 -937 260 684 240 -291 752 -822 -835 -126 605 849 236 508 -536 -146 -145 820 -254 -758 -615 -279 -558 -659 642 872 -271 -132 -151 788 62 -671 933 -326 65 -569 -922 806 808 963 207 239 -120 -704 -968 -174 847 -293 -778 -622 -593 -330 -556 816 -296 -787 467 941 -711 -102 -583 294 -117 -40 -248 28 686 -845 -525 -809 562 -350 867 312 -336 -44 -806 -494 -601 -942 -785 593 584 37 990 731 628 433 -880 -462 -755 -423 84 -31 974 479 514 249 707 834 307 -458 -680 107 64 -277 151 618 -179 -883 829 -32 725 -177 397 583 -885 440 -837 632 -187 617 926 -50 232 -465 801 -385 912 97 173 220 -80 863 -504 -513 543 917 997 132 787 250 949 551 -457 -789 -628 -143 -529 656 -657 60 858 -173 -159 -667 -537 -243 554 66 -737 238 831 24 -678 636 497 -554 -769 -46 361 351 -225 315 797 -170 -722 -761 -63 -387 758 -967 -129 -933 346 141 513 -60 -721 472 555 -226 -595 401 -500 857 -824 387 389 772 -215 -213 762 241 442 -980 375 337 335 -290 -212 -683 150 -90 -521 209 -433 -673 -98 614 517 231 -137 918 -694 -864 359 -401 893 9 835 89 405 -464 887 -503 438 -665 -307 459 410 730 837 -108 -388 -975 -479 93 627 -508 388 10 -315 -943 -868 533 247 889 44 -546 -650 919 721 409 804 77 -959 263 -625 -687 -666 -236
+----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	

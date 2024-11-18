@@ -1,0 +1,6 @@
+
+1)	Nginx is a high performance web server that is responsible for handling 
+	the load of some of the largest sites on the internet.
+	- handling many concurrent connections and 
+	- forwarding or serving static content.
+	

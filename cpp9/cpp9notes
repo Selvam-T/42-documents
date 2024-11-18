@@ -1,0 +1,172 @@
+CPP09 
+
+General evaluation on cmdline:
+-----------------------------
+cat ex*/*.*pp | grep "using"
+cat ex*/*.*pp | grep "friend"
+cat ex*/*.*pp | grep "free"
+cat ex*/*.*pp | grep "boost"
+cat ex*/*.*pp | grep "include <"
+cat ex*/*.*pp | grep "include >"
+	
+✅ Ex 00:
+---------
+
+1)	//Not sure if Evaluation PDF requires csv file to be evaluated
+	I am ok if student assume data.csv does not have duplicate date/exchange rate.
+	That they don't need to evaluate for duplicates. 
+	The PDF does not say anything about it.
+
+2)	But I will evaluate the date and price in csv file. 
+	I am going to bound the price within the range of data type double.
+	
+3)	The description about second database is a little confusing. But I am going to
+	assume that it represents a date and units of bit coins. 
+	
+4)	csv file validation (optional, if not required by evaluation)
+	- able to open file
+	- header present 
+	- each line has date and rate (missing date, missing rate)
+	- able to read til eof
+	- valid date
+	- valid rate
+
+5 a)	Pg. 7 I take example of input file to mean, the input is a txt file. 
+	(I accept only txt as input file format).	
+5 b)	Valid date?
+	- >= startDate (bitcoinStartDate for csv, oldestDate in csv for input txt)
+	- <= today
+	- valid days (28 in Feb leapyear, 29 in Feb not leap year, 30 days, 31 days)
+	- valid month 1 - 12
+	- valid year / valid range as above.
+	- missing date
+	- incorrect date format (yyyy-mm-dd is valid)
+	
+6)	Valid rate test for DB file (optional if not required by Evaluation)
+	- float
+	- negative	throw exception
+	- missing 	throw exception
+	- larger than FLT_MAX throw exception?
+	
+6)	Valid rate test for input file
+	- float
+	- missing rate		throw exception?
+	- negative		throw exception 'negative'
+	- positive > 1000 	throw exception 'large'
+
+7)	Input file type is invalid.
+	example: input.pdf	
+
+- Bitcoin exchanges
+	-opens input file
+	-value is the quantity of bitcoin you hold at that point in time
+	-date input validation
+	-database doesn't have the date, so you find the earliest date given
+
+- Comparison operator to compare date
+
+- if the date in input file doesn't exist in the database, find the nearest
+
+link input.csv:
+https://cdn.intra.42.fr/document/document/27407/input.csv
+https://cdn.intra.42.fr/document/document/27408/cpp_09.tgz
+  
+✅ Ex 01: RPN
+--------------
+
+1) Input string must be enclosed in " ", otherwise for one specific reason, i.e *
+	will be treated as wildcard when not enclosed in "", it will throw error.
+	Evaluation page shows inputs not enclosed in " ", but you must enclose it in " " when testing.
+
+2) Test invalid inputs
+	./APN
+	./RPN 
+	./RPN "1a 2 +"
+	./RPN "a1 3 -"
+	./RPN "455"
+	./RPN "12" "13"
+	./RPN "1 A +"
+	./RPN "-1 2 +"
+	./RPN "1 3 + 2"
+	./RPN "+ 1 3"
+	./RPN "1 2 + 3 4"  --> I treat this as invalid why?
+			//The expression lacks operators after 3 4, so it cannot be fully evaluated.
+
+3) Test valid input
+	./RPN "00001 1 +"
+	./RPN "3 4 5 6 + + - 6 +"
+	
+4) Test division by zero.
+	valgrind ./RPN "1 0 /"
+
+✅ Ex 02:
+---------  	
+
+1) It involves splitting the input into small parts, 
+2) sorting those parts, 
+3) and merging them back with minimal comparisons.
+4) an error message should be displayed on the standard error.
+5) random list generator - handle at least 3000 different integers
+6) use at least two different containers in your code to validate this exercise
+7) implement your algorithm for each container
+8) It turns out that the order of such comparisons can be determined 
+   by an integer progression called the Jacobsthal numbers, 
+   when optimizing for the worst-case.
+   0 , 1 , [?] => 1 + 2 x 0 == 1;
+   0 , 1, 1, [?] => 1 + 2 x 1 == 3;
+   0, 1, 1, 3, [?] => 3 + 2 x 1 == 5;
+
+Evaluation give following input:
+`shuf -i 1-1000 -n 3000 | tr "\n" " " `
+
+Questions:
+
+1)	Pg 12. "time used to perform all your operations"
+	How are you calculating time? Where does the time calculation begin and end?
+	
+2)	Pg 13. "The management of errors related to duplicates is left to your discretion."
+	Data validation errors-
+		- negative
+		- non-numeric
+		- INT_MAX to INT_MIN
+		- (It does not say, you cannot have duplicates) Pg.12
+		
+3)	Can you use std::set?
+	It does not say you cannot use std::set or any particulare container?
+	std::set automatically sorts the list.
+	You don't need to implement the sorting algorithm?
+	
+	Pg 13. The management of errors related to duplicates is left to your discretion.
+	My interpretation, you can accept or not accept duplicates.
+	
+	But the technical problem with using std::set is that, it will not accept duplicates.
+	The set will have unique elements. 
+	Meaning, when  you display the sorted list. It will not have duplicates. Error in output.
+
+4)	Design choice. I did not make PmergeMe a "wrapper class" or "container adapter" 
+	like std::stack, with private members to operate on it.
+	I made it a "function object" or a "utility class", similar to std::sort, which
+	takes container or iterator as an argument and performs operations without owning
+	the container.
+
+5)	Ford-Johnson algorithm uses a sequence of numbers for insertion, derived from Jacobsthal
+	Understanding Jacobsthal sequence of numbers.
+	It is defined by recurrence relation.
+	It starts with 0, 1. then each following number is found by formula: 2 x (i-1) + (i-2)	
+
+6)	Files to turn in does not have .tpp file, suggesting I cannot have templated class 
+	and functions to pass as argument vectors and deque.
+	Pg 11. Avoid generic function. (I don't know what to make of it).
+	
+7)	Pg 10. Program must use merge-insert sort algorithm. 
+	       You need to use Ford-JOhnson algorith.
+
+8)	std::vector and std::deque uses same functions, yet there is vast difference in sorting time.
+	Why?
+	std::vector is expected to sort faster than std::deque. 
+	This is because std::vector provides contiguous memory storage, 
+	leading to better cache locality and less overhead when sorting. 
+	
+	In contrast, std::deque stores its elements in chunks, which leads to more 
+	frequent cache misses and may result in slower performance.
+	

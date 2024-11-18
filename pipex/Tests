@@ -1,0 +1,159 @@
+Mandatory
+---------
+
+1,	Norm error - fail - pg3, 1
+2,	Valgrind, memory leak - pg3, 4
+	valgrind --leak-check=full --show-error-list=yes ./a.out
+	//ensure Makefile cc has a -g flag
+3,	Makefile - $(NAME), all, clean, fclean
+4,	Makefile - must not relink, pg3, 5
+5,	If libft is used, main Makefile should compile libft library 
+	by compiliing libft Makefile
+	
+6,	check if input file has data, output file is empty before run
+
+//How to handle errors? Pg 6. It says, handle error thoroughly, not quit unexpectedly,
+//if you have doubt, handle the errors like the shell command
+
+7,	error message for function failure
+🌟	- fork() --> can't test how shell handles, so custom msg
+🌟	- pipe() --> can't test how shell handles, so custom msg
+🌟	- dup2() --> can't test how shell handles, so custom msg
+✅	- open() --> test cases below
+✅	- execve() --> test cases below
+✅	- access() --> test cases below
+	
+8,	error message for incorrect input
+✅	- argc < 5
+		Error: too few arguments
+✅	- argc > 5
+		Error: too many arguments
+✅	- correct error messages displayed? --> test cases below
+✅	- is the command valid?	--> test cases below
+		incorrect command name, ex: short
+✅	- are the flags valid?	-->test cases below
+		incorrect flags, ex: sort -j
+
+--------------------------------------------------------------------
+Test	valgrind
+----	//ensure Makefile cc has a -g flag
+
+valgrind --leak-check=full --show-error-list=yes ./pipex "tinfile" "sort -r" "uniq" "outfile"
+
+Test	fork()	pipe()
+----
+	Just do a visual check of code for handling error.
+	
+	fork() fails with ENOMEM if there is not enough memory to create a new process.
+	pipe() fails with EMFILE, ENFILE, ENOMEM
+	
+Test	Invalid number arguments on command line
+----
+	
+Test cases: Valid	--> %> diff outfile outfile2
+------------------
+
+	sort -r < infile | uniq > outfile2
+	./pipex "infile" "sort -r" "uniq" "outfile"
+
+	grep dog < infile | wc -l > outfile2
+	./pipex "infile" "grep dog" "wc -l" "outfile"
+
+	ls -l < infile | grep pipex > outfile2
+	./pipex "infile" "ls -l" "grep pipex" "outfile"
+
+	< infile find . -type f | xargs wc -l > outfile2
+	./pipex "infile" "find . -type f" "xargs wc -l" "outfile"
+
+	head -n 5 < infile | tail -n 2 > outfile2
+	./pipex "infile" "head -n 5" "tail -n 2" "outfile"
+
+
+Test cases: invalid
+-------------------
+invalid input file ✅
+	< tinfile sort -r | uniq > outfile2
+	./pipex "tinfile" "sort -r" "uniq" "outfile"
+
+invalid input and output files ✅
+	< tinfile sort -r | uniq > shoutfile
+	./pipex "tinfile" "sort -r" "uniq" "shoutfile"
+	//expect error for input file only, output file is created if not exist
+
+invalid cmd1 ✅	
+	short -r < infile | uniq > outfile2
+	./pipex "infile" "short -r" "uniq" "outfile"
+
+invalid flag 1 ✅
+	
+	sort -x < infile | uniq > outfile2
+	./pipex "infile" "sort -x" "uniq" "outfile"
+	
+invalid cmd2 ✅
+	
+	sort -r < infile | tuniq > outfile2
+	./pipex "infile" "sort -r" "tuniq" "outfile"
+
+invalid cmd1 and cmd2 ✅
+	
+	short -r < infile | tuniq > outfile2
+	./pipex "infile" "short -r" "tuniq" "outfile"
+-----------------------------------------------------------------------
+
+Paco error on pipex-tester
+--------------------------
+
+# 14: The program uses the environment list                                 [KO]
+Your pipex:
+Bash:
+hello
+world
+Your tty output:
+pipex: command not found: env_var
+Your exit status:
+Exit status: 0
+Expected: <128
+
+My understanding. 
+
+1,	The test expects the exit status to be less than 128.
+	I do not understand what that means?
+	This is a student created test, it should not be taken as it is in defence.
+
+2, 	from run.sh script, this is what I gather from the relevant test.
+	it is running the command ./assets/env_var or env_var
+	on /dev/null
+	According to Chatgpt /dev/null is a special device file in Unix-like OS.
+	it discards all data written to it, and provides no data to any process that
+	reads from it.
+	env_var is a script, likely a command or program that deals with environment variables
+	
+3,	There is no man page on these. Could they be tester generated scripts?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	

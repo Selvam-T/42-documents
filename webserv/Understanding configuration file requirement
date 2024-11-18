@@ -1,0 +1,240 @@
+1) Choose the port and host of each ’server’.
+
+   Each server block represents a unique server instance with its host and port settings. 
+   When starting your server, it will read this file, and each configuration entry directs 
+   it to listen on the specified IP and port combination.
+   
+	   server {
+	   	host: 127.0.0.1;  # Localhost
+	   	port: 8080;       # Port for this server
+	   }
+
+	   server {
+	   	host: 192.168.1.10;  # Specific network IP
+	   	port: 9090;          # Different port for a different server
+	   }
+   
+   Configuration parsing -
+   
+   1) Loading and Parsing 
+   	Load into server application
+   2) Validation
+   	- check if the ports are within valid ranges, 
+   	- IPs are correctly formatted
+   	- no servers are bound to the same port unless that’s intentional.
+   3) Handling Multiple Servers 
+   	create listening socket for each server
+   4) Setting Defaults and Ranges
+   	- if a host or port isn't specified, it defaults to something like 0.0.0.0
+   		(bind to all interfaces) 
+   	- or a standard port (e.g., 80 for HTTP).
+   5) Error Handling:
+   	- for cases where ports are already in use 
+   	- or the configuration is invalid.
+   	- checking if the socket binds correctly
+   6) Real-Time Config Reloading (Optional).
+   	- reload the configuration without restarting the server
+   	- watch the configuration file for changes 
+   	- or trigger a reload manually through a signal (e.g., SIGHUP).
+   	
+2) Setup the server_names or not.
+
+	server {
+	    host: 127.0.0.1
+	    port: 8080
+	    server_name: example.com www.example.com
+	}
+	
+- You can have multiple domain names pointing to 127.0.0.1 (or any IP address) 
+	
+	server {
+	    host: 127.0.0.1
+	    port: 8080
+	    server_name: example.com
+
+	    # Content and settings specific to example.com
+	}
+		
+	server {
+	    host: 127.0.0.1
+	    port: 8080
+	    server_name: test.com
+
+	    # Content and settings specific to test.com
+	}
+	
+3) The first server for a host:port will be the default...
+	
+	First block acts as the fallback or "catch-all" server.
+
+	# Default server block for 127.0.0.1:8080
+	server {
+	    host: 127.0.0.1
+	    port: 8080
+	    server_name: default
+
+	    # This block will handle all requests that don't match other server names
+	    # Add your default configuration here
+	}
+	
+4) Setup default error pages.
+
+	# Default server block for 127.0.0.1:8080
+	server {
+	    host: 127.0.0.1
+	    port: 8080
+	    server_name: default
+
+	    # Default error pages
+	    error_page 404 /404.html;
+	    error_page 500 502 503 504 /50x.html;
+
+	    # Serve the error page
+	    location = /404.html {
+		root /path/to/your/error/pages;
+		internal;
+	    }
+
+	    location = /50x.html {
+		root /path/to/your/error/pages;
+		internal;
+	    }
+
+	    # Other default server configurations
+	}
+
+	# Specific server block for example.com
+	server {
+	    host: 127.0.0.1
+	    port: 8080
+	    server_name: example.com
+
+	    # Specific error page handling (can override default)
+	    error_page 404 /404_example.com.html;
+	    error_page 500 502 503 504 /50x_example.com.html;
+
+	    location = /404_example.com.html {
+		root /path/to/example.com/error/pages;
+		internal;
+	    }
+
+	    location = /50x_example.com.html {
+		root /path/to/example.com/error/pages;
+		internal;
+	    }
+
+	    # Other configuration for example.com
+	}
+
+5) Limit client body size.
+
+	- The body of a GET request is usually empty. Any data that is sent is 
+	  included in the URL as query parameters.
+	- methods like POST, PUT, or DELETE, which are intended to send data to 
+	  the server (e.g., submitting a form or uploading a file), then the 
+	  body size becomes important.
+	- If a request exceeds this size, Serve a custom error page (such as 413.html).
+	  
+	# Specific server block for example.com
+	server {
+	    host: 127.0.0.1
+	    port: 8080
+	    server_name: example.com
+
+	    # Limit the client body size to 2 MB for example.com
+	    client_max_body_size 2M;
+
+	    # Other configurations for example.com...
+	}
+	
+	// Send the 413 Request Entity Too Large Response
+	
+void send_413_error(int client_socket) {
+    const std::string error_page = "<html><body><h1>413 Request Entity Too Large</h1><p>Your request is larger than the server is willing or able to process.</p></body></html>";
+
+    std::string response = "HTTP/1.1 413 Request Entity Too Large\r\n";
+    response += "Content-Type: text/html\r\n";
+    response += "Content-Length: " + std::to_string(error_page.size()) + "\r\n";
+    response += "\r\n";
+    response += error_page;
+
+    send(client_socket, response.c_str(), response.size(), 0);
+}
+
+6) Route Configurations and Rules: Define routing behavior with options
+
+	1) Accepted HTTP Methods: Specify allowed HTTP methods (e.g., GET, POST) 
+	   for each route.
+	   
+	   route /example {
+	   	methods GET POST;
+	   	...
+	   }
+	   
+	   Parse this part of the configuration to store allowed methods for each route 
+	   in a std::set<std::string> or a similar container for fast lookup.
+	   
+	2) HTTP Redirection: Set up URL redirections for routes.
+	
+	route /old-page {
+    		redirect http://example.com/new-page;
+	}
+	
+	Look up the requested route in your configuration data. 
+	If the route has a redirect rule, retrieve the target URL and the specified 
+	redirection type (301 or 302).
+	
+	If no redirect rule exists for the route, proceed with normal request handling 
+	(e.g., serving a file, executing a CGI script).
+	
+	3) File/Directory Rooting: Map URLs to specific directories or files, 
+	making files in those locations accessible via the defined URLs.
+	
+	In your configuration file, define a root for each route, indicating the directory 
+	where the server should look for files when a URL matches that route. For example:
+	
+	route /images {
+    		root /var/www/media/images;
+	}
+	
+	4) Directory Listing: Enable or disable listing directory contents for routes 
+	leading to directories.
+	
+	In the server configuration, each route can have a setting to enable or disable 
+	directory listing. For example:
+	
+	route /downloads {
+    		root /var/www/downloads;
+    		directory_listing on;
+	}
+	
+	5)) Default Directory File: Set a default file (e.g., index.html) to respond 
+	with if the route targets a directory.
+	
+	In the server configuration, define a default_file for routes leading to directories. 
+	For example:
+	
+	route /blog {
+    		root /var/www/blog;
+    		default_file index.html;
+	}
+	
+	Here, if a user requests /blog/ (without specifying a file), the server will 
+	automatically serve /var/www/blog/index.html.
+	
+	6) CGI Execution Setup: Allow CGI execution based on file extension (like .php) 
+	to process requests dynamically:
+	
+	7) Supported Methods: Primarily work with POST and GET requests for CGI routes.
+	
+	8) File Upload Management: Accept file uploads via POST and specify where uploaded 
+	files should be saved.
+	
+	9) CGI Integration Details:
+	- Use the full file path as PATH_INFO when calling the CGI.
+	- Handle chunked requests by unchunking them before CGI processing, 
+	signaling the end with EOF.
+	- Mark the end of CGI output with EOF if content_length is absent.
+	- Pass the requested file as the first argument when executing the CGI.
+	- Ensure CGIs execute in the correct directory for accurate relative file paths.
+	- Ensure compatibility with at least one CGI type (e.g., PHP, Python).
