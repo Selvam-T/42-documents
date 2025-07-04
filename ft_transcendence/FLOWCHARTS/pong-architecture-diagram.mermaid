@@ -1,0 +1,143 @@
+flowchart TB
+    %% Main Components with colors
+    subgraph WEB["Web Modules [BLUE]"]
+        direction TB
+        BE["Backend Framework\nFastify + Node.js + npm"]
+        FE["Frontend Framework\nTailwind CSS + TypeScript\nVite/Webpack + React/Vue.js"]
+        DB["Database\nSQLite + Sequelize/Knex.js"]
+        
+        DB <--> BE
+        BE <--> FE
+    end
+    
+    subgraph UM["User Management Modules [GREEN]"]
+        direction TB
+        SUM_BE["Standard User Management Backend\nFastify + bcrypt + JWT"]
+        SUM_FE["Standard User Management Frontend\nTailwind CSS + TypeScript + Axios"]
+        RA_BE["Remote Authentication Backend\nFastify + Passport.js + OAuth 2.0"]
+        RA_FE["Remote Authentication Frontend\nGoogle Sign-in SDK"]
+        
+        SUM_BE <--> SUM_FE
+        RA_BE <--> RA_FE
+        SUM_BE <--> RA_BE
+    end
+    
+    subgraph GAMEPLAY["Gameplay and User Experience Modules [RED]"]
+        direction TB
+        NG_BE["New Game Backend\nFastify + WebSocket + Redis"]
+        NG_FE["New Game Frontend\nReact/Vue.js + WebSocket client"]
+        GC_BE["Game Customization Backend\nFastify"]
+        GC_FE["Game Customization Frontend\nTailwind CSS + TypeScript"]
+        
+        NG_BE <--> NG_FE
+        GC_BE <--> GC_FE
+        NG_BE <--> GC_BE
+    end
+    
+    subgraph AI["AI-Algo Modules [YELLOW]"]
+        direction TB
+        AI_BE["AI Opponent Backend\nTensorFlow.js/Node.js"]
+        AI_FE["AI Opponent Frontend\nWebSocket client"]
+        STATS_BE["Stats Dashboard Backend\nFastify + SQLite queries"]
+        STATS_FE["Stats Dashboard Frontend\nChart.js"]
+        
+        AI_BE <--> AI_FE
+        STATS_BE <--> STATS_FE
+    end
+    
+    subgraph GRAPHICS["Graphics Module [PURPLE]"]
+        direction TB
+        G3D_BE["3D Techniques Backend\nFastify + WebSocket"]
+        G3D_FE["3D Techniques Frontend\nBabylon.js + WebGL"]
+        
+        G3D_BE <--> G3D_FE
+    end
+    
+    subgraph ACCESS["Accessibility Modules [ORANGE]"]
+        direction TB
+        DEV["Support on All Devices\nTailwind CSS + PostCSS"]
+        BROWSER_BE["Browser Compatibility Backend\nFastify + Browserlist"]
+        BROWSER_FE["Browser Compatibility Frontend\nBabel + Polyfills"]
+        ACCESS_FE["Accessibility for Visually Impaired\nARIA + axe-core"]
+    end
+    
+    subgraph DEVOPS["DevOps Module [CYAN]"]
+        direction TB
+        MON["Monitoring System\nPrometheus + Grafana + Node Exporter\nDocker"]
+    end
+    
+    subgraph SSPONG["Server-Side Pong Module [PINK]"]
+        direction TB
+        SSP_BE["Server-Side Pong Backend\nFastify + WebSocket + OpenAPI\nCommander.js"]
+        SSP_FE["Server-Side Pong Frontend\nTailwind CSS + TypeScript\nAxios + WebSocket client"]
+        
+        SSP_BE <--> SSP_FE
+    end
+    
+    %% Cross-component interactions
+    BE <--> SUM_BE
+    BE <--> RA_BE
+    BE <--> NG_BE
+    BE <--> GC_BE
+    BE <--> AI_BE
+    BE <--> STATS_BE
+    BE <--> G3D_BE
+    BE <--> BROWSER_BE
+    BE <--> SSP_BE
+    
+    FE <--> SUM_FE
+    FE <--> RA_FE
+    FE <--> NG_FE
+    FE <--> GC_FE
+    FE <--> AI_FE
+    FE <--> STATS_FE
+    FE <--> G3D_FE
+    FE <--> DEV
+    FE <--> BROWSER_FE
+    FE <--> ACCESS_FE
+    FE <--> SSP_FE
+    
+    DB <--> SUM_BE
+    DB <--> RA_BE
+    DB <--> NG_BE
+    DB <--> GC_BE
+    DB <--> AI_BE
+    DB <--> STATS_BE
+    DB <--> G3D_BE
+    DB <--> SSP_BE
+    
+    MON --- BE
+    MON --- DB
+    
+    %% Game-specific interactions
+    SUM_BE --- NG_BE
+    SUM_BE --- AI_BE
+    SUM_BE --- STATS_BE
+    SUM_BE --- SSP_BE
+    
+    GC_BE --- NG_BE
+    GC_BE --- AI_BE
+    GC_BE --- G3D_BE
+    GC_BE --- SSP_BE
+    
+    SSP_BE --- G3D_BE
+    SSP_BE --- AI_BE
+    
+    %% Styling
+    classDef blue fill:#d4e6ff,stroke:#0066cc
+    classDef green fill:#d4ffdb,stroke:#006622
+    classDef red fill:#ffd4d4,stroke:#cc0000
+    classDef yellow fill:#ffffd4,stroke:#cccc00
+    classDef purple fill:#e6d4ff,stroke:#6600cc
+    classDef orange fill:#ffecd4,stroke:#cc6600
+    classDef cyan fill:#d4ffff,stroke:#00cccc
+    classDef pink fill:#ffd4ec,stroke:#cc0066
+    
+    class WEB blue
+    class UM green
+    class GAMEPLAY red
+    class AI yellow
+    class GRAPHICS purple
+    class ACCESS orange
+    class DEVOPS cyan
+    class SSPONG pink

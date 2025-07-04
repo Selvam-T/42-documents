@@ -1,0 +1,300 @@
+
+Server-side scripting:
+
+The web server receives a request just like any other, 
+but notes that this URL does not map to a flat file, 
+but instead somehow to a scripting area.
+
+The server then starts the script, feeding it all the information contained 
+in the request headers and URL. 
+The script then runs and produces as its output the HTML and 
+HTTP headers to be returned to the client, which the server takes care of.
+
+CGI
+CGI (Common Gateway Interface) is a way for web servers and server-side programs to interact.
+
+The server needs a way to know which URLs map to scripts and 
+which URLs just map to ordinary HTML files.
+
+------------------------------------------------
+
+Example of a CGI request-response:
+
+1)	Client request from browser navigation bar:
+	http://www.example.com/cgi-bin/process_form.cgi
+	
+2)	Server execution:
+	- executes the "process_form.cgi" script, 
+	- passing the form data (name) as environment variables.
+	
+3)	CGI script processing:
+	 - the script reads the name from the environment variables, 
+	 - generate and output the HTML code
+	 
+4)	Server delivery:
+	- server sends the generated HTML response back to the user's browser
+	
+The HTTP message received by Server application:
+-----------------------------------------------
+
+1) Assume HTTP request GET sent from browser navigation bar -
+
+	http://localhost:8080/cgi-bin/process_form.cgi
+	
+2) The HTTP message will look like this-
+
+	GET /cgi-bin/process_form.cgi HTTP/1.1
+	Host: localhost:8080
+	Connection: keep-alive
+	Cache-Control: max-age=0
+	...
+	User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) 
+		Chrome/130.0.0.0 Safari/537.36
+	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/
+		webp,image/ png,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+	...
+	Accept-Encoding: gzip, deflate, br, zstd
+	Accept-Language: en-GB,en-US;q=0.9,en;q=0.8
+	
+3) GET has no body
+
+#*****************************************************************************#
+
+Understanding 2 key points in the PDF pg 8, to be sure Python CGI libraries can be used
+---------------------------------------------------------------------------------------
+
+1) "Because you won’t call the CGI directly, use the full path as PATH_INFO."
+
+	- PATH_INFO is an environment variable that is passed to the CGI script. 
+	  It indicates additional information or the "extra path" that the CGI script 
+	  can use, such as the requested file or URL.
+   
+   	- If your server needs to execute example.py located at /var/www/cgi-bin/, 
+   	  it must set PATH_INFO to the full path (e.g., /var/www/cgi-bin/example.py), 
+   	  so the CGI script can know which file to handle.
+
+2) "Your program should call the CGI with the file requested as first argument."
+
+	- When your server executes the CGI script (using execve() or equivalent), 
+	  it should pass the requested file as the first argument.
+	  
+	- For example, if the requested file is /var/www/cgi-bin/example.py, 
+	  then your program needs to call the script with this file as the first argument.
+	  
+	  
+#*****************************************************************************#
+
+CGI Module Python 
+-----------------
+
+1) Most often, CGI scripts live in the server’s special cgi-bin directory.
+
+2)  Places all sorts of information about the request, such as 
+	- the client’s hostname, 
+	- the requested URL, 
+	- the query string, and 
+	- lots of other goodies) 
+	in the script’s shell environment, 
+	
+	- executes the script, and 
+	
+	- sends the script’s output back to the client.
+
+3) CGI provides 
+	- simpler interface to Python script
+	- utilities that help debugging scripts
+	- support for file uploads from a form
+
+4) The form data is read in 2 ways -
+	- GET method: Form data is sent in the URL query string and accessed via QUERY_STRING.
+	- You create Environment Variables (QUERY_STRING)
+	
+	- POST method: Form data is sent in the request body and read from sys.stdin.
+
+
+5) The output of a CGI script should consist of two sections
+	- a minimal header section 
+	- HTML
+
+
+6) import cgi vs import cgitb
+
+	- The cgi module is used to process form data received via GET or POST requests.
+	- It provides the cgi.FieldStorage() class to parse and extract data from the request.
+	
+	- cgitb (Debugging CGI Scripts)
+
+7) FieldStorage class
+	- is used to get at submitted form data,
+	- reads the form contents from the standard input or the environment
+	- supports the standard dictionary method keys() and 
+	  the built-in function len()
+	  
+	- fields, can be accessed through form[key]
+	- The getvalue() method returns this string value directly
+
+	- If the submitted form data contains more than one field with the same name -
+	  - form[key] returns a list of such instances
+	  - form.getvalue(key) would return a list of strings
+	  - the getlist() method, which always returns a list of values
+	  - getfirst(name, default=None) returns only one value associated with form field name
+	  
+	- If a field represents an uploaded file
+	  - test for an uploaded file by testing either the filename attribute 
+	    or the file attribute.
+	  - then read the data from the file attribute
+	  
+	- If an error is encountered when obtaining the contents of an uploaded file,
+	  done attribute of the object for the field will be set to the value -1
+	  
+	- For multipart/form-data (or multipart/*)
+	  - determined by testing its type attribute, which should be multipart/form-data
+	  - it can be iterated over recursively just like the top-level form object.
+	  
+8) A form submitted via POST that also has a query string will contain both 
+   FieldStorage and 
+   MiniFieldStorage items.
+
+9) Functions
+	
+	- cgi.parse()
+	  Parse a query in the environment or from a file
+	   
+	- cgi.parse_multipart()
+	  Parse input of type multipart/form-data (for file uploads).
+	  
+	- cgi.parse_header(string)
+	  Parse a MIME header (such as Content-Type) into a main value 
+	  and a dictionary of parameters.
+	
+	- cgi.test()
+	  Robust test CGI script, usable as main program.
+	  
+	- cgi.print_environ()
+	  Format the shell environment in HTML.
+	  
+	- cgi.print_form(form)
+	  Format a form in HTML
+	  
+	- cgi.print_directory()
+	  Format the current directory in HTML
+	  
+	- cgi.print_environ_usage()
+	  Print a list of useful (used by CGI) environment variables in HTML.
+	
+10) Check if cgi Module is Available on your machine -
+   
+    $> python3 -c "import cgi; print('CGI module is available')"
+    $> python3 --version
+
+11) Check Python Modules Manually
+    $> python3 -c "help('modules')"
+
+12) Make sure that the first line of the script contains
+    #!/usr/local/bin/python
+
+13) Make sure the Python interpreter exists and is executable by “others”.
+
+14) You should test your script from the command line:
+    if it contains a syntax error, the Python interpreter won’t execute it at all
+
+#*****************************************************************************#
+
+Example of how CGI Module would parse QUERY_STRING in URI in conjunction with Env
+---------------------------------------------------------------------------------
+1) The following header fields need to be injected into ENV
+
+POST /foo.php?someVar=123&anotherVar=TRUE HTTP/1.1
+Host: example.org
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 7
+
+foo=bar
+
+
+1) Query string or Query parameters from above is 
+	
+	someVar=123&anotherVar=TRUE
+	
+	- typically used for GET requests
+	- but they can also be included in a POST request URL.
+	
+	
+2) POST Request body parameters may contain following
+
+	foo=bar
+	
+	CGI Module extracts key value pair from the body (together with ENV as below)
+	
+	- Content-Type: application/x-www-form-urlencoded
+	- Content-Type: multipart/form-data
+	
+		//Form parameters
+		
+	- Content-Type: application/json, XML, etc.
+		
+		//Payload parameters
+		
+
+3) Server Workflow (Tentative)
+------------------------------
+
+- The web server receives the request and extracts:
+	The query string (someVar=123&anotherVar=TRUE).
+	The request body (foo=bar).
+
+- The web server (e.g., NGINX, Apache) forwards the request to PHP (via FastCGI or a module).
+
+- PHP populates:
+	$_GET from the query string.
+	$_POST from the request body.
+
+- The PHP script (foo.php) processes both sets of data separately.
+
+------------------------------------------------------------------------------------
+
+Consider parsing the entire HTTP request body in python script
+--------------------------------------------------------------
+
+- For each client request, you should know the Content-Type and what to expect in the request body.
+- You'll know in advance the order or structure of the form fields or file uploads 
+
+1) Content-Type: application/x-www-form-urlencoded
+	body:
+		firstName=SELVAM&firstName=dfdf&firstName=yghgh&lastName=dfsf&sex=male&date=2025-02-18&mobile=3533&city=234
+
+2) Content-Type: multipart/form-data; //file upload only
+
+-----------------------------158152525435053818232116696335
+Content-Disposition: form-data; name="file"; filename="testfile.txt"
+Content-Type: text/plain
+
+Selvam Testing. Line 1.
+
+line 2. end of file.
+
+-----------------------------158152525435053818232116696335--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+

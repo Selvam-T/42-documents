@@ -1,0 +1,270 @@
+Docker file
+-----------
+1) I have installed mariadb-server package
+
+	> I think I should remove this?❓
+
+	> This includes mysqld (the MariaDB daemon), 
+	  configuration files, and utilities like  
+	  mysql, mysqladmin, and mysqld_safe.
+	
+	
+2) mariadb-install-db --> 
+	 initializes the database system tables in /var/lib/mysql.
+	 
+.env
+----
+
+	password, user, root etc
+
+docker-compose
+--------------
+❓	networks is currently connected to docker_network
+	This needs change
+
+ports:
+------
+	not exposed to internet
+
+Volumes:
+-------
+❓	custom config file has changed bind = 0.0.0.0
+	but I think mariadb should only connect with wordpress on backend,
+	meaning bind = 127.0.0.1 (default).
+	That means I should not mount custom config file
+	
+How to access database in Mariadb container
+-------------------------------------------
+	1) mysql -u root -p
+
+	2) Enter password: root
+
+	3) SHOW DATABASES;
+
+	4) use mysql
+
+	5) SELECT User, Host FROM mysql.user;
+
+	6) EXIT;
+	
+Understanding MariaDB configuration variables
+---------------------------------------------
+
+> MariaDB is a fork from MYSQL image, hence it retains MYSQL prefix in variables.
+> These are the default and expected variable names in the official MariaDB 
+
+MYSQL_DATABASE: 
+	- name of a database to be created automatically when the container starts
+	
+MYSQL_USER:
+	- non-root user that will be created in the MariaDB instance
+	- requires MYSQL_PASSWORD to be set as well
+	- if both are provided, the user is created with access to the 
+	  database specified in MYSQL_DATABASE
+
+MYSQL_PASSWORD:
+	- as stated above, password for MYSQL_USER
+	
+MYSQL_ROOT_PASSWORD:
+	- password for root user of the MariaDB instance
+	
+	
+Understanding the MariaDB initialization logic
+----------------------------------------------
+- mariadb-install-db - is the tool responsible for initiliazation of Mariadb.
+- This tool is part of the Mariadb server package.
+
+- When starting up a new instace of MariaDB,
+  - it initializes MariaDB data directory, and
+  - creates the system tables in the mysql database, if it does not exist
+  - MariaDB uses these tables to manage priveleges, roles and plugins.
+    
+//- mariadb-install-db does not DB create_USER and DB_PASSWORD, 
+//  such as those defined in wp-config.php.
+//- I must run a custom script to create this.
+  
+- mariadb-install-db initialization process ensures that the database is ready to accept
+  connections and managae data.
+  
+- 1. Check data directory
+  - If /var/lib/mysql data directory exists and contains a valid database structure,
+    ex. system tables, initialization is skipped, server proceeds to start normally
+  - If the directory is empty or doesn't exist, MariaDB triggers the initialization process.
+
+- 2. Creation of System Tables
+  - create essential system tables in the mysql database schema
+  - tables stores metadata such as user privileges, database information, and server configuration
+  - mysql.user, mysql.db, mysql.tables_priv
+  
+- 3. Default User and security setup
+  - MariaDB sets up a root@localhost user with no password (older version)
+  - modern versions encourate setting a root password
+  
+- 4. File creation
+  5. Storage Engine initialization
+  6. Privilege System initialization
+  
+- How Initialization is triggered ?
+  - Docker/Containers use initialization scripts to handle this as part of the entrypoint
+  - Or manually via mariadb-install-db script with options like --datadie=/path/to/data
+  - Or Automatically by the server, when the data directory is empty as mentioned above.
+  
+- Configuration files /etc/mysql/my.cnf guides the initialization process
+
+- Post initiazation
+  - once initialized, start the server 
+  - set a root password, remove test databases, and lock down the instance ??
+  - connect using a client like mariabd or mysql to verify the setup
+
+DB_USER, DB_PASSWORD, DB_NAME, DB_HOST
+--------------------------------------
+
+- DB_USER, DB_PASSWORD credentials are added to mysql.user table 
+- CREATE USER and GRANT permissions
+- Without a valid user with proper permissions, WordPress can't 
+  authenticate with the databse
+  
+- DB_NAME
+- CREATE DATABASE
+- WordPress stores all its data (posts, pages, settings, etc) in this database
+- If the database doesn't exist WordPress can't initialize or function
+
+- DB_HOST
+- In WordPress this is the hostname/IP address where MariaDB is running
+- In Docker setup this refers to the service name of your MariaDB container
+
+- WordPress wp-config.php file must contain credentials that exactly match
+  what's configured in your MariaDB instance. 
+
+Dockerfile installations
+------------------------
+1)	RUN mariadb-install-db --datadir=/var/lib/mysql --user=mysql
+
+  	this utility is installed as part of MariaDB server package. 
+    	this utility is executed to initialize MariaDB.
+    	
+ 	--user=mysql refers to System User
+ 	don't confuse with Database User.
+  	
+  	MariaDB data directory is initialized and owned by System User.
+    	Database User is created after initialization using custom script.
+
+2)	USER mysql ❓
+
+>	(Switching to the 'mysql' user seems to prevent the entrypoint script
+	from being able to configure the system properly)
+	
+	Besides, MYSQL server itself will run as the 'mysql' user automatically
+	when you use mysqld_safe for actual database operations.
+	
+	This separation of privileges is important.
+	We need root for initial setup, but the
+	database server itself runs as 'mysql'
+	
+>	'mysql' is the 'System User' that the container runs as when it starts.
+	Changing user from 'System Root User' to 'System User' for security reasons.
+	(Again don't confuse System Root User with Database Root User)
+	
+
+	
+3)	RUN mkdir -p /run/mysqld
+	RUN chown mysql:mysql /run/mysqld
+	
+	This creates the directory needed for MySQL socket file with
+	System User 'mysql' ownership so System User can access it.
+	Why, because we are using System User 'mysql' instead of Root for security reasons. 
+	
+Check initialization is complete
+--------------------------------
+>	SHOW DATABASES; 
+
+>	USE wordpress;
+>	SHOW TABLES;
+	'wp_users' Table contains regular user information.
+	SELECT user_login, user_pass, display_name FROM wp_users;
+
+>	From WordPress container
+		mysql -u <DB_USER> -p<DB_PASSWORD> -h mariadb <DB_NAME>
+
+Check System Tables have been setup:
+------------------------------------
+>	From Mariadb container
+		mysql -u root
+>	SHOW TABLES IN mysql;
+		you should see a table 'user'
+>	SELECT User, Host FROM mysql.user;
+>	SHOW GRANTS FOR 'wordpressuser'@'%';
+>	SELECT User, authentication_string FROM mysql.user WHERE User = 'wordpressuser';
+
+Essential setup for WordPress database connectivity
+---------------------------------------------------
+
+1)	Using Docker set environment variables to pass credential to MariaDB runtime.
+
+2)	Create a initilization script and copy to container.
+	- official MariaDB Docker image includes an entrypoint script, 
+	  that runs when the container starts
+	- this script looks for docker-entrypoint-initid.d
+	- the entrypoint script initializes databse with root credentials
+	- creates specified database
+	- creates specified user
+
+Docker compose Health check vs ENTRYPOINT connection test
+---------------------------------------------------------
+Why do I need both?
+
+1. Mariadb: Health Check + Wordpress: depends_on
+
+a. Health check on Mariadb is to inform other services that depend on Mariadb
+   that Mariadb is running and ready to accept connection.
+   
+b. Health check does not inform ENTRYPOINT of mariadb anything about mariadb.
+   Therefore I must separately check again inside mariadb ENTRYPOINT if mariadb is 
+   running, before I can run sql commands to create Database.
+   
+2. Also, ENTRYPOINT wordpress checks that the Database and User are fully set up.
+   (i.e. b. is complete) before it can install wordpress, and update admin_user detail
+   in Database, wp_users table.
+   
+   There is chance of a race condition (user creation lagging behind the health check)
+   
+Mariadb User vs Admin_user vs Regular_user
+------------------------------------------
+
+Mariadb user 
+	- a database-level user stroed in mysql.user
+	- is defined at the database level in Mariadb
+	- created via ENTRYPOINT script, using init.sql in mysql
+	- the credentials must match in Mariadb's mysql.user table to connect to mariadb
+	
+Regular user
+	- WordPress-level user, stored in the wordpress database's wp_users table
+	- created vis wp core install ?
+	- Used to log into the WordPress site
+	
+docker compose image: directive related issue
+---------------------------------------------
+
+I am not required to have image: directive in docker compose because I am
+building container from scratch, with install instructions in Dockerfile.
+
+For reasons, I didn't fully understand, the Mariadb version installed during build
+is maraidb 10.5.28, the version in Debian:bullseye apt repository.
+
+But when I did docker compose build, it seems like docker compose image: directive
+has precedence over Dockerfile instrutctions, thus it seems MariaDB 10.7 is installed.
+
+This causes Mariadb to fail.
+
+Error cannot start due to incampatible redo log from mariadb 10.5.28.
+
+What this means is the persistent mysql_data volume retains data from an older MariaDB
+version 10.5.28 , leading to redo log incompatibilities.
+
+The work around is to give invalid image value from .env to docker compose. So it is forced
+to rely on instructions from Dockerfile. 
+
+When I removed the image: directive from docker-compose.yml I did not have this issue.
+
+
+

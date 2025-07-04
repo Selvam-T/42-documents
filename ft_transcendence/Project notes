@@ -1,0 +1,92 @@
+🟧 Preamable
+-----------------------------------------------------------------------------------------------
+
+- mandatory part 
+- series of modules on various topics
+
+- each module and mandatory element contains technical constraints 
+  you cannot bypass.
+
+- select the topics you like, but not technologies you like.
+
+- consider several possible strategies, think about your design, 
+  before starting coding anything.
+  
+- Some modules may depend on others, 
+  some modules may conflict with others.
+  
+- Ft_transcendence will bring many doubts and requires a lot of difficult decisions
+
+- Your project management and team management choices will strongly impact
+  your timeline and results
+
+  
+🟧 Overview
+-----------------------------------------------------------------------------------------------
+
+- user interface 
+- real-time multiplayer capabilities
+- to play Pong with all your friends
+
+Part 1) mandatory guidelines / minimum requirement / small portion of the final grade
+Part 2) additional modules / replace / complement the mandatory part.
+  
+🟧 Prohibtion questions
+-----------------------------------------------------------------------------------------------
+
+1) libraries or tools is prohibited 🔒
+	- if it provides immediate, complete solution for an entire feature or module
+   	  small libraries or tools is allowed
+   	- to solve simple, unique task representing a subcomponent of a large feature
+   	  or module
+	
+2) third party library and tools
+	- consult 'can', 'must', 'use' guideline
+
+🟧 Evaluation guidelines 
+-----------------------------------------------------------------------------------------------
+	
+- library or tools
+  	- justify use of library or tools that is not explicitly approved
+  	- is it in contradiction with the project's constraints?
+  	
+- EVALUATOR will take responsibility in determining the legitimacy of specific library or tool
+
+🟣 Setup SSH in Visual Studio running on host machine to connect to Virtual Machine 
+-----------------------------------------------------------------------------------------------
+- VS code running on host machine, will access Virtual machine to pull files using SSH
+- Virtual Machine - settings/ Network/ Port Forwarding
+	ssh		TCP	0.0.0.0		2222	0.0.0.0		22
+	transcendence	TCP	0.0.0.0		4242	0.0.0.0		4242
+- configuration of SSH on host and virtual machine, I don't remember
+- setting up of SSH connection to virtual machine, I don't remember
+
+🟢 AI Prediction, data and machine learning approach
+-----------------------------------------------------------------------------------------------
+
+<> Model needs to predict where and when the ball will arrive, so the paddle
+  can move accordingly.
+
+<> This is a deterministic game, where the outcome is entirely determined by 
+  the initial conditions and the rules, with no random elements or 
+  external factors influencing the result.
+
+1. Data Input
+   - The Frontend game is sending ball's position (x,y) and velocity(x,y)
+     to the backend every 1 sec.
+   - example payload: {x: 400, y: 200, vx:5, vy:3, wall_x: 700, height: 400}
+  	
+//2. Model Architecture
+	- train network to predict the ball's future y-position at the wall 
+	- x = 0 and x = 500 are walls, y coordinates are AI's paddle position across wall
+	
+//3. Training
+	- simulate many pong games, record (x,y, vx, vy) and the corresponding
+	  y-position where the ball hits the wall
+	  
+4. Prediction
+	- determine y-position of the collision on the wall based on data input.
+	- determine future moves for next 1 minute (how many moves?)
+	- The backend will send the AI paddle's target position to update the game.
+	- response { y_collision: 250}
+

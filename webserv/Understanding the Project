@@ -2,6 +2,9 @@ reading - https://trungams.github.io/2020-08-23-a-simple-http-server-from-scratc
 
 Write a HTTP server
 
+I assume the HTTP server is expected to be HTTP 1.1 complaint.
+Pg. 6, NGINX is HTTP 1.1 complaint, may be used to compare Headers and server behaviours.
+
 1) Read the RFC
 	RFC contains Technical and Organizational documents about the Internet
 2) Do some tests with telnet and NGINX before starting this project.
@@ -56,7 +59,7 @@ CONFIGURATION FILE
 	what is a configuration file? What does it provide
 
 EXECVE
-2) You can't execve another web server.
+2)✅ You can't execve another web server.
 	
 	When you execve a web server, you are replacing the current process with 
 	that server's process. This means your original program (which called execve) 
@@ -75,13 +78,13 @@ EXECVE
 	The project requires the program be restricted from spawning or replacing itself 
 	with a new web server process.
 	
-	Design recommended -
+✅	Design recommended -
 	------------------
 	3) Asynchronous, Non-Blocking Servers:
 	   Rather than creating a new process or thread, these servers use non-blocking I/O 
 	   and event loops to handle many requests within the same process efficiently.
 	
-3) Your server must never block and the client can be bounced properly if necessary.
+3)✅ Your server must never block and the client can be bounced properly if necessary.
 	
 	- handle multiple client requests concurrently
 	- asynchronous processing, start processing another request even if previous
@@ -89,25 +92,25 @@ EXECVE
 	- if a client cannot be handled properly, redirect or reject with errors response
 	
 POLL()
-4) It must be non-blocking and use only 1 poll() (or equivalent) for all the 
+4)✅ It must be non-blocking and use only 1 poll() (or equivalent) for all the 
    I/O operations between the client and the server (listen included).
    
-   	- Non-blocking I/O: The server won’t wait or "block" on any single I/O operation. 
+✅   	- Non-blocking I/O: The server won’t wait or "block" on any single I/O operation. 
    	(including listening). Instead, it can continue executing while awaiting input 
    	or output readiness, making it highly responsive.
 	
-	- Single poll() for all I/O: By using one poll() (or an equivalent like epoll or select), 
+✅ 	- Single poll() for all I/O: By using one poll() (or an equivalent like epoll or select), 
 	the server can check the readiness of all I/O events (connections, reads, and writes) 
 	with one system call.
 	
-	- The poll() function lets the server know which sockets are ready for action 
+✅ 	- The poll() function lets the server know which sockets are ready for action 
 	(e.g., accepting new connections or reading/writing data) without having to block 
 	or spawn multiple threads.
 
-⚠️ 	Thus, if you try to read/recv or write/send in any file descriptor
+⚠️✅  	Thus, if you try to read/recv or write/send in any file descriptor
 	without using poll() (or equivalent), your grade will be 0.
 
-5) poll() (or equivalent) must check read and write at the same time.
+5)✅ poll() (or equivalent) must check read and write at the same time.
 
 	- When you say that poll() (or its equivalent, like select() or epoll()) 
 	must check read and write at the same time, it means that the server can monitor 
@@ -119,7 +122,7 @@ POLL()
 	The server would then react based on which events occurred, allowing it to process 
 	multiple clients effectively within a single iteration of the event loop.
 
-6) You must never do a read or a write operation without going through poll() 
+6)✅ You must never do a read or a write operation without going through poll() 
    (or equivalent).
   
   	- Event-driven Architecture: Using poll() aligns with the event-driven programming model,
@@ -137,7 +140,7 @@ POLL()
   	 - Your application must loop through the fds array to identify which FDs are ready based 
   	 on their revents values.
 ERRNO 	 
-7)⚠️ Checking the value of errno is strictly forbidden after a read or a write operation.
+7)⚠️ Checking the value of errno is strictly forbidden after a read() or a write() operation.
 
 	- In non-blocking mode, checking errno may not provide reliable or meaningful 
 	information because the error states can be ambiguous or misleading.
@@ -160,7 +163,7 @@ CONFIGURATION FILE + POLL()
 	the file is available for reading, which means there's no need to check for readiness 
 	like you would with non-blocking sockets.
 
-SELECT()/MACROS
+SELECT()/MACROS ✅ (not using SELECT())
 9) You can use every macro and define like FD_SET, FD_CLR, FD_ISSET, FD_ZERO 
    (understanding what and how they do it is very useful).
    
@@ -260,8 +263,7 @@ DEFAULT ERROR PAGES
 	  
 CGI/FORK()/PYTHON, PHP SCRIPTS
 15) You can’t use fork for something else than CGI (like PHP, or Python, and so forth).
-	- highlights a guideline regarding the use of the fork() system call in server 
-	development, particularly in the context of handling requests and processes.
+
 	- In the context of Common Gateway Interface (CGI), fork() is commonly used to 
 	execute scripts (like those written in PHP or Python). When a server receives a 
 	request for a CGI script, it can use fork() to create a new process to execute 

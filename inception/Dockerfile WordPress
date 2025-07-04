@@ -1,0 +1,107 @@
+A) Package / Tool explained
+----------------------------
+
+1) wget			- to download files from the internet
+
+2) php			- PHP programming language
+			- provides PHP core components to process PHP files
+3) php-fpm		- PHP FastCGI Process Manager
+			- is a process manager for PHP
+			- is not a complete PHP installation
+			- needs PHP core installation to function
+
+4) php-mysql		- MySQL database extension
+			- installs the mysqli extension
+			- to interact with MariaDB database directly from PHP
+			- to connect to and query database
+			- execute SQL queries
+			- User Authentication
+			- Retrieving Blog posts
+			- Saving comments
+			- Managing User profiles
+			- Storing site configuration details
+5) mariadb-client	- Database connection client
+			- command-line tool for database interactions
+			- Runs outside of PHP
+			- allows direct interaction with database from shell
+			- useful for system level database management
+			- connect to database, run SQL queries, database administration
+			
+6) iputils-ping		- Network debugging (ping)
+7) iproute2		- Network configuration tools
+
+8) WordPress		- Content Management System
+9) WP-CLI		- WordPress Command Line Interface
+
+
+B) php-mysql             vs          mariadb-client
+----------------------------------------------------
+
+> Specific to PHP 		     Command-line tool for database interaction
+> Only works within PHP scripts      Allow direct database operations from the shell
+				     for debugging, setup scripts or manual intervention
+
+C) WordPress, how it works with PHP and PHP-FPM
+-----------------------------------------------
+
+- WordPress is a PHP-based Content Management System (CMS)
+- written in PHP
+- requires PHP to generate dynamic web content
+- stores content in MariaDB database
+
+- PHP interprets WordPress PHP files
+- Generates HTML dynamically
+- Processes user interactions
+- Manages database queries
+- Handles authentication
+- Renders page content
+
+- PHP-FPM is a process manager for PHP
+- Handles FastCGI requests from Nginx
+
+D) Workflow:
+------------
+
+1.	Nginx receives web request
+2.	Nginx passes PHP files to PHP-FPM
+3.	PHP-FPM spawns PHP processes
+4.	PHP interprets WordPress Code
+5.	Generates final HTML
+6.	Sends response back through Nginx to user
+
+E) www-data
+-----------
+
+>	www-data is UID 33 is default user in Debian based images.
+>	Nginx and WordPress run as as www-data
+>	www-data is standard user and group in Debian based systems created
+	specifically for web server processes like Nginx and PHP-FPM
+
+>	With permission setto r-x Nginx and WordPress is able to read files,
+	enter subdirectories like wp-admin
+
+F)	403 Forbidden issue trouble-shooting
+--------------------------------------------
+>	1. Permissions of wp-admin/index.php
+
+	Is it owned by www-data:www-data with rwxr-xr-x ?
+	
+>	2. PHP-FPM Listening / connectivity
+	
+	ss -tuln | grep 9000
+	
+	Is WordPress-php-fpm is running and listening on port 9000
+	
+>	3. Test PHP file / Nginx routing
+
+	place a test.php in wp-admin folder, navigate to 
+	https://localhost/test.php
+	
+	This confirms nginx can pass PHP requests to WordPress-php-fpm
+	
+>	4. Nginx Error log:
+
+	Look for permission denied or fastcgi errors.
+
+	
+

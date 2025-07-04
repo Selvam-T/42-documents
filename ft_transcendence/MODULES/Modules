@@ -1,0 +1,225 @@
+- 7 major modules is required.
+
+- Two Minor Modules count as one Major Module.
+
+- review each module as it may require modifications to your baseline website.
+
+🟢 Web
+-----------------------------------------------------------------------------------------------
+
+		+---------------------+       +---------------------+
+		| Backend Framework   |<----->| Frontend Framework  |
+		| (Fastify + Node.js) |       | (Tailwind + TS)     |
+		| (Backend)           |       | (Frontend)          |
+		+---------------------+       +---------------------+
+			  |                            |
+			  | Stores/Retrieves           | Displays
+			  |                            |
+			  v                            v
+		+---------------------+       +------------------------+
+		| Database            |<----->| Blockchain             |
+		| (SQLite)            |       | (Avalanche + Solidity) |
+		| (Backend)           |       | (Backend)              |
+		+---------------------+       +------------------------+
+			  ^                            |
+			  | Supports                   | Sends Data
+			  +----------------------------+
+         
+	
+🟢 User management
+-----------------------------------------------------------------------------------------------
+
+		+---------------------+       +---------------------+
+		| Standard User Mgmt  |<----->| Frontend Framework  |
+		| (Backend)           |       | (Tailwind + TS)     |
+		| - Registration      |       | (Frontend)          |
+		| - Login             |       | - User UI           |
+		| - Profiles          |       +---------------------+
+		| - Match History     |                 ^
+		+---------------------+                 |
+			  |                             |
+			  | Stores Data                 | Displays
+			  v                             |
+		+---------------------+       +---------------------+
+		| Database            |       | Remote Auth         |
+		| (SQLite)            |       | (Google Sign-in)    |
+		| (Backend)           |       | (Backend)           |
+		+---------------------+       +---------------------+
+			  ^                            |
+			  |                            | Triggers
+			  |                            v
+		+---------------------+       +---------------------+
+		| Backend Framework   |<----->| Remote Auth         |
+		| (Fastify + Node.js) |       | (Frontend)          |
+		| (Backend)           |       | - Google Sign-in UI |
+		+---------------------+       +---------------------+
+			  |
+			  | Links Scores
+			  v
+		+------------------------+
+		| Blockchain             |
+		| (Avalanche + Solidity) |
+		| (Backend)              |
+		+------------------------+
+
+🟢 AI
+-----------------------------------------------------------------------------------------------
+
+		+---------------------+       +---------------------+
+		| AI Opponent         |<----->| Frontend Framework  |
+		| (Backend)           |       | (Tailwind + TS)     |
+		| - AI Logic          |       | (Frontend)          |
+		| - Simulated Inputs  |       | - AI Paddle UI      |
+		+---------------------+       | - Dashboards UI     |
+			  |                   +---------------------+
+			  | Stores Outcomes            | Renders
+			  v                            |
+		+---------------------+       +---------------------+
+		| Database            |<----->| User/Game Stats     |
+		| (SQLite)            |       | Dashboards          |
+		| (Backend)           |       | (Backend)           |
+		+---------------------+       | - Stats Retrieval   |
+			  ^                    +--------------------+
+			  |                            |
+			  | Provides Data              | Fetches Data
+			  |                            v
+		+---------------------+       +---------------------+
+		| Backend Framework   |<----->| Standard User Mgmt  |
+		| (Fastify + Node.js) |       | (Backend)           |
+		| (Backend)           |       | - User Profiles     |
+		+---------------------+       +---------------------+
+			  |                            |
+			  | Uses Power-ups             | Links Scores
+			  v                            v
+		+---------------------+       +------------------------+
+		| Game Customization  |       | Blockchain             |
+		| (Optional)          |       | (Avalanche + Solidity) |
+		+---------------------+       +------------------------+
+		
+🟢 Gameplay and user experience
+-----------------------------------------------------------------------------------------------
+
+		+---------------------+       +---------------------+
+		| Remote Players      |<----->| Frontend Framework  |
+		| (Backend)           |       | (Tailwind + TS)     |
+		| - Network Sync      |       | (Frontend)          |
+		+---------------------+       | - Game UI           |
+		 	  |      	      +---------------------+
+			  |                            | - Chat UI           |
+			  v                            |
+		+---------------------+       +---------------------+
+		| Database            |<----->| Multiple Players    |
+		| (SQLite)            |       | (Backend)           |
+		| (Backend)           |       | - 3+ Players        |
+		+---------------------+       +---------------------+
+			  ^                            |
+			  | Stores Data                | Extends
+			  |                            v
+		+---------------------+       +---------------------+
+		| New Game            |<----->| Game Customization  |
+		| (Backend)           |       | (Backend)           |
+		| - Game Logic        |       | - Power-ups, Maps   |
+		| - Matchmaking       |       +---------------------+
+		+---------------------+                 |
+			  |                             | Applies
+			  v                             |
+		+---------------------+       +---------------------+
+		| Standard User Mgmt  |<----->| Live Chat           |
+		| (Backend)           |       | (Backend)           |
+		| - User Profiles     |       | - Messaging         |
+		+---------------------+       | - Game Invites      |
+		          |	              +---------------------+
+			  |                            |
+			  | Links Scores               | Notifies
+			  v                            v
+		+------------------------+    +---------------------+
+		| Blockchain             |    | Backend Framework   |
+		| (Avalanche + Solidity) |    | (Fastify + Node.js) |
+		+------------------------+    +---------------------+
+			  ^
+			  | Uses Power-ups
+			  v
+		+---------------------+
+		| AI Opponent         |
+		| (Backend)           |
+		+---------------------+
+
+	
+🟢 Graphics
+-----------------------------------------------------------------------------------------------
+
+		+---------------------+       +---------------------+
+		| Adv. 3D Techniques  |<----->| Frontend Framework  |
+		| (Frontend)          |       | (Tailwind + TS)     |
+		| - Babylon.js 3D     |       | (Frontend)          |
+		| - Immersive UI      |       | - Menus, HUD        |
+		+---------------------+       +---------------------+
+			  |                            |
+			  | Requests State             | Renders
+			  v                            |
+		+---------------------+       +---------------------+
+		| Adv. 3D Techniques  |<----->| Game Customization  |
+		| (Backend)           |       | (Backend)           |
+		| - Game State        |       | - 3D Maps, Power-ups|
+		+---------------------+       +---------------------+
+			  |                            |
+			  | Stores Outcomes            | Applies
+			  v                            |
+		+---------------------+       +---------------------+
+		| Database            |<----->| Remote/Multi Players|
+		| (SQLite)            |       | (Backend)           |
+		| (Backend)           |       | - Sync 3D Gameplay  |
+		+---------------------+       +---------------------+
+			  |                            |
+			  | Links Profiles             | Uses APIs
+			  v                            v
+		+---------------------+       +---------------------+
+		| Standard User Mgmt  |<----->| Backend Framework   |
+		| (Backend)           |       | (Fastify + Node.js) |
+		| - User Profiles     |       | (Backend)           |
+		+---------------------+       +---------------------+
+
+	
+🟢 Accessibility
+-----------------------------------------------------------------------------------------------	
+
+		+---------------------+       +---------------------+
+		| Support All Devices |<----->| Frontend Framework  |
+		| (Frontend)          |       | (Tailwind + TS)     |
+		| - Responsive Design |       | (Frontend)          |
+		+---------------------+       | - Accessible UI     |
+			  |		      +---------------------+
+			  |                            |
+			  | Adapts Visuals             | Renders
+			  v                            |
+		+---------------------+       +---------------------+
+		| Graphics            |<----->| Browser Compat.     |
+		| (Frontend)          |       | (Frontend)          |
+		| - 3D Visuals        |       | - Add’l Browser     |
+		+---------------------+       +---------------------+
+			  |                            |
+			  | Ensures Accessibility      | Uses APIs
+			  v                            v
+		+---------------------+       +---------------------+
+		| Accessibility VI    |<----->| Multi-Language      |
+		| (Frontend)          |       | (Backend)           |
+		| - Screen Readers    |       | - 3+ Languages      |
+		| - High Contrast     |       +---------------------+
+		+---------------------+                 |
+			  |                             | Stores Preferences
+			  | Renders                     v
+		+---------------------+       +---------------------+
+		| SSR Integration     |<----->| Database            |
+		| (Backend)           |       | (SQLite)            |
+		| - Pre-render HTML   |       | (Backend)           |
+		+---------------------+       +---------------------+
+			  |                            |
+			  | Uses APIs                  | Links Profiles
+			  v                            v
+		+---------------------+       +---------------------+
+		| Backend Framework   |<----->| Standard User Mgmt  |
+		| (Fastify + Node.js) |       | (Backend)           |
+		| (Backend)           |       | - User Profiles     |
+		+---------------------+       +---------------------+	
+				
+

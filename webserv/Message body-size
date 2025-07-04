@@ -1,0 +1,44 @@
+
+How to determine message body size
+----------------------------------
+1) When a message does not have a Transfer-Encoding header field, 
+	a Content-Length header field can provide the anticipated size,
+	as a decimal number of octets, for potential content.
+	
+2) For messages that do include content, 
+	the Content-Length field value provides the framing information necessary 
+	for determining where the data (and message) ends. 
+
+  For messages that do not include content, 
+  	the Content-Length indicates the size of the selected representation.
+  
+  	
+Psuedo code for determining body length (based on RFC 9112, 6.3)
+----------------------------------------------------------------
+
+if (Transfer-Encoding header is present) {
+    if (Transfer-Encoding is "chunked") {
+        read body as a series of chunks until a zero-length chunk is found
+    } else {
+        // Unsupported transfer encoding
+        throw error: "Unsupported Transfer-Encoding"
+    }
+} else if (Content-Length header is present) {
+    content_length = parse Content-Length header value
+    if (content_length < 0) {
+        throw error: "Invalid Content-Length"
+    }
+    read content_length bytes from the message body
+} else if (Request is a GET, HEAD, DELETE, or CONNECT method) {
+    // No message body for these request types
+    body_length = 0
+} else if (Response has status code 1xx, 204, or 304) {
+    // No message body for these response types
+    body_length = 0
+} else if (Response uses HTTP/1.1 and has no Content-Length or Transfer-Encoding) {
+    // Read until the connection is closed (HTTP/1.1 without body delimiters)
+    read until connection close
+} else {
+    // Unknown situation, throw an error or close connection
+    throw error: "Unable to determine body length"
+}

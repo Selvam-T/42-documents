@@ -81,3 +81,11 @@ POST is used for the following functions (among others):
 	The server might then return this ID and location in the response.
 
 4)	Appending data to a resource’s existing representation(s).
+
+
+DELETE:
+------
+
+Read stackoverflow - Status code when deleting a resource using HTTP DELETE for the 2nd time:
+
+https://stackoverflow.com/questions/6439416/status-code-when-deleting-a-resource-using-http-delete-for-the-second-time

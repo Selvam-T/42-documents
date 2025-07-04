@@ -1,0 +1,73 @@
+non-blocking vs select() vs recv() return -1 vs errno EAGAIN / EWOULDBLOCK
+---------------------------------------------------------------------------
+non-blocking	you could set socket to non-blocking using fnctl()
+		or set argument to MSG_NOTWAIT in read(), recv() or send()
+		
+Assume you set either socket or function to non-blocking.
+
+recv() function in blocking mode returns
+	> 0 if there is data
+	= 0 if client disconnected
+	< 0 if error occured (fatal errors)
+	
+recv() function in non-blocking mode returns
+	> 0 if there is data
+	= 0 if client disconnected
+	< 0 if error occured (no data or fatal errors)
+		no data, errno is EAGAIN, EWOULDBLOCK
+
+but if you use select, recv() in non-blocking, there would not be EAGAIN, EWOULDBLOCK errno
+	therefore, it would become redundant to check if EAGAIN, EWOULDBLOCK error occured if
+	recv() returned < 0
+	
+To further understand this read below.
+
+Blocking Behavior Without MSG_DONTWAIT:
+----------------------------------------
+By default, your socket is blocking (no fcntl() with O_NONBLOCK).
+recv(client_fd, buf, BUFFER_SIZE - 1, 0) waits indefinitely for data or connection closure, 
+appearing to "not wait" if data is sent immediately by the client (e.g., nc 127.0.0.1 8081).
+
+Non-Blocking with MSG_DONTWAIT:
+------------------------------
+Using recv(client_fd, buf, BUFFER_SIZE - 1, MSG_DONTWAIT) makes the call non-blocking.
+If no data is available (e.g., waiting in netcat without sending), recv() returns -1 with 
+errno set to EAGAIN/EWOULDBLOCK ("Resource temporarily unavailable").
+
+Interpreting -1 Return Value:
+-----------------------------
+Question: Can -1 from recv() with MSG_DONTWAIT only mean no data if not checking errno?
+
+Answer: No, -1 can also indicate fatal errors (e.g., ECONNRESET, EBADF, EINTR), 
+even if data was sent.
+Assuming it only means "no data" is unsafe without errno checks.
+
+Fatal errors (e.g., connection reset) can occur even with data in the buffer, 
+requiring proper error handling.
+
+Keep client connected or disconnect the client?
+-----------------------------------------------
+To keep the application running until the client disconnects (recv() returns 0):
+Handle bytes_read > 0 (process data), 
+bytes_read == 0 (close socket), 
+and bytes_read < 0 (check errno).
+For EAGAIN/EWOULDBLOCK, continue processing; 
+for fatal errors (e.g., ECONNRESET), close the socket.
+
+Blindly continuing on -1 without checking errno risks ignoring fatal errors, 
+leading to undefined behavior.
+
+Using select() with MSG_DONTWAIT:
+--------------------------------
+
+Question: If select() marks a socket as readable (blocking socket) and recv() uses MSG_DONTWAIT, 
+is checking EAGAIN/EWOULDBLOCK redundant?
+
+Answer: Typically, recv() won’t return -1 with EAGAIN/EWOULDBLOCK because select() ensures 
+data is available or an error exists. However, rare edge cases (e.g., race conditions) 
+may still cause EAGAIN. Thus, checking errno for EAGAIN/EWOULDBLOCK is not entirely redundant 
+but less critical.
+
+-1 is more likely to indicate fatal errors (e.g., ECONNRESET, EBADF), 
+but robust code should handle EAGAIN/EWOULDBLOCK to ensure reliability.
+

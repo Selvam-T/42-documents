@@ -1,0 +1,80 @@
+[] Dockerfile is processed first during the image build. 
+	- It sets up directories, installs software, and configures the environment.
+	- Dockerfile sets up the filesystem and permissions
+	
+	- create directories and set permissions in your Dockerfile
+	  
+	  Example:
+	  RUN mkdir -p /var/www/html /var/log/nginx && \
+    		chown -R www-data:www-data /var/www/html /var/log/nginx && \
+    		chmod -R 755 /var/www/html /var/log/nginx
+	  
+	
+[] nginx.conf is processed when the container starts. 
+	- It loads NGINX configurations and applies settings.
+	- nginx.conf defines how NGINX behaves at runtime.
+	
+	- You can declare access_log and error_log Globally inside HTTP block
+	- all servers inherit these log settings.
+	
+	http {
+    		access_log /var/log/nginx/access.log;
+    		error_log /var/log/nginx/error.log warn;
+    		...
+    	}
+    	
+    	- You can override logs inside individual server blocks if needed:
+    	- Use global logs if all servers should log to the same file.\
+    	- Use per-server logs for better separation and debugging when handling multiple domains.
+    	
+    	http {
+    		server {
+		    listen 80;
+		    root /var/www/html;
+		    access_log /var/log/nginx/site1_access.log;
+		    error_log /var/log/nginx/site1_error.log warn;
+		}
+	}
+
+[] For PHP-FPM configuation file see below.
+	
+------------------------------------------------------------------------------------------
+
+[] Example of PHP-FPM Configuration file:
+
+- Global settings → /etc/php/{version}/fpm/php-fpm.conf
+- Per pool settings → /etc/php/{version}/fpm/pool.d/www.conf
+
+- PHP-FPM logs are configured in the PHP-FPM configuration file.
+
+	; Error log file for PHP-FPM
+	error_log = /var/log/php7.4-fpm.log
+
+	; Access log (logs requests handled by PHP-FPM)
+	access.log = /var/log/php7.4-fpm-access.log
+
+	; Slow log (logs slow requests, useful for debugging)
+	slowlog = /var/log/php7.4-fpm-slow.log
+	request_slowlog_timeout = 5s
+
+	; Enable logging of pool activity
+	access.format = "%R - %u %t \"%m %r%Q%q\" %s %f %{mili}d %{kilo}M %C%%"
+	
+--------------------------------------------------------------------------------------------
+
+[] PHP and PHP-FPM have separate configuration files:
+
+> PHP Configuration File (php.ini)
+
+Located in /etc/php/{version}/cli/php.ini (for CLI)
+Located in /etc/php/{version}/fpm/php.ini (for PHP-FPM)
+
+Controls core PHP settings like memory_limit, max_execution_time, upload_max_filesize, etc.
+
+> PHP-FPM Configuration Files
+
+Global settings → /etc/php/{version}/fpm/php-fpm.conf
+Per pool settings → /etc/php/{version}/fpm/pool.d/www.conf
+
+Controls process management, logging, timeouts, and pool-specific settings.
+

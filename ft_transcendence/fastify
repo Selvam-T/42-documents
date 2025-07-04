@@ -1,0 +1,228 @@
+
+
+1) cd project
+
+2) npm init
+
+	package.json
+	
+3) npm run test
+
+4) npm install fastify
+
+	package-lock.json
+	
+5) npm install @fastify/static
+
+6) node server.js
+
+
+🟧 1. Arrow Function
+-----------------------------------------------------------------------------------------------
+
+const logX = (x) => {
+  console.log(x);
+};
+
+logX('hello'); // prints "hello"
+
+
+🟧 2. Regular Function Expression
+-----------------------------------------------------------------------------------------------
+
+const logX = function(x) {
+  console.log(x);
+};
+
+logX('hello'); // prints "hello"
+
+
+🟧 3. Named Function Declaration
+-----------------------------------------------------------------------------------------------
+
+function logX(x) {
+  console.log(x);
+}
+
+logX('hello'); // prints "hello"
+
+
+🟧 4. Async Arrow Function
+-----------------------------------------------------------------------------------------------
+
+const logX = async (x) => {
+  console.log(x);
+};
+
+logX('hello'); // prints "hello"
+
+
+🟧 5. Async Regular Function
+-----------------------------------------------------------------------------------------------
+
+async function logX(x) {
+  console.log(x);
+}
+
+logX('hello'); // prints "hello"
+
+
+🟧 6. Class Method
+-----------------------------------------------------------------------------------------------
+
+class Logger {
+  static logX(x) {
+    console.log(x);
+  }
+}
+
+Logger.logX('hello'); // prints "hello"
+
+
+🟢 Fastify server setup for a Single Page Application (SPA)
+-----------------------------------------------------------------------------------------------
+
+1) Import Fastify:
+
+	The Fastify web framework is imported to create the web server.
+
+2) Import Path module:
+
+	The path module is imported to handle file paths, ensuring compatibility across 
+	different operating systems when serving static files.
+
+3) Import fastifyStatic plugin:
+
+	This plugin is imported to serve static files (like images, stylesheets, 
+	JavaScript files, etc.) in the application.
+
+4) Create Fastify instance:
+
+	A new Fastify instance is created with logging enabled. 
+	This instance will handle all the incoming requests and route them accordingly.
+
+5) Register static file serving plugin:
+
+	The fastifyStatic plugin is registered to serve static files. 
+	The root directory for static files is set to a "public" folder in the 
+	current working directory, and files are served with the /public prefix.
+
+6) Register custom 404 handler plugin:
+
+	A custom handler is registered to catch all unmatched routes (404 errors). 
+	When no route matches, it serves index.html to allow the frontend to take over the routing.
+	
+	- This is not meant to show an error page.
+	- It’s meant for Single Page Apps (SPAs) like React, Vue, or Angular.
+
+	- In SPAs, routes like /about, /profile/123 are handled on the frontend, not by the backend.
+
+	- So if you refresh or directly access /profile/123, Fastify doesn’t know that route — 
+	  it thinks it's a 404.
+
+	- But instead of error, we serve index.html so the frontend router can take over.
+
+7) Serve homepage:
+
+	A route is set up for the root path (/), and when accessed, it sends 
+	the index.html file as the response. This is the entry point for the frontend app.
+
+8) Serve API route:
+
+	An API route /api/message is created that sends a JSON response with a simple message, 
+	showing how the backend can serve API data.
+
+9) Start the Fastify server:
+
+	The server is started, listening on port 3000. If there’s any error during the startup, 
+	it logs the error and stops the process.
+	
+
+🟢 Fastify styles of route declaration
+-----------------------------------------------------------------------------------------------
+
+1. Standard fastify.route()
+
+	fastify.route({
+	  method: 'GET',
+	  url: '/user',
+	  handler: async (request, reply) => {
+	    return { hello: 'user' };
+	  }
+	});
+	
+2. Shortcut methods (fastify.get(), .post(), etc.)
+
+	fastify.get('/user', async (request, reply) => {
+	  //return { hello: 'user' }; //or
+	  reply.code(200).send({ hello: 'user' }):
+	});
+	
+3. Plugin-based / Modular routing
+
+	// routes/userRoute.js
+	module.exports = async function (fastify, opts) {
+	  fastify.get('/user', async (request, reply) => {
+	    //return { hello: 'user' };// or
+	    reply
+	    	.code(200)
+	    	.send({ hello: 'user' });
+	};
+	
+4.  Route prefixing with fastify.register()
+
+	// main.js
+	fastify.register(require('./routes/userRoute'), { prefix: '/api' });
+
+	// routes/userRoute.js
+	module.exports = async function (fastify, opts) {
+	  fastify.get('/user', async (request, reply) => {
+	    return { hello: 'user' };
+	  });
+	};
+
+5. When is each preferred?
+
+1. fastify.route()		Full control (schema, multiple methods, etc.)
+2. fastify.get/post/...()	Clean, fast syntax for basic routes
+3. Plugin-based routing		Large projects, modular design
+4. Route prefixing		Grouped paths, versioning, organized structure
+
+
+🟢 database.js
+-----------------------------------------------------------------------------------------------
+
+1.	Import sqlite
+	- lets you connect to and interact with a local SQLite database
+	- SQLite is embedded, file-based DB
+	- saves data in a local file
+	- security - file level access control
+	
+2.	import bycrypt 
+
+	- for passsword security, stores hashed version, not plain text
+	
+3.	create SQLite database file users.db
+
+	const db = new sqlite('users.db');
+	- establishes the database connection
+	
+4.	create tables
+
+	- intialize the schema so users can be added and retrieved
+	
+5.	create User (name, password)
+	
+	- Hash the password using bycrypt.hash()
+	- insert new user into the users table
+
+6.	getAllUsers()
+
+	- fetch all user records from the database and return them as an array
+	- to display user data in the /users view
+
+🟣 Fastify route options of interest
+-----------------------------------------------------------------------------------------------
+
+preValidation(request, reply done) - useful if you need to perform authentication at route level
+

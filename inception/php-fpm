@@ -1,0 +1,282 @@
+
+> PHP-FPM is a separate server-side process manager — it is not embedded in NGINX or PHP.
+
+> PHP-FPM is bundled with PHP but runs as a separate daemon (background process).
+
+> NGINX does not include PHP-FPM; it only acts as a reverse proxy that forwards 
+  PHP requests to PHP-FPM.
+
+> PHP core includes a built-in server, not suitable for production, 
+	limited to execute one single request at a time, and 
+	lacking in security, scaling and so on.
+
+> Therefore, PHP relies on an additional component, PHP-FPM, 
+	for managing multiple processes and ultimately on Nginx to 
+	efficiently serve web applications.
+
+> PHP-FPM: The FastCGI Process Manager
+	- spawnS multiple workers, which can handle multiple requests simultaneously
+	- PHP-FPM cannot directly manage incoming HTTP traffic
+	- relies on a web server to act as a reverse proxy
+
+> Nginx handles incoming HTTP requests from clients, 
+	forwards these requests to PHP-FPM, 
+	and returns the appropriate responses back to the client.
+
+------------------------------------------------------------------------------
+> Does PHP-FPM Run in the Container Without PHP Installed?
+
+No, PHP-FPM requires PHP to process PHP scripts.
+PHP-FPM is just a FastCGI process manager—it doesn’t include the core PHP runtime. 
+You must install php along with php-fpm for it to work properly.
+
+Although I did not install PHP core separately, PHP is installed in the container.
+This comes from the default package provided by the Debian bullseye. When you
+install php-fpm and php-mysql, Debian automatically installs the default PHP version.
+
+------------------------------------------------------------------------------
+
+PHP-mysql vs mysqli:
+
+Wordpress doesn't use php-mysql extention anymore.
+
+Wordpress uses mysqli by default, improved extension for MYSQL databases.
+MariaDB is fully compatible with mysqli.
+
+To check if mysqli is installed
+
+$>php -m | grep mysqli
+
+------------------------------------------------------------------------------	
+
+> PHP CLI (Command Line Interface) Usage
+> ❓ do I need to install this?
+
+PHP CLI (Command Line Interface) is used to run PHP scripts from the terminal 
+instead of a web server.
+
+1)	Running PHP Scripts Manually
+	
+	php script.php
+
+2)	Debugging & Testing Code
+
+	php -r 'echo "Hello, CLI!\n";'
+	
+3) 	Running PHP-Based Command-Line Applications
+
+4)	Managing Databases
+
+------------------------------------------------------------------------------
+
+Updating listen directive in default www.conf
+---------------------------------------------
+
+1) Dockerfile option:
+
+   RUN echo "listen = 0.0.0.0:9000" >> /etc/php/8.2/pool.d/www,conf
+   
+   Listen directive already defined, so duplicate listen directive can 
+   cause PHP-FPM to fail.
+   
+2) Replace default www.conf in container with custom www.conf from host
+
+   Unless the custom www.conf replicates all the necessary defaults, 
+   risks losing defaults, this could break PHP-FPM.
+   
+3) Separate custom www.conf not replace default www.conf
+   PHP-FPM reads all .conf files in pool.d/
+   Settings in custom.conf override matching directive in www.conf
+   due to later parsing. This keeps the original intact.
+   
+   Ensure [WWW] matches the pool name in www.conf
+
+3) Dockerfile correct option:
+  
+   RUN sed -i 's/listen = .*/listen = 0.0.0.0:9000/' /etc/php/8.2/pool.d/www.conf
+
+------------------------------------------------------------------------------
+
+Port 9000:
+---------
+
+1)	Don't expose 9000 in wordpress service in docker-compose.yml
+	It is internal to app-network.
+	Nginx accesses it via wordpress:9000 as stated in Nginx configuration file.
+	
+2)	No external mapping needed.
+
+------------------------------------------------------------------------------
+
+
+CGI vs FastCGI
+--------------
+
+Traditional CGI (Common Gateway Interface)
+	- when a web server receives an HTTP request that points to a CGI script
+	- it launches a new process to execute that script specifically for that request
+	- this process is then terminated once the response is sent back to the client. 
+	
+FastCGI
+	- instead of firing up a process with every request, the necessary service 
+	  is initialized and kept running in the background 
+	- so it's ready to handle requests immediately without the overhead 
+	  of starting a new process for each incoming request, 
+	- resulting in faster response times and more efficient resource utilization. 
+	
+	- FastCGI also stops using operating system pipes and 
+	  environment variables for communication and instead 
+	- multiplexes all of this information over a TCP connection. 
+	- This means that your web server and application are now location independent 
+	  and can be running on different machines.
+
+------------------------------------------------------------------------------
+Tuning PHP-FPM
+
+>	Process Manager Strategies: On-demand, Static, and Dynamic
+
+	Process manager is responsible for controlling the pool of workers
+	- It determines how these workers are created, maintained, and terminated 
+	  based on the chosen strategy and configuration settings.
+	- (don't confuse PHP-FPM workers with nginx workers)
+	
+	- The process manager strategy impacts the potential usage of server resources 
+	  such as CPU, memory, and network bandwidth.
+	  
+
+Tuning Nginx
+	
+>	worker_processes: directive specifies the number of Nginx worker processes 
+		that will be spawned to handle a pool of connections
+>	worker_connections: directive determines the maximum number of simultaneous connections 
+	 	that can be handled by each worker process. 
+
+------------------------------------------------------------------------------
+Monitoring and Troubleshooting
+
+>	Nginx Log files:
+	- Access logs record all incoming requests,
+	- error logs contain information about issues related to the Nginx server.
+	- Analyzing these logs can help you identify issues with your 
+		server configuration, 
+		resource usage, or 
+		performance bottlenecks.
+	
+	- Enable status module in Nginx configuration.
+		- Access realtime information about NGINX server
+			- number of active connections
+			- accepted connections
+			- handled requests
+			
+			
+>	PHP-FPM Log Files contains errors and warnings related to PHP application.
+	
+	Enable status page in your PHP-FPM configuration.
+		- Access real-time information on 
+		- Active processes
+		- Idle processes
+		- Requests in the queue
+------------------------------------------------------------------------------
+The configuration files for PHP-FPM (FastCGI Process Manager) is typically located at:
+
+How did I change listen port value to 9000?
+- The method discussed below in 3) didn't work. So amended it to www.conf in Dockerfile.
+- I don't know if this is elegant.
+	In Dockerfile for WP add -
+	RUN echo "listen = 127.0.0.1:9000" >> /etc/php/7.4/fpm/pool.d/www.conf
+
+
+1)	php.ini (/etc/php/X.X/fpm/php.ini)
+	
+	- General PHP settings like memory limits, execution time, and file uploads.
+	
+	memory_limit = 256M
+	max_execution_time = 300
+	upload_max_filesize = 100M
+	post_max_size = 100M
+	
+	-> I think I DON'T need to modify this.
+
+2)	php-fpm.conf (/etc/php/X.X/fpm/php-fpm.conf)
+	
+	- Global PHP-FPM settings affecting all worker pools.
+	  
+	  including the process manager settings, error logging, and 
+	  other general options.
+	
+	error_log = /var/log/php-fpm.log
+	include=/etc/php/X.X/fpm/pool.d/*.conf
+
+	-> I think I have no need to modify this. If any I can add to custom.conf
+	 
+3)	www.conf (/etc/php/X.X/fpm/pool.d/www.conf)
+
+	- Per-worker pool configuration (e.g., process management, listening mode).
+	  including how many worker processes should be spawned and 
+	  what user/group they should run as.
+	  
+	listen = 9000
+	user = www-data
+	
+	pm = dynamic
+	pm.max_children = 10
+	pm.start_servers = 3
+	pm.min_spare_servers = 2
+	pm.max_spare_servers = 5
+	
+	-> originally, listen = /run/php/php8.2-fpm.sock, this mean NGINX must be configured
+	   to pass PHP requests to this socket.
+	   But, if NGINX and PHP-FPM run in different Docker containers, you should use a 
+	   TCP port (listen = 9000), as UNIX sockets are not accessible across containers.
+	
+	   add listen = 9000 in custom.conf to override just this directive
+	   
+	   add user = whatever in custom.conf if you want to replace www-data
+	   
+	-> see above in php-fpm.conf, directive 'include' will include all *.conf from this folder
+
+------------------------------------------------------------------------------
+
+PHP-FPM tests (from inside WordPress container)
+-----------------------------------------------
+
+1) PHP-FPM Configuration Verification:
+	
+   Config File: /etc/php/7.4/fpm/pool.d/www.conf confirms listen = 0.0.0.0:9000.
+   
+❓ Main Config: /etc/php/7.4/fpm/php-fpm.conf has error_log = /var/log/php7.4-fpm.log, 
+   	but daemonize = yes is commented (defaults to yes), which may cause issues in Docker 
+   	(fixed by setting daemonize = no).
+   	
+2) PHP-FPM Process Check
+
+   Command: ps aux | grep php-fpm
+   
+   Result: PHP-FPM is running with a master process (php-fpm: master process) 
+   	   and two worker pools (php-fpm: pool www) under www-data.
+   	   
+3) Port Binding Check:
+  
+   Command: ss -tuln | grep 9000
+           
+4) Local PHP-FPM Connectivity (WordPress Container):
+
+   Command: curl -v http://localhost:9000
+   
+   Test PHP File: Not yet tested (recommended: create test.php with phpinfo()).
+
+5) Nginx to PHP-FPM Connectivity (Nginx Container):
+   
+   Command: curl -v http://wordpress:9000
+
+
+6) PHP-FPM Log Check:
+   
+   Command: cat /var/log/php7.4-fpm.log
+
+7) PHP-FPM Config Test:
+
+   Command: /usr/sbin/php-fpm7.4 -t
+
+	
+	

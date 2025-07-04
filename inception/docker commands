@@ -1,0 +1,182 @@
+
+1) Check if Docker is installed and running:
+	
+	docker --version
+	
+2) docker build -t test .
+	//  build an image from a Dockerfile.
+	// tag it with name 'test'
+	// . is the directory where you find Dockerfile and dependencies
+	
+Note: This builds a Docker image, not a container.
+      You have named the image 'test'.
+      This image can later be used to create containers.
+      
+      Docker image is stored in Docker's internal filesystem, /var/lib/docker/
+      It is not stored in your local directory.
+
+3) docker images
+	// show docker images
+	
+4) docker rmi <image_id>
+	//remove image
+	
+   vs
+   docker rm <container_id>
+   	//remove container
+   	
+   You cannot remove an image if a container exists created from that image.
+
+5) docker run -it test 
+	// -i run interactively from an image, run in the background
+	//   keep's the container's standard input open
+	// -t simulate a terminal session, make it possible to interact 
+	//   using terninal inside the container
+	
+Note: This command starts the container, which launches NGINX inside the container.
+      You have started the container, NGINX inside it is running.
+(Assuming the Dockerfile installed NGINX, and had command to launch NGINX)
+
+
+6) docker run -it -p 8085:80 test
+	// start a new container from test 'image'
+	// -p map ports between host machine and Docker container
+	// 8085 local machine, 80 inside the container
+	// 80 on local machine is privileged port, another service could be using it
+	
+Note: See note above.
+
+7) docker run -d -p 8085:80 test
+	// run a Docker container from the test image in detached mode
+	// also perform port mapping
+
+8) docker run -d -p 8080:80 nginx
+   	
+   	// We instruct docker to pull nginx image from Docker Hub, 
+   	// if it already doesn't exist, build the container, 
+   	// and start the container.		
+   	
+9) docker ps -a
+	// list  all Docker containers running and stopped
+	
+10) docker ps
+	// only running Docker containers
+	
+11) docker exec -it <container_id> bash 
+	// start an interactive Bash shell inside a running Docker container
+
+12) docker logs <container_id>
+	// retrieves the logs for a container on container ID
+
+13) docker system prune
+	// Removes all unused data such as stopped containers, unused networks, 
+	   dangling images, and build cache.
+
+14) To start a container.
+	docker start <container_id>
+	
+15) To stop a container.
+
+	docker stop <container_id>
+	
+  	Force Removal (if it’s still running):
+  
+  	docker rm -f <container_id>
+
+16) Stop all running containers, remove all container instance, then remove image
+
+	docker ps -a --filter "ancestor=image_name" \
+	-q | xargs docker stop \
+	| xargs docker rm \
+	&& docker rmi image_name
+
+16) docker run vs docker start commands
+	docker run = create + start; 
+	docker start = just start an existing one.
+	
+   whereas, docker-compose up command
+   	starts all containers defined in docker-compose.yml
+   	
+   while, docker exec command
+   	does not start or create containers; 
+   	it simply executes commands inside a running container.
+
+---------------------------------------------------------------------------------
+ 	
+16) To create and start a container from the downloaded NGINX image:
+    ---------------------------------------------------------------
+
+>	docker run -d -p 8080:80 --name my_nginx -v \
+		/home/sthiagar/webserv/nginx.conf:/etc/nginx/nginx.conf nginx
+	
+	
+	-p 8080:80 	--> Maps port 8080 on your local machine to port 80 inside the container, 
+			    so you can access NGINX at http://localhost:8080.
+	--name my_nginx	--> custom name given to the running container instance
+	
+	-v 		--> flag in Docker is used to mount a volume (or bind mount) 
+			    from your local machine into the container.
+	
+	/home/sthiagar/webserv/nginx.conf --> local configuration file to replace default file
+	
+	/etc/nginx/nginx.conf --> container’s default configuration path for NGINX 
+
+	nginx --> at the end you see nginx, this is the name of the Docker image.
+		  Docker will look for an image named nginx (from Docker Hub or 
+		  your local image cache) and use it to create the container.
+		  
+
+17) Type following in browser
+	1) http://localhost/
+	
+	display the html page provided at location / in the nginx.conf file
+	
+	2) http://localhost/hello
+	
+	display the html page provided at location /hello if there is one
+	
+-----------------------------------------------------------------------------------
+
+Example: Dockerfile for inception
+
+FROM debian
+
+RUN apt update && apt upgrade -y
+
+RUN apt install nginx -y
+
+EXPOSE 80
+
+CMD ["nginx", "-g" , "daemon off;"]
+
+-----------------------------------------------------------------------------------
+Example: Dockerfile to run webserv
+~ the below Dockerfile may have errors
+
+FROM debian
+
+RUN apt update && apt upgrade -y
+
+RUN apt install clang make: -y
+
+WORKDIR /webserv
+
+COPY . .
+
+RUN make debug
+
+-----------------------------------------------------------------------------------
+
+1) docker build -t webserv .
+
+2) docker run -d -p 8085:8085  webserv:latest
+
+3) docker ps
+
+4) docker exec -it 989d24a9d410 bash
+	root@989d24a9d410:/webserv# is bash command line
+	
+5) root@989d24a9d410:/webserv# ls
+
+6) root@989d24a9d410:/webserv# ./webserv 8086
+

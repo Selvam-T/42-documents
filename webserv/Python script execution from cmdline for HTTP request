@@ -1,0 +1,16 @@
+Test py script from command line on HTTP request messages
+
+1) Get HTTP message for the HTML request
+
+2) export following Header fields as environment variables
+
+	export CONTENT_LENGTH=83
+	export CONTENT_TYPE=application/x-www-form-urlencoded
+	export REQUEST_METHOD=POST
+	
+3) echo HTTP body as input to STDIN of py script
+
+	echo "firstName=John&lastName=Doe&sex=male&date=1990-01-01&mobile=1234567890&city=NewYork" | ./submit-form.py
+	
+	
+	

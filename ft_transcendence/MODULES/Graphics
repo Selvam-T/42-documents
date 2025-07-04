@@ -1,0 +1,104 @@
+🟢 Graphics
+-----------------------------------------------------------------------------------------------
+
+Implementing Advanced 3D Techniques (Frontend, with Backend support): 
+
+Enhances the Pong game with advanced 3D graphics using Babylon.js for an immersive experience.
+
+Nodes (Modules/Components):
+---------------------------
+
+> Advanced 3D Techniques (Frontend):
+	Description: 
+	Renders the Pong game with 3D graphics using Babylon.js, creating stunning visual effects 
+	and an immersive UI.
+	
+	Implementation: 
+	Frontend.
+
+> Advanced 3D Techniques (Backend):
+	Description: 
+	Supports 3D gameplay by processing game state (e.g., ball/paddle positions) 
+	and ensuring compatibility with Babylon.js rendering.
+
+	Implementation: 
+	Backend.
+	
+> Frontend Framework (Tailwind CSS + TypeScript):
+	Description: 
+	Provides the UI framework for integrating Babylon.js and styling non-3D elements 
+	(e.g., menus, HUD).
+
+	Implementation: 
+	Frontend (from Web modules).
+	
+> Backend Framework (Fastify with Node.js):
+
+	Description: 
+	Provides APIs/WebSockets for real-time game state updates to support 3D gameplay.
+	
+	Implementation: 
+	Backend (from Web modules).
+	
+> Database (SQLite):
+
+	Description: 
+	Stores game session data (e.g., match outcomes) linked to 3D gameplay.
+
+	Implementation: 
+	Backend (from Web modules).
+	
+> Standard User Management:
+
+	Description: 
+	Links user profiles to 3D game sessions (e.g., stats, history).
+
+	Implementation: 
+	Backend (from User Management modules).
+	
+> Remote Players/Multiple Players:
+
+	Description: 
+	Ensures 3D graphics support remote and multiplayer gameplay with synchronized visuals.
+
+	Implementation: 
+	Backend and Frontend (from Gameplay and User Experience modules).
+
+> Game Customization Options:
+
+	Description: 
+	Applies customization (e.g., 3D maps, visual power-ups) to the 3D game.
+
+	Implementation: 
+	Backend and Frontend (from Gameplay and User Experience modules).
+	
+	
+Connections (Interdependencies):
+--------------------------------
+
+> Advanced 3D Techniques (Frontend) → Frontend Framework:
+	The 3D graphics (Babylon.js) integrate with Tailwind CSS + TypeScript 
+	for UI rendering (e.g., menus, HUD).
+	
+> Advanced 3D Techniques (Frontend) → Advanced 3D Techniques (Backend):
+	The frontend requests real-time game state (e.g., ball/paddle positions) from the 
+	backend to render 3D visuals.
+	
+> Advanced 3D Techniques (Backend) → Backend Framework:
+	Uses Fastify APIs/WebSockets to process and send game state updates for 3D rendering.
+
+> Advanced 3D Techniques (Backend) → Database:
+	Stores 3D game session outcomes (e.g., match results) in SQLite.
+
+> Advanced 3D Techniques (Backend) → Standard User Management:
+	Links 3D game sessions to user profiles for stats and history tracking.
+
+> Advanced 3D Techniques (Backend) → Remote Players/Multiple Players:
+	Ensures game state synchronization for remote/multiplayer 3D gameplay.
+
+> Advanced 3D Techniques (Backend) → Game Customization Options:
+	Applies customization settings (e.g., 3D maps, visual power-ups) to the 3D game.
+
+> Advanced 3D Techniques (Frontend) → Game Customization Options:
+	Renders customized 3D visuals (e.g., power-up effects, map designs) 
+	based on user settings.

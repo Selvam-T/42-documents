@@ -1,0 +1,136 @@
+	
+🟢 User management
+-----------------------------------------------------------------------------------------------
+
+		+---------------------+       +---------------------+
+		| Standard User Mgmt  |<----->| Frontend Framework  |
+		| (Backend)           |       | (Tailwind + TS)     |
+		| - Registration      |       | (Frontend)          |
+		| - Login             |       | - User UI           |
+		| - Profiles          |       +---------------------+
+		| - Match History     |                 ^
+		+---------------------+                 |
+			  |                             |
+			  | Stores Data                 | Displays
+			  v                             |
+		+---------------------+       +---------------------+
+		| Database            |       | Remote Auth         |
+		| (SQLite)            |       | (Google Sign-in)    |
+		| (Backend)           |       | (Backend)           |
+		+---------------------+       +---------------------+
+			  ^                            |
+			  |                            | Triggers
+			  |                            v
+		+---------------------+       +---------------------+
+		| Backend Framework   |<----->| Remote Auth         |
+		| (Fastify + Node.js) |       | (Frontend)          |
+		| (Backend)           |       | - Google Sign-in UI |
+		+---------------------+       +---------------------+
+			  |
+			  | Links Scores
+			  v
+		+------------------------+
+		| Blockchain             |
+		| (Avalanche + Solidity) |
+		| (Backend)              |
+		+------------------------+
+
+
+The flowchart represents the User Management modules and their interdependencies within the Pong platform. 
+
+It includes two major modules:
+-----------------------------
+
+Standard User Management, Authentication, and Users Across Tournaments 
+	(Backend and Frontend): 
+	Handles user registration, login, profiles, and tournament participation.
+
+Remote Authentication (Google Sign-in) (Backend and Frontend): 
+	Implements secure Google Sign-in for user authentication.
+
+Modules (Nodes):
+---------------
+
+Standard User Management (Backend and Frontend):
+	Backend: Manages user data (e.g., registration, login, profiles, match history) and 
+		stores it in the database (SQLite, as per Web modules).
+
+	Frontend: Provides user interfaces for registration, login, profile updates, 
+		avatar uploads, friend management, and viewing stats/match history.
+
+Remote Authentication (Google Sign-in) (Backend and Frontend):
+	Backend: Integrates with Google’s authentication API, handles token exchange, 
+		and validates user credentials.
+
+	Frontend: Displays the Google Sign-in button and manages the login flow UI.
+
+Database (SQLite) (Backend, from Web modules): 
+	Stores user data (e.g., usernames, emails, avatars, match history).
+
+Backend Framework (Fastify with Node.js) (Backend, from Web modules): 
+	Provides APIs for user management and authentication.
+
+Frontend Framework (Tailwind CSS + TypeScript) (Frontend, from Web modules): 
+	Renders user management interfaces.
+
+Blockchain (Avalanche + Solidity) (Backend, from Web modules): 
+	Stores tournament scores, linked to user profiles.
+
+
+Interdependencies (Arrows):
+---------------------------
+
+Standard User Management (Backend) → Database: 
+	Stores user data (e.g., profiles, match history) in SQLite.
+
+Standard User Management (Backend) → Backend Framework: 
+	Uses Fastify APIs to handle user requests (e.g., login, profile updates).
+
+Standard User Management (Frontend) → Standard User Management (Backend): 
+	Frontend sends user inputs (e.g., login credentials, profile updates) to backend APIs.
+
+Standard User Management (Backend) → Blockchain: 
+	Links user profiles to tournament scores stored on Avalanche.
+
+Remote Authentication (Backend) → Standard User Management (Backend): 
+	Google Sign-in creates or links user accounts in the Standard User Management system.
+
+Remote Authentication (Backend) → Backend Framework: 
+	Uses Fastify to integrate Google’s authentication API and handle token exchange.
+
+Remote Authentication (Frontend) → Remote Authentication (Backend): 
+	Frontend triggers Google Sign-in and receives authentication tokens.
+
+Standard User Management (Frontend) → Frontend Framework: 
+	Uses Tailwind CSS + TypeScript for UI rendering.
+
+Remote Authentication (Frontend) → Frontend Framework: 
+	Displays Google Sign-in button and login flow UI.
+	
+
+Implementation Details:
+-----------------------
+Standard User Management:
+	Backend: 
+		Handles secure registration, login, profile updates, avatar uploads, 
+		friend management, and match history. 
+		Requires duplicate username/email handling (e.g., unique constraints in SQLite).
+		
+	Frontend: 
+		Provides user-friendly interfaces for all features, styled with Tailwind CSS 
+		and scripted with TypeScript.
+		
+	Remote Authentication:
+		Backend: Integrates Google Sign-in API, manages secure token exchange, and 
+		links Google accounts to user profiles.
+	
+		Frontend: Displays a Google Sign-in button and handles the login flow UI.
+
+Interdependencies:
+
+	Both modules rely heavily on the Backend Framework (Fastify) for API support 
+		and the Frontend Framework (Tailwind CSS + TypeScript) for UI.
+	The Database (SQLite) is critical for storing user data.
+	
+	The Blockchain (Avalanche) links tournament scores to user profiles, 
+		requiring integration with Standard User Management.

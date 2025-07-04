@@ -44,14 +44,14 @@
 	
 2)	Dog and Cat -
 	1) private member attribute -
-		Brain* _brain;
+		Brain* _brain; 
 		
 	2) constructor has -
 		new Brain();
 		
 	3) destructor delete the brain -
-		//delete [] _brain; //incorrect _brain is a pointer (pointing to static array).
-		delete _brain;
+		//delete [] _brain; //incorrect 
+		delete _brain;// correct because _brain is a pointer (pointing to static array).
 	
 3)	In main() -
 	1) 	pg 7. create array of Animal objects. (see below*)
@@ -150,7 +150,8 @@ Example Usage    | x[0]->makeSound(); 	          	 |x[0]->makeSound();
 	- Check Class name changed to AAnimal (suggested convention pg.9)
 	- Has Pure Virtual function such as 
 		virtual void makeSound() const = 0;
-	- no constructors because it can't be instantiated ?
+	- no constructors because it can't be instantiated ? Wrong !
+	- Make the constructors private, although destructor is public virtual.
 	- virtual destructor required, to delete pointer to the base class.
 		because in main() we declare pointers of AAnimal type
 		

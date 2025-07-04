@@ -1,0 +1,174 @@
+Project requirements:
+--------------------
+1) Pg 5. For performance matters, the containers must be built either from the 
+	penultimate stable version of Alpine or Debian.
+	
+Does it mean Virtual Machine Host OS can ONLY be Alpine or Debian?
+- No. 
+- The host OS (where Docker runs) can still be Ubuntu, as it only provides the platform 
+  for running Docker. The host OS doesn't dictate the base images used in your containers.
+
+- When building your Docker images for NGINX, WordPress + PHP-FPM, and MariaDB, 
+  you must use a Debian or Alpine base image (not Ubuntu). 
+
+2) We are not allowed to use nginx image.
+	We are required to build, i.e we start from base image.
+
+A) What is Docker:
+------------------
+
+- Docker is simply a tool for creating and managing containers.
+
+- Docker has two concepts that are useful to understand: 
+	- the Dockerfile 
+	- and Docker Images.
+
+- A Dockerfile contains the set of instructions for building a Docker Image.
+  
+- A Docker Image serves as a template for creating Docker containers. 
+
+- Although in this project you are required to build container, and not create nginx from 
+  nginx image pulled from Docker Hub, I think you can pull base images ex: Debian that is 
+  a necessary component of nginx. I don't believe you can build everything from scratch
+  without pulling necessary underlying elements from Docker Hub
+  
+Example:
+
+	# Use an official Node.js runtime as a parent image (.js is java script)
+	FROM node:18
+
+	# Set the working directory in the container
+	WORKDIR /app
+
+	# Copy package.json and package-lock.json to install dependencies
+	COPY package*.json ./
+
+	# Install dependencies
+	RUN npm install
+
+	# Copy the rest of the application code to the container
+	COPY . .
+
+	# Expose the port the app runs on
+	EXPOSE 3000
+
+	# Define the command to run the application
+	CMD ["node", "app.js"]
+	
+Explanation:
+
+	FROM node:18: Specifies the base image (Node.js version 18) from which this 
+	Docker image will be built.
+	
+	WORKDIR /app: Sets /app as the working directory within the container.
+	
+	COPY package*.json ./: Copies package.json and package-lock.json files to the 
+	working directory to install dependencies separately (better caching).
+	
+	RUN npm install: Installs the project dependencies defined in package.json.
+	
+	COPY . .: Copies the entire project folder (current directory) to the 
+	container’s /app directory.
+	
+	EXPOSE 3000: Specifies that the container will listen on port 3000 at runtime.
+	
+	CMD ["node", "app.js"]: Defines the command to start the Node.js application 
+	(app.js in this case).
+
+B) What is Container:
+---------------------
+
+- A container is a lightweight, standalone, and executable software package 
+  that includes everything needed to run a piece of software, including 
+  - the code, runtime, system tools, libraries and Settings (Configuration).
+  	
+  - code: application’s source files or compiled binaries.
+  - runtime: interpreter or compiler required to execute the code
+  - system tools: utilities and commands provided by the operating system 
+    (like grep, sed, or curl on Linux) that applications may rely on to 
+    perform certain tasks.
+  - libraries: pre-written code that applications use to perform common tasks, 
+    such as handling JSON, managing databases, or creating user interfaces.
+-   Settings (Configuration): Settings or configuration files define specific 
+    parameters and environment variables that the application needs, such as 
+    database credentials, API keys, port numbers, and environment-specific options.
+  
+  - Containers are designed to isolate applications and their dependencies, ensuring 
+    that they can run consistently across different environments. Whether the application 
+    is running from your computer or in the cloud, the application behaviour remains the same.
+
+  - Containers can be created and managed by multiple tools or containerization platforms 
+    (not just Docker), such as Podman, LXC (Linux Containers), and Kubernetes. 
+    They provides the tools and services necessary for building, running, and deploying 
+    containerised applications. 
+
+Docker Container:
+-----------------
+
+- A Docker container is a container that is specifically created and managed by Docker.
+
+- A container is not an image, but a live instance created from that image.
+
+- Docker container contains all the necessary code, runtime, system tools, libraries, 
+  and settings required to run a software application.
+
+How does nginx image become a container?
+----------------------------------------
+
+1) To pull nginx image from docker hub.
+	docker pull nginx
+	
+2) Create and start a container
+	docker run -d -p 8080:80 nginx	//in this case I am not mounting my confiq file 
+	
+3) If you don't "docker pull nginx", docker run command will automatically pull nginx first.
+   Docker keeps tracks of images you have already pulled in its local image cache.
+   If an image with the same name and tag exists locally, Docker uses it instead of pulling it again.
+
+What is a container image published on Docker Hub composed of?
+---------------------------------------------------------------
+Example: 
+	WordPress image is composed of multiple layers that include everything needed 
+	to run the application.
+
+1) A lightweight OS layer, typically based on Debian, Alpine, or Ubuntu.
+
+2) WordPress Source Code
+	- Pre-installed WordPress files
+	- Default themes and plugins, often included to help with the initial setup.
+
+3) Application Runtime:
+	- PHP and necessary PHP extensions (e.g., mysqli, gd, curl).
+	- Web server software such as Apache or an option for FastCGI Process Manager (FPM).
+	
+4) Configuration Files: 
+	- Preconfigured settings for PHP, Apache, or NGINX (if included)
+	- Environment variable support for database connection settings 
+	(e.g., WORDPRESS_DB_HOST, WORDPRESS_DB_USER).
+	
+5) Entrypoint Script:
+	- A script that runs when the container starts to set up the environment, 
+	configure WordPress settings, and launch necessary services.
+	- Example: docker-entrypoint.sh that ensures database connection and 
+	initializes the setup.
+	
+6) Dependencies:
+	- Required system packages such as curl, tar, gzip, and mysql-client 
+	to interact with external services.
+	- Custom scripts for health checks or automatic updates.
+7) Metadata and Labels:
+	- Instructions for default exposed ports (e.g., EXPOSE 80 for HTTP).	
+
+8) Each layer is cached to optimize builds and updates.
+
+	
+C) Docker compose:
+------------------
+
+- Containers should follow the single responsibility principle. 
+  Each container should run a single service or application.
+
+- For multiple services, use tools like Docker Compose to orchestrate containers.
+
+
+

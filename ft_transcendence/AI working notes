@@ -1,0 +1,190 @@
+🟢 Game Architecture Overview (game.ts)
+-----------------------------------------------------------------------------------------------
+
+├── Constants and Dimensions
+├── Game Loop and Update Mechanics
+├── Class Responsibilities
+│   ├── Game
+│   ├── Paddle
+│   └── Ball
+└── State & Events Management
+
+
+🟢 Understanding SPEED in the game
+-----------------------------------------------------------------------------------------------
+
+GAME_SPEED = 4 x 60 
+
+	> Base movement rate = 4  
+	i.e, 4 Pixels per frame.
+	
+	Paddle moves 4 pixels per key press.
+	
+	Why 4?
+	Different games use different values depending on gameplay requirements.
+	Based on playtesting 4 pixels per frame is smoother, 1 is sluggish, 
+		10 has precise positioning difficulty.	
+
+	> Target_FPS = 60
+	60 Frames per second.
+	Therefore 1 Frame lasts 1 / 60 secs, 
+	i.e 16.7 milliseconds approx.
+
+
+	> GAME_SPEED: 4 pixels x 60 secs.
+	            i.e., 240 pixels / second.
+
+PADDLE_SPEED 
+	- initialized to GAME_SPEED
+	- does not increment
+	- helps to move paddle 'up' or 'down' by constant number of pixels per frame
+	- varies between '+' and '-' constant value to move 'up' and 'down'
+	
+BALL_INITIAL_SPEED 
+	- initialized to GAME_SPEED
+	- base speed of the ball
+	- applied as velocity factor for ball
+	
+speedMultiplier
+	- multiplier or scaling factor
+	- increments by multiples of 0.02 for ball
+	- does not increment for paddle
+	- used to increment the velocity of the ball movement
+	- used to change direction of paddle movement
+	
+
+🟢 Fixed timestep loop
+-----------------------------------------------------------------------------------------------
+- Common pattern in game programming
+- if (deltaTime > this.frameInterval / 1000) 
+	to ensure the game doesn't update too quickly
+
+
+🟣 What do I need to keep track of ?
+-----------------------------------------------------------------------------------------------
+
+1) Paddle position: origin points (x, y)
+	- where x value is fixed for both players. Player 1, x = 10, Player 2, x = 480.
+	- Jason has given a 10 px space between wall and paddle. 
+
+2) Paddle dimension: 
+	- paddle with it's dimension of 10 x 50, when placed on origin points 10 x 250, 
+	  will define the area it occupies on the canvas [10 - 20, 250 - 300]
+	
+3) Ball position: logically same as above
+4) Ball Dimension: logically same as above
+
+5) Is there a collision on the AI wall? 
+
+6) What is the point of collision, (x, y) points ? 
+   X - axis is fixed at player 1 : 10, player 2: 480
+       don't need to know where it lands on wall, because when it hits wall it is not
+       deflected, game starts fresh.
+   Y - axis 
+
+9) When is ball position updated?
+   When is ball velocity updated?
+   When is paddle position updated?
+
+🟢 AI paddle deflection logic
+-----------------------------------------------------------------------------------------------
+
+1) 	Say y = 200 is the predicted collision point on wall or y-axis of canvas. 
+
+a)	Do I move a segment of paddle to y = 200 for a desired deflection? or
+b)	Do I adjust the predicted collision point on wall to align with a segment of the paddle 
+	for a desired deflection?
+	
+	I choose (a) because the logic is reflected on the paddle, self explanatory.
+	
+2) 	What is the logic for selecing the deflection point on AI paddle to AI's advantage?
+	- PADDLE_DEFLECTION_FACTOR = [0.2, 0.4, 0.6, 0.8];
+	- PADDLE_DEFLECTION = [-0.8, -0.6, -0.4, -0.2, 0.2, 0.4, 0.6, 0.8]
+
+	This means Paddle is divided into 8 segements, 
+	each segment from top to bottom has these ratio.
+
+3)	How do these ratio translate to angle?
+	So, upon contact with the paddle, 
+	- the ball reverses direction, achieved by reversing the sign of vel.x 
+	  additionally, the speed along x is increased by a speedMultiplier value
+	- the ball also goes up or down along the y-axis, this is achieved by setting
+	  vel.y as a proportion of vel.x using the deflection value.
+	  i.e. vel.y = 0.8 * vel.x, where 0.8 is the deflection value of segment 1 of paddle.
+
+
+🟢 AI Prediction, data and machine learning approach
+-----------------------------------------------------------------------------------------------
+> AI logic to be a function call
+> Maintain in-memory array, avoid database latency.
+
+1) Similuation based prediction
+2) Physics based prediction
+3) machine learning based prediction
+
+🟣 Consideration 1: My approach to implement AI-ALGO
+-----------------------------------------------------------------------------------------------
+
+> Calculating ball trajectory using formulas is just physics, not real AI.
+
+> AI, you want to learn patterns from past ball movements (including bounces ?) to predict
+  where the ball will go based on real game data.
+  
+> Does AI use A* algorithm or its alternative used to find the shortest path 
+  from one point to another?
+  - Yes these algorithms are foundational in game AI, robotics, navigation etc.
+  - Is great from grid-based movement. 
+  - Pong has no graph of nodes or paths, movement is continous, not discrete.
+
+> Yes, if you define AI as anything that enables machine to make 'intelligent' decisions
+  then it is. But they follow a fixed logic, no experience is gathered or used.
+  
+> No, if you are talking about AI in the modern sense (learning from data, adapting over
+  time), these algorithms are not leaning based.
+ 
+
+🟣 Tips 💡
+----------
+🚀 > When gathering data, the game must be set to super slow speed, so I can capture
+  data in quick succession before bouncing off ceiling or floor.
+  
+🚀 > How can I determine if ball bounced of ceiling?
+  We know max pixels along x and y axis. If xi > xi+1 <= xi+2 then we know xi+2 is moving
+  in opposite direction. Notice <= because xi+2 after bounce can happen to be on the same
+  x axis, but clearly a different y axis.
+
+🚀 > I don't think I need to need if ball bounced off a ceiling or floor ?
+ 
+🚀 > Physics is symmetric in pong, flip the data when the ball travels left --> right, 
+  in addition to right --> left, to double the data we have.
+
+🚀 > Similarly there is symmetry in ball movement top --> bottom, bottom --> top
+
+🚀 > Rebound velocity: 
+  the walls are made of same materials as ceiling and floor, so they have same rebound velocity.
+  If walls are concrete and floor is grass the rebound velocity is different in each.
+  
+
+🟢 a) Paddle Boundary violation check vs b) Paddle Stop logic
+-----------------------------------------------------------------------------------------------
+
+a and b are Seperate logic
+
+a)	- Boundary on y-axis is [0 to 500]
+	- Therefore paddle position after incrementing or decrementing cannot go outside the range.
+	- It is an illegal state to go outside the range.
+	- Boundary violation is not a condition to stop()
+	- You don't want to stop() at 0 or 500, you don't want paddle position to even have values
+	  outside of the range. Therefore you want to correct the paddle position. 
+	
+b) 	- Avoid paddle jitter movement
+	- jitter happens due to overshoot of paddle postion past paddleTarget, then in the next
+	  iteration it paddle position corrects to a position below paddleTarget, and it jitters
+	  because it is never on the mark.
+	- So create a "dead zone" around this.pos.y — basically saying:
+	  "if the target is close enough (within ±segmentHalf), just stop."
+	- paddle will stop moving if the target is within ±segmentHalf pixels of the current position.
+	- This helps avoid unnecessary movement when you're already "close enough".
+
+
+  

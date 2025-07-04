@@ -1,0 +1,55 @@
+Purpose of the Makefile in This Project:
+---------------------------------------
+'make' is a build automation tool program, works by reading Makefile.
+
+The Makefile is a tool for automating tasks like running Docker Compose commands.
+The developer can include additional checks and validations to ensure that 
+everything is working correctly.
+	
+Makefile Structure:
+------------------
+
+1)	# Project Variables
+
+execute docker-compose commands
+2)	# build: 
+		- executes the docker-compose build command
+		- If the build fails, Docker Compose will exit with a non-zero status code, 
+		- and the Makefile will stop at that point
+		- validate if images were built
+
+3)	# up: 
+		- Start the services
+		- I donot run clean: before up:
+		
+4)	# down:
+		- Stop and remove services
+		
+5)	# clean:
+		- Clean up containers, images, and volumes
+		
+6)	# logs:
+		- Check logs
+		
+7)	# update:
+		- Update images and rebuild
+		- I do not down: the container can keep running.
+		- the update comes into effect only if I stop and start
+
+Diagnostics:
+8)	# network:
+	1) Displays networks
+	2) Lists Containers and IP connected to custom network
+	So in effect this test alone determines all containers are running 
+	and connected to each other.
+	
+9)	# ping
+	ping each other
+	
+Additional, combined with some commands above
+		
+1)	# check_volumes:
+
+2)	# validate_container_configurations:
+
+4) 	# Validate TLS settings in NGINX

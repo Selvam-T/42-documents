@@ -1,0 +1,211 @@
+Virtual Machine
+---------------
+
+To check tools available related to VM
+
+1) Check I have VirtualBox on command line.
+
+	$> lsmod | grep kvm
+	
+	If it lists kvm or kvm_intel means it is installed and running
+
+
+2) VirtualBox version
+	
+	$> vboxmanage --version
+	
+	The commands returned command not found, indicating those hypervisors are not present.
+	
+3) $>  egrep -o '(vmx|svm)' /proc/cpuinfo
+	
+	The egrep command output vmx, confirming that your system supports 
+	Intel Virtualization Technology (VT-x). 
+	
+	This is necessary for running virtual machines.
+
+4) $> ps -e | grep -iE 'qemu|kvm|vbox|vmware|virt'
+
+	The process libvirtd is running, indicating that KVM (Kernel-based Virtual Machine) 
+	is installed or supported on your system. 
+	libvirtd is the daemon for managing virtualization tools, 
+	commonly used with KVM and QEMU.
+	
+-------------------------------------------------------------------------------------------------	
+1) Virtual Machine manager says QEMU/KVM not connected
+	
+	Ensure libvirtd Service is Running
+	
+	I don't have sudo right to start libvirtd
+	
+I was advised to look for computers that have virtualbox
+-------------------------------------------------------------------------------------------------
+
+1) Download ubuntu desktop ISO image. VM OS (Host OS)
+	%> lscpu
+	
+	The Architecture says x86_64, therefore my machine supports 64-bit, 
+	and I should use the AMD64 image.
+	
+	%> egrep -o '(vmx|svm)' /proc/cpuinfo
+	
+	output shows vmx (Intel), therefore the processor can run 64-bit virtual machines.
+	
+2) I downloaded Ubuntu 22.04.5 LTS (Jammy Jellyfish) Desktop ISO Image. 
+	Features:
+	- GNOME 42 Desktop Environment (for Desktop) - Graphical user interface
+		- Files(file manager)
+		- Terminal(command line)
+		- Settings(system settings)
+		- Software(app store)
+	- Linux Kernel 5.15
+	- Server Features - includes container deployment Docker
+	- Compatible with container-related tools like Docker compose and container runtimes
+	- TLS Support
+		example - TLSv1.2 and TLSv1.3, for configuring secure connections
+			with NGINX or Docker container networking
+	- NGINX, WordPress, MariaDB compatible
+	- Docker Networking
+		- bridge networks, overlay networks, and custom DNS setups for
+		inter-container communication
+	- Volumes and Data Management
+		- filesystem(with EXT4 and overlay2) is optimized for Docker volumes,
+		ensuring smooth handling of WordPress files and MariaDB database.
+		
+3) download ISO image into home/sgoinfre folder. File size is 5.9 GB
+	- google/settings/download/change folder
+	
+-------------------------------------------------------------------------------------------------
+
+4) When I launched Virtualbox application I got error message.
+	
+	1) Can't enumerate USB devices ...
+	
+	I ignored it, because I don't need USB.
+	
+5) 	Select New
+	Name: UbuntuVM
+	Folder: /home/sthiagar/sgoinfre/VM
+		create VM folder in sginfre 
+		do not create in your home
+	
+⭐	Username: sthiagar
+⭐	Password: inception123
+	
+	Hardware Base_memory: 10240 MB (10 GB)
+				Although 4 GB is recommended
+
+	Processor: 7
+	
+	Disk size: 125 GB
+	
+6)	Ubuntu Account
+	
+⭐	Name: sthiagar
+⭐	computer-name : sthiagar-VirtualBox
+⭐	Username: sthiagar
+⭐	Password: inception123
+	
+	Let it install. Restart.
+	
+7) Once you are in VM
+	Open Terminal right-click
+	
+	$> sudo apt update
+	$> sudo apt upgrade
+	$> sudo usermod -aG sudo sthiagar
+		to add sudo permission
+	//if I have to remove it for whatever reasons
+	$> sudo usermod -rG sudo sthiagar
+	
+8) Test network
+	$> ping -c 4 google.com
+	If you receive responses, your VM has an active internet connection. 
+	If not, check your VirtualBox network settings.
+	
+9) Github setup
+
+Ping	$> ping -c 4 github.com
+	
+Intall	$> sudo apt install git -y
+
+verson	$> git --version
+
+- Configure Git with your Github credentials
+	git config --global user.name "YourGitHubUsername"
+	git config --global user.email "youremail@example.com"
+
+- Generate SSH key 
+	$> ssh-keygen
+	Key saved in file in /home/sthiagar/.ssh/id_ed25519
+	
+	$> cat /home/sthiagar/.ssh/id_ed25519.pub
+
+- Add Public key to Github
+
+	- Github/ settings/ SSH nad GPG keys
+	- Add a New SSH Key
+	
+- Verify the connection
+	$> ssh -T git@github.com
+	It will display a message. Ask to enter yes/no: type 'yes'
+	
+	No Shell Access is allowed. You can't execute commands directly on GitHub's servers.
+	BUt you can use SSH for tasks like
+		- Cloning repositories
+		- Pushing changes to repo
+		- Pulling changes from repo
+		- Managing your GitHub account via git commands 
+10) Install Make
+	sudo apt-get update
+	sudo apt-get install make
+	
+11) Install on Ubuntu 
+
+	1) Docker Engine (to run containers)
+	
+	- visit docker.com
+	  Look up Install Docker Engine on Ubuntu
+	- Install using the apt repository
+	- It has 2 parts to it
+		1) add Docker's GPG keyring to apt repository, so that it can 
+		   install the latest version
+		2) Install the docker package, using sudo
+		
+	$> sudo apt-get install docker-ce docker-ce-cli \
+		containerd.io docker-buildx-plugin docker-compose-plugin
+		
+	- When you install docker using sudo,
+		- it adds your regular user to docker group
+		- the UNIX socket /var/run/docker.sock is owned by root and docker group
+		
+	- If you install as regular user, then $USER may not added to docker group
+		- so permission is denied to communicate with Docker daemon via UNIX socket
+		- then you may need to add your user to docker group
+			sudo usermod -aG docker $USER
+		- Log out and back in
+		- verify with groups to see docker in the list
+
+	2) Docker Compose (to manage multi-container applications)
+    	
+    	sudo apt-get instal docker-compose
+    	
+    	but I installed a plugin, not as standalone as suggested above.
+    	
+    	docker-compose vs docker compose
+    	--------------    ------ -------
+    	docker-compose is standalone. 
+    	It is installed separately from the Docker Engine.
+    	It is a separate binary, that communicates with the Docker daemon via API
+    	
+    	docker compose (no hyphen) is integrated directly into the Docker CLI as a plugin.
+    	It is a sub command of the docker CLI, not a separate tool.		
+	
+*************************************** end of VM ***********************************************
+
+
+1) Create the Directory structure as in pg.9
+
+-------------------------------------------------------------------------------------------------
+1) for nginx configuration file sample
+
+	cat /etc/nginx/sites-available/default

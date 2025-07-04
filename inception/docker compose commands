@@ -1,0 +1,117 @@
+image: directive
+----------------
+I added image: directive to docker-compose.yml.
+Mistake. 
+docker-compose overrides Dockerfile with directive attributes during build.
+In Dockerfile I install mariadb from debian:bullseye apt repository.
+I checked the version of mariadb installed it is 10.5.xx
+When I docker compose up and down services, mariadb does not start, becuase
+it seems the mariabdb version installed is different, 10.7 ? And this seems
+to be because docker-compose.yml image: directive takes precedence over Dockerfile,
+and it installs the mariabd image from dockerhub, the latest version?
+Something about the redo log being incompatible, thus mariadb does not start.
+
+
+Commands for command line:
+-------------------------
+
+a) Build the NGINX image and start the container
+	
+	docker-compose up --build
+	
+b) Start the NGINX container (without rebuilding)
+
+	docker-compose up -d
+	
+c) Rebuild the image without starting it
+
+	docker-compose build
+
+	
+a) Check the status of containers
+
+	docker-compose ps
+	
+
+a) Stop the running NGINX container
+
+	docker-compose stop
+	
+b) Restart the NGINX container
+
+	docker-compose restart
+	
+c) Stop and remove containers, networks, and volumes
+
+	docker-compose down
+	
+
+a) View NGINX logs in real-time	
+
+	docker-compose logs -f nginx
+	
+
+a) Start only the NGINX service
+
+	docker-compose up -d nginx
+	
+b) Stop only the NGINX service
+
+	docker-compose stop nginx
+	
+c) Restart only the NGINX service
+	
+	docker-compose restart nginx
+	
+	
+a) Open an interactive shell inside the NGINX container
+
+	docker-compose exec nginx /bin/sh
+	
+b) Run a command inside the NGINX container
+
+	docker-compose exec nginx nginx -t
+	
+
+a) Remove stopped containers and unused images
+
+	docker system prune -a	
+	
+
+Directives in Compose.yml:
+--------------------------
+
+Secrets:
+	- Values are exposed as files in the container's filesystem.
+	- Available as file contents at /run/secrets/<secret name>
+	- Docker mounts these as in-memory (tmpfs) files when the container starts,
+	  and they are only accessible if explicitly referenced in the services.
+	  secrets: subkey
+	  
+Environment:
+	- Automatically available to all processes in the container via the environment.
+	
+
+General guideline for ordering of directives:
+--------------------------------------------
+
+1)	Version:
+2)	Services:
+3)?	Service_name:
+4)	image:
+5)	build:
+6)	depends_on:
+7)	networks:
+8)	ports:
+9)	volumes:
+10)	environment:
+11)	env_file:
+12)	restart:
+13)	container_name:
+14)?	command:
+15)?	entrypoint:
+16)?	user:
+17)?	working_dir:
+18)?	labels:
+19)	healthcheck:
+

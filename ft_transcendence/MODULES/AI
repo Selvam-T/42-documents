@@ -1,0 +1,196 @@
+Constraints
+
+1) A* algorithm is not permitted for this task
+
+2) AI can only refresh its view of the game once per second, requiring it to anticipate 
+   bounces and other actions.
+
+
+🟢 AI-ALGO
+-----------------------------------------------------------------------------------------------
+
+		+---------------------+       +---------------------+
+		| AI Opponent         |<----->| Frontend Framework  |
+		| (Backend)           |       | (Tailwind + TS)     |
+		| - AI Logic          |       | (Frontend)          |
+		| - Simulated Inputs  |       | - AI Paddle UI      |
+		+---------------------+       | - Dashboards UI     |
+			  |                   +---------------------+
+			  | Stores Outcomes            | Renders
+			  v                            |
+		+---------------------+       +---------------------+
+		| Database            |<----->| User/Game Stats     |
+		| (SQLite)            |       | Dashboards          |
+		| (Backend)           |       | (Backend)           |
+		+---------------------+       | - Stats Retrieval   |
+			  ^                    +--------------------+
+			  |                            |
+			  | Provides Data              | Fetches Data
+			  |                            v
+		+---------------------+       +---------------------+
+		| Backend Framework   |<----->| Standard User Mgmt  |
+		| (Fastify + Node.js) |       | (Backend)           |
+		| (Backend)           |       | - User Profiles     |
+		+---------------------+       +---------------------+
+			  |                            |
+			  | Uses Power-ups             | Links Scores
+			  v                            v
+		+---------------------+       +------------------------+
+		| Game Customization  |       | Blockchain             |
+		| (Optional)          |       | (Avalanche + Solidity) |
+		+---------------------+       +------------------------+
+		
+The flowchart represents the AI-Algo modules and their interdependencies within the Pong platform. 
+It includes one major module and one minor module:
+
+> AI Opponent (Backend and Frontend):
+  -----------------------------------
+  Introduces an AI player to enhance gameplay, simulating human behavior without using 
+  the A* algorithm.
+
+> User and Game Stats Dashboards (Frontend, with Backend support):
+  ----------------------------------------------------------------
+  Displays user and game statistics through intuitive dashboards.
+
+Modules (Nodes):
+----------------
+
+AI Opponent (Backend and Frontend):
+	Backend: 
+	Implements AI logic, decision-making, and simulated keyboard inputs 
+	to control the AI paddle. Processes game state (e.g., ball position, 
+	paddle location) and anticipates bounces.
+
+	Frontend: 
+	Renders the AI-controlled paddle and integrates it into the game UI, 
+	ensuring smooth gameplay visuals.
+	
+User and Game Stats Dashboards (Frontend, with Backend support):
+
+	Frontend: 
+	Displays user-friendly dashboards with charts/graphs for user stats 
+	(e.g., wins, losses) and game session details (e.g., match outcomes, historical data).
+
+	Backend: 
+	Retrieves and processes statistical data from the database for display 
+	on the dashboards.
+	
+Database (SQLite) (Backend, from Web modules): 
+	Stores game data (e.g., match history, user stats) used by both modules.
+
+Backend Framework (Fastify with Node.js) (Backend, from Web modules): 
+	Provides APIs for AI logic (e.g., game state updates) and dashboard data retrieval.
+
+Frontend Framework (Tailwind CSS + TypeScript) (Frontend, from Web modules): 
+	Renders the game UI and dashboards.
+
+Standard User Management (Backend, from User Management modules): 
+	Links user profiles to stats and game data.
+
+Blockchain (Avalanche + Solidity) (Backend, from Web modules): 
+	Stores tournament scores, potentially used in dashboards for tournament stats.
+
+Game Customization Options (Optional, assumed): 
+	If implemented, provides power-ups that the AI must utilize.
+	
+Interdependencies (Arrows):
+---------------------------
+
+> AI Opponent (Backend) → Database: 
+  Stores game outcomes (e.g., AI vs. player match results) in SQLite.
+
+> AI Opponent (Backend) → Backend Framework: 
+  Uses Fastify APIs to process game state and send AI inputs.
+  
+> AI Opponent (Frontend) → AI Opponent (Backend): 
+  Frontend requests AI paddle movements from the backend and renders them.
+
+> AI Opponent (Backend) → Game Customization Options: 
+  If power-ups are implemented, the AI must use them strategically.
+
+> User and Game Stats Dashboards (Backend) → Database: 
+  Retrieves user and game data (e.g., wins, losses, match history) from SQLite.
+
+> User and Game Stats Dashboards (Backend) → Backend Framework: 
+  Uses Fastify APIs to fetch stats data.
+
+> User and Game Stats Dashboards (Frontend) → User and Game Stats Dashboards (Backend): 
+  Frontend requests stats data for display.
+
+> User and Game Stats Dashboards (Backend) → Standard User Management: 
+  Links stats to user profiles.
+
+> User and Game Stats Dashboards (Backend) → Blockchain: 
+  Retrieves tournament scores for display (e.g., tournament stats).
+
+> AI Opponent (Frontend) → Frontend Framework: 
+  Renders AI paddle using Tailwind CSS + TypeScript.
+
+> User and Game Stats Dashboards (Frontend) → Frontend Framework: 
+  Renders dashboards with charts/graphs.
+  
+> AI Opponent (Backend) → Standard User Management: 
+  Links AI match outcomes to user profiles (e.g., updating win/loss stats).
+  
+🟢 Algorithm
+-----------------------------------------------------------------------------------------------
+
+AI needs to predict the ball's future position and make decisions in time.
+It can only refresh its view once per second.
+
+> Use of the A* algorithm is not permitted:
+
+  What is A* algorithm?
+  - considered an extension of Dijkstra's algorithm (Dike-straw)
+  - find shortest path from a source to a specified target
+  - uses heuristic function to guide its search
+  
+  What is the alternative?
+  - Bouncing Algorithm
+  - trajectory of ball
+  - screen refreshed every 1 second.
+  - moving ball positioned using (x,y) coordinates
+  - velocity vector (Vx, Vy)
+  - how is velocity vector affected when the ball bounces against vertical and horizontal walls
+
+> Essential Info for AI (refreshed once per second):
+
+	1) ball_x:	Current X position of the ball
+
+	2) ball_y:	Current Y position of the ball
+
+	3) ball_velocity_x: Horizontal speed/direction of ball
+
+	4) ball_velocity_y: Vertical speed/direction of ball
+
+	5) paddle2_y:	Current Y position of the AI paddle
+
+	6) game_tick:	Current game time or tick count (to help sync movement)
+
+	7) paddle_height:	Height of the paddle
+
+	8) wall_height: 	Total vertical size of the play area (for bouncing prediction)
+		
+	9) ceiling length: 	Horizontal width ?
+		
+> Optional but Useful Info (to improve AI prediction):
+
+	10) ball_angle: 	Directional angle of the ball (can be derived from velocity, though)
+
+	11) ball_speed:		Magnitude of the velocity (can also be derived)
+
+	12) paddle_speed: 	How fast the AI paddle can move per second
+	
+	Note:
+	ball_velocity_x and ball_velocity_y can calculate
+	- ball_speed = sqrt(vx² + vy²)
+	- ball_angle = atan2(vy, vx)
+	
+	- paddle_speed is already knowns to AI, to calculate if it can already
+	  reach a predicted Y position in time
+	
+The AI can use this data to simulate the ball’s future trajectory (with wall bounces), 
+and move its paddle accordingly to intercept it at the expected Y position 
+when it reaches the AI side.
+
+	reaction_time: Delay in AI movement (to simulate imperfect AI)	

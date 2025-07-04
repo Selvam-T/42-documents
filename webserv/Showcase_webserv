@@ -1,0 +1,115 @@
+Webserv : Selvam, Emma, Bing
+
+Showcasing: 12:30pm -> 2:30pm
+
+
+write (just text) a short presentation about your project:
+
+1) What it's about?
+	- Build an HTTP server in c++ from scratch
+	- Accept configuration file as input to define server behavior
+	- Support GET requests for both static and dynamic web pages.
+	- Handle POST requests to upload files and DELETE requests to remove them.
+	- Serve appropriate error pages (e.g., 404 Not Found) when things go wrong.
+	- Use NGINX as a reference to understand real-world server behavior.
+
+	
+2) The challenges you faced ?
+	- Getting started is always a challenge in all projects.
+	- Analogy of being told to "build a restaurant"
+		- when you don't know what "food" is
+		- you have never seen a "menu"
+		- you don't know "how customers behave"
+		- and for some reason, the kitchen only speaks "binary"
+	
+	- And you are told:
+		"Make sure it handles reservations, serves hot food, responds fast, 
+		 and never crashes".
+
+3) How did we get started ?
+	- build tables and chairs --> listen() and bind()
+	- hope someone sits down  --> accept()
+	- They say something like --> "GET /spaghetti"
+	  "Uhh.. kitchen, they said 'GET' ... should I go get something?
+	  
+	- We responded with:
+	  "200 OK ... here's a shoe"
+	  Because we don't know what the response should look like.
+	  
+	- Meanwhile, a real HTTP server down the street is:
+		- Handing out perfect meals
+		- Taking orders with HEADERS and COOKIES
+		- Managing 100 guests at once (non-blocking sockets)
+
+4) What	did we have to educate ourselves with to build a web server?
+	
+	-Socket programming:
+	 	"open a door to the internet, wait for visitors, and talk to them"
+	 
+	- Non-blocking I/O & multiplexing
+	  	"managing multiple clients"
+	
+	- HTTP protocol basics
+		"learn the rules of conversation between browser and server"
+	
+	- Manual HTTP request parsing
+		"figure out what the visitor is asking for, example GET, POST, DELETE"
+		
+	- Routing logic:
+		"decide where to send them depending on what door (URL) they knocked on"
+	
+	- Serving static files
+		"find a file (photo or a webpage) and hand it over to the browser"
+		
+	- Handling POST requests:
+		"uploading a form or a file"
+	
+	- Understanding HTTP/1.1 features
+		"keeping the connection open instead of hanging up after every sentence."
+		
+	- Manual error handling
+		"say sorry nicely like "404 not found" instead of going silent when
+		 something goes wrong"
+
+	
+4) Architecture
+	It is a non-blocking, event-driven HTTP server built using epoll()
+	for efficient I/O multiplexing
+	
+	- Listens on multiple ports and accepts incoming client connections
+	- Parses raw HTTP requests to route to appropriate handler functions
+	- Serves static files from disk (HTML pages, images)
+	- Executes CGI scripts (like PHP or Python) to serve dynamic content
+	- Manages multiple clients concurrently without blocking using epoll's event loop
+	- Handles GET, POST, and DELETE methods
+	- Cleans up connections and resources gracefully on shutdown
+	 
+5) Anything that you find worthy of sharing with tech and non-tech people.
+	
+	- striking a fair balance on how deep you want to dive into learning
+	
+	- HTTP standards and protocols are defined in RFCs - Request for Comments
+	  You can get lost in documents, so you learn to selectively read them
+	  
+	- we explored implementation of base64 encoding and decoding for Authentication,
+	  stepping slightly outside the basic scope of projects
+	 
+	- understanding what non-blocking truly means
+	
+	- story behind CGI timeout implementation
+		
+6) How we divided our work?
+	- HTTP Request
+	- HTTP Response
+	- configuration file parsing --> conversion to data struct
+	
+7) Demo:
+	wrk benchmarking tool
+	general test cases
+	
+	Can we demo blocking vs non-blocking?
+	different error pages?
+	
+	security vulnerabilities? examples: cgi script execution
+
+

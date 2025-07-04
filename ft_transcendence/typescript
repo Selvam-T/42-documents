@@ -1,0 +1,102 @@
+
+🟢 Typescript
+-----------------------------------------------------------------------------------------------
+
+- Typescript is programming language build on Javascript.
+
+- Static Typing	vs	Dynamic Typing
+
+- Typescript is Javascript with 
+	- Type Checking
+	- code completion
+	- Refactoring
+	- Short hand notation
+	
+
+- We have various runtime environment for running Javascript, such as browsers
+
+- We can use Javascript on the front end or back end
+
+- Typescript compiler
+
+
+🟢 Drawbacks
+-----------------------------------------------------------------------------------------------
+
+- Compilation (transpilation) involved
+
+- .ts	compiled	.js
+
+
+🟢 Developement environment
+-----------------------------------------------------------------------------------------------
+
+- node.js
+
+- Install Typescript compiler
+	npm i -g typescript
+	
+- Verify installation
+	tsc -v
+	
+- you can use visual studio code as code editor
+
+
+🟢 Visual Studio / First program
+-----------------------------------------------------------------------------------------------
+
+- tsc index.ts
+  this may fail, if tsc was not installed globally using -g flag
+  or it is not available in my path
+
+- In pong-game project I use
+  npx tsc index.ts
+  
+  > it means tc was installed locally in the project's node module
+  > npx is a tool that comes with npm
+  > it lets you run binaries like tsc from a package without installing them globally
+  > it looks for tsc in node_modules/,bin/ and runs it
+  
+🟢 Older version of Javascript ES5
+-----------------------------------------------------------------------------------------------
+
+ES5 is a standard or specification
+Javascript is the implementation of that specification
+
+All features in browswers have been implemented in browser using ES5?
+
+🟢 How to configure the Typescript compiler
+-----------------------------------------------------------------------------------------------
+
+- configuration file for typescript compiler
+
+- tsc --init
+	creates tsconfig.json with certain settings
+
+- if you have tsconfig.json, you can compile all ts files in the project by just running 
+	  tsc 
+	  or
+	  npx tsc
+	  
+🟢 Debuggin Typescript application
+-----------------------------------------------------------------------------------------------
+
+- enable "sourceMap": true in tsconfig.json
+	shows how each line of ts maps to geerated js code in 'index.js.map'
+	this is not for us to understand, this is for debugger
+	
+- write some loging in ts file for debugging
+
+- add BREAKPOINT to stop execute code line by line from that point
+
+- goto DEBUG panel, select 'create and launch json file,
+	select node.js
+	this creates a file called launch.json
+	json file tells the debugger how to debug this application
+	
+	add 'preLaunchTask ; "tsc: build - tsconfig.json"
+	
+- go back to DEBUG panel, click on 'Lauch Program'
+	
+       
+STOPPED VIDEO at 30 FUNCTIONS

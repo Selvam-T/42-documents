@@ -1,0 +1,295 @@
+
+RFC 7230
+
+- CR ASCII 13, LF ASCII 10, SP ASCII 32
+- if sever receives a CRLF first, it should ignore the CRLF.
+
+I tested, all header lines are terminated with ASCII 13.
+
+HTTP request:
+-------------
+
+1) Request-Line   = <Method> SP <Request-URI> SP <HTTP-Version> CRLF
+
+	Method = "GET", "POST" "DELETE", "OPTIONS", "HEAD", "PUT", "TRACE", "CONNECT"
+		(Interested in "GET", "POST" "DELETE")
+		
+	Request-URI = "*" | absoluteURI | abs_path | authority
+		(Interested in "abs_path", may be "absoluteURI")
+		
+		1) abs_path = GET /pub/WWW/TheProject.html HTTP/1.1
+			      Host: www.w3.org
+				- where abs_path cannot be empty, it can be '/' to denote root
+				- invalid Host, the reponse MUST be a 400 (Bad request) error msg.
+		
+		Question: If 'host' is not provided with 'abs_path', for all methods, then
+			return '400 bad request'? 
+			
+		2) absoluteURI = GET http://www.w3.org/pub/WWW/TheProject.html HTTP/1.1
+				- when the request is being made to a proxy.
+				- any Host header field value in the request MUST be ignored,
+				  the host is part of the Request-URI
+				  
+-  A sender MUST NOT send whitespace between the start-line and the
+   first header field.
+   
+2) Header Fields
+   	header-field   = field-name ":" OWS field-value OWS	//Optional White Space
+	- 0 or more header fields
+	- an empty line preceding the CRLF, indicating end of the header fields	  
+
+	General-header Fields:
+	----------------------
+	(General applicability to both request and response messages, 
+	but which do not apply to the entity being transferred.)
+
+	Request Header Fields:	
+	----------------------
+	(Additional information about the request, and about the client, 
+	specific to Request)
+
+	Response-header Fields:
+	-----------------------
+	(additional information about the response which cannot be placed 
+	in the Status-Line, specific to Response). 
+
+	Entity-header Fields:
+	---------------------
+	(metainformation about the entity-body or,
+	if no body is present, about the resource identified by the request.)
+	- A client sending a POST request might include Content-Type and 
+	Content-Length as entity headers.
+	- A server responding to a GET request might include Content-Type and 
+	Content-Length as entity headers.
+
+
+3) Message Body
+	The presence of a message body in a request is signaled by a
+   	- Content-Length or 
+   	- Transfer-Encoding header field.
+   	
+   	If terminating the request message body with a line-ending is desired, 
+   	then the user agent MUST count the terminating CRLF octets 
+   	as part of the message body length. (RFC 7230, pg 34)
+-----------------------------------------------------------------------------------
+
+Message Body Length:
+
+1) If a Transfer-Encoding header field is present and 
+	
+	If the chunked transfer coding (Section 4.1) is the final encoding
+	- body length is determined by reading until chunk-size = 0 is encountered
+	
+	If the chunked transfer coding is not the final encoding (RFC 7230, pg 32)
+	- the server MUST respond with the 400 (Bad Request) status code 
+	and then close the connection.
+
+2) If a message is received with both a Transfer-Encoding 
+	and a Content-Length header field,	
+	- the Transfer-Encoding overrides the Content-Length.
+
+3) If a transfer-Encoding and with either 
+	- multiple Content-Length header fields having differing field-values or
+	- a single Content-Length header field having an invalid value
+		- the server MUST respond with a 400 (Bad Request)
+		- close the connection
+		
+	
+4) If a valid Content-Length header field is present without Transfer-Encoding
+	- its decimal value defines the expected message body length in octets.
+	- If the sender closes the connection or the recipient times out 
+	before the indicated number of octets are received
+		- the recipient MUST consider the message to be incomplete and close the connection.
+	
+5) If this is a request, and none of the above are true, then no message body is present
+
+6) A server MAY reject a request that contains a message body but not a
+	Content-Length by responding with 411 (Length Required). (pg 33)
+	
+-----------------------------------------------------------------------------------
+							
+HTTP response:
+--------------
+
+- server responds with an HTTP response message.
+
+1) Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+	
+	Status-Code
+	- 1xx: Informational - Request received, continuing process
+	- 2xx: Success - The action was successful
+	- 3xx: Redirection - Further action must be taken
+	- 4xx: Client Error - The request cannot be fulfilled
+	- 5xx: Server Error - The server failed to fulfill the request
+	
+	- HTTP applications do not need to understand the meaning of all registered status codes
+	  however, they MUST understand the class of the status code, i.e first digit
+	  
+2) Header Fields
+	ends with CRLF
+3) Message Body
+	HTTP Content
+	(Terminated with CRLF ?)
+
+HTTP POST method request - identifying File upload vs Form data from Header fields:
+----------------------------------------------------------------------------------
+
+1) How do you identify file upload or form-data	?
+			File upload			Form data
+			-----------			---------
+					
+   Content-Type:	multipart/form-data		application/x-www-form-urlencoded
+			- includes boundary parameter
+			
+2) Enclosed within the boundary it contains		
+			File upload			Form data
+			-----------			--------- 
+			
+   Content-Disposition: "name", "filename"		---- not applicable ----
+   RFC6266
+
+   Content-Type:					---- not applicable ----
+			
+3) How to determine the beginning and end of data ?
+			File upload			Form data
+			-----------			---------
+  boundary
+ 			- enclosed within boundary	- Single string with key-value pairs.
+ 			line after Content-Type		- Appears to be the last line of data.
+ 							- Content-Length: 81, is the number of 
+ 							  characters of data.
+ 							- The key-value pair is field name: value
+ 							
+ Content-Length:	- includes boundary, and	- length of data, help extract data, exclude
+ RFC7230		the headers within each part	  trailing extra characters
+			therefore does not help
+
+4) How to parse the Body
+The body of a multipart message is structured as follows:
+
+- Each part begins with the boundary string followed by \r\n.
+- The boundary string may include a trailing -- if it is the final boundary.
+- Each part contains headers (e.g., Content-Disposition, Content-Type) followed by the actual content.
+
+/***********************************************************************************/
+
+(Content below is not applicable to this project. 
+	but helps understand how to read HTTP request).
+
+How to read an HTTP reply: 
+-------------------------
+
+LF means Line feed, which is '\n'.
+
+1) The correct way to read an HTTP reply is to read until you have received a 
+full LF-delimited line (some servers use bare LF even though the official spec says 
+to use CRLF), which contains the response code and version, 
+
+2) then keep reading LF-delimited lines, which are the headers, until you encounter a 
+0-length line, indicating the end of the headers, 
+
+3) then you have to analyze the headers to figure out how the remaining data is encoded 
+so you know the proper way to read it and know how it is terminated. 
+
+4) There are several different possibilities, refer to RFC 2616 Section 4.4 
+for the actual rules.
+
+pseudo code:
+------------
+// Send Request
+send(hSocket, req.c_str(), req.length(), 0);
+
+// Read Response
+std::string line = ReadALineFromSocket(hSocket);
+int rescode = ExtractResponseCode(line);
+std::vector<std::string> headers;
+do
+{
+     line = ReadALineFromSocket(hSocket);
+     if (line.length() == 0) break;
+     headers.push_back(line);
+}
+
+while (true);
+
+if (
+    ((rescode / 100) != 1) &&
+    (rescode != 204) &&
+    (rescode != 304) &&
+    (request is not "HEAD")
+)
+
+{
+    if ((headers has "Transfer-Encoding") && (Transfer-Encoding != "identity"))
+    {
+        // read chunks until a 0-length chunk is encountered.
+        // refer to RFC 2616 Section 3.6 for the format of the chunks...
+    }
+    else if (headers has "Content-Length")
+    {
+       // read how many bytes the Content-Length header says...
+    }
+    else if ((headers has "Content-Type") && (Content-Type == "multipart/byteranges"))
+    {
+        // read until the terminating MIME boundary specified by Content-Type 
+	//is encountered...
+    }
+    else
+    {
+        // read until the socket is disconnected...
+    }
+}
+
+/***********************************************************************************/
+URL [RFC3986]
+-------------
+
+	I don't need to handle parsing the URL string. 
+	This is handled by the Client / Browser.
+
+scheme://host[port]path[?query]
+
+http://api.com/weather?year=1964&city=C%C3%A1diz
+
+scheme --> http
+host --> api.com
+port --> optional
+path --> /weather
+?query --> key:value pairs, separated by &
+
+
+HTTP Request/Reply pattern [RFC7231]
+------------------------------------
+Each HTTP request manipulates a resource & requires
+
+URL:		as above
+
+Method:		indicates how to manipulate the resource
+
+Headers:	key/value pairs for network plumbing
+		- proxies
+		- authentication
+		- caching
+		- body length/content
+		- conditionals
+		
+Bodies:		for parsing/returning ephemeral "structures" (JSON) or parsed data
+		example:
+		name, address, phone, mail
+		documents, photos, audio, video
+		
+		What is JSON?
+		JavaScript Object Notation, data format, structure
+		{
+			"name" : "Alice",
+			"age" : 25,
+			"courses": ["Math", "Science"],
+			"isStudent": false,
+			"address": {
+			 "city": "New Jersey",
+			 "zip": "10001"
+			 }
+		}
+/***********************************************************************************/
+
+

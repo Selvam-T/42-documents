@@ -1,0 +1,34 @@
+
+🟧 	Run
+	python3 -m http.server 8080 
+  
+  serves your Pong game's files 
+  	(like index.html, pong.js, pong.css) 
+  over HTTP.
+    
+  — It doesn't "create" the game logic 
+  — it just hosts the files 
+    so you can open http://localhost:8080 in your browser and 
+    play the game.
+    
+🟧	Open browser:
+   	http://localhost:8080
+   	
+   	play game!!
+   	
+   	
+🟢 Other open-source server options to replace python3 -m http.server:
+
+	Node.js + http-server (npm install -g http-server)
+
+	NGINX (super lightweight and powerful)
+
+	Apache HTTP Server (heavier, but classic)
+
+	Caddy (easy HTTPS by default)
+
+	lighttpd (small and fast)
+
+	serve (npm install -g serve — great for static sites)
+
+

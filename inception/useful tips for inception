@@ -1,0 +1,242 @@
+🟢 docker vs docker compose
+-----------------------------------------------------------------------------------------------
+docker         -> low-level container control
+docker compose -> orchestrates multi-container setups using services
+
+docker commands         -> deal with containers, images, volume, networks etc
+docker compose commands -> deal with services defined in .yml
+
+🟢 Dockefile
+-----------------------------------------------------------------------------------------------
+
+1) Place all install commands in one block.
+	> efficient and easier to maintain
+	> reduces image layers
+
+  Example: bad
+	RUN apt update && app upgrade -y
+	RUN apt install nginx -y
+	RUN apt install openssl -y
+	
+  Example: good
+	RUN apt update && apt upgrade -y && \
+	    apt install -y \
+	        nginx \
+	        openssl
+
+2) EXPOSE 
+	- EXPOSE instruction in Dockerfile does not publish the port.
+	  You don't need to specify EXPOSE. 
+	  It is only for documentation purpose of developers
+	  
+	  
+🟢 Dockefile for WordPress-PHP-FPM
+-----------------------------------------------------------------------------------------------
+
+> Do I need to install PHP along with PHP-FPM ?
+
+  - PHP-FPM requires PHP to process PHP scripts.
+  - but you do not need to install PHP separately.
+  - When you install php-fpm and php-mysql, Debian automatically 
+    installs the default PHP version.
+
+🟢 Secrets: vs Environment:
+-----------------------------------------------------------------------------------------------
+
+> Secrets and Environment variables both provide configuration data to containers. 
+
+> Environment:
+	- data is made available to all processes in the container during runtime.
+
+> Secrets:
+	- Values are exposed as files in the container's filesystem.
+	- accessible in container directory /run/secrets/<secret name>
+	  
+
+🟢 Fail safe operator and Redirection
+-----------------------------------------------------------------------------------------------
+Example:
+	docker compose stop wordpress || true
+	
+	> || true is fail safe operator
+	> to prevent script or makefile from exiting when a command fails
+	
+Example: 
+	docker volume rm srcs_wp_files >/dev/null 2>&1;
+	
+	> /dev/null 2>&1 is redirection to black hole
+	> full output suppression of stdout and stderr
+
+
+🟢 log files from containers
+-----------------------------------------------------------------------------------------------
+
+1) docker compose logs 
+   command shows STDOUT and STDERR of each container 
+   - It does not show not the internal log files. (see 2 and 3)
+   Nginx
+   - only logs if NGINX is configured to log to /dev/stdout or /dev/stderr
+   - by default nothing, unless log paths are redirected in nginx.conf
+   Wordpress + PHP-FPM
+   - by default, some PHP startup/debug errors, not full logs
+   MariaDB
+   - only startup logs/errors if MariaDB is set to log to stdout/stderr
+   
+2) error logs:
+   a) Nginx path in container:
+   /var/log/nginx/error.log
+   
+   - enable logs in nginx.conf
+   - volume mount to host
+   
+   b) Mariadb path in container:
+   /var/log/mysql/error.log
+   
+   c) Wordpress + PHP-FPM path in container
+   /var/log/php7.4-fpm.log
+   
+   
+3) access logs:
+   a) Nginx path in container:
+   /var/log/nginx/access.log
+   
+   - enable logs in nginx.conf
+   - volume mount to host
+   
+   b) Mariadb
+   - not enabled by default
+   
+   c) Wordpress
+   - not typical unless manually configured
+
+
+
+🟢 sed utility for string replacement
+-----------------------------------------------------------------------------------------------
+
+> Useful to edit selected attributes in config files
+
+> -i option for in-place editing
+
+> g flag to find every occurence
+
+
+🟢 .env
+-----------------------------------------------------------------------------------------------
+
+> to explore how to inject environment variables from .env into
+	- makefile
+	- Dockerfile (build)
+	- Dockerfile (runtime)
+	- docker compose
+	- configuration file (this is called in container runtime when nginx starts)
+	
+> docker-compose will automatically detect .env if it is in the same directory
+	- environment: (to inject into container runtime from docker compose)
+	- args: (to inject into Dockerfile/ build environment from docker compose)
+		in conjunction with ARGS in Dockerfile
+		
+> Dockerfile also uses ENV directive, I forget how.
+
+> path to file must be relative to project root, because during evaluation, 
+  the project root is different from you working directory
+
+
+🟢 Network (Docker compose)
+-----------------------------------------------------------------------------------------------
+
+>	You may consider Front-end and Back-end network. But is it necessary?
+
+>	Single Custom-network:
+	- All 3 containers are on one network
+	- doesn't automatically mean Nginx can access MariaDB
+	- Docker networks allow containers to communicate only if explicitly
+	  configured to (e.g., via ports or service names)
+	
+>	network driver determines the network type.
+	- Bridge (Default)
+	- creates a private network on the host
+	- allowing containers to communicate via IP address or services name
+
+
+🟢 How do you test Containers communicate with each other correctly
+-----------------------------------------------------------------------------------------------
+
+1. - ping test, confirms basic network reachability between containers / network layer
+2. - telnet test, confirms port connectivity / transport layer
+
+3. - Authentication test
+	- Are you able Connect to Mariadb from wordpress using mariadb client ?
+		mysql -u <DB_USER> -p<DB_PASSWORD> -h mariadb <DB_NAME>
+	- Are you able to authenticate with credentials you set up in wp-config.php?
+	- Then are you able to query database? Such as, 
+		> SHOW DATABASES; 
+		> USE wordpress;
+		> SHOW TABLES;
+		> If it says Empty set() 
+		  ** means wordpress in not initialized in database.
+	- additionally query,	  
+		> SHOW GRANTS FOR 'wordpressuser'@'%';
+		> SELECT User, Host FROM mysql.user;
+		> SELECT User, authentication_string FROM mysql.user WHERE User = 'wordpressuser';
+
+🟢 ENTRYPOINT script to install and intialize wordpress
+-----------------------------------------------------------------------------------------------		
+1. Create a wp-config.php file with mariabd crednetials 
+   - using WP-CLI command / wp config create
+
+2. Install wordpress using WP-CLI command / wp core install
+	- install WordPress
+	- Create database tables
+	- Set up the initial admin user and site configuration
+	
+3. This assume WP-CLI is installed in WordPress image.
+
+
+🟢 Config files required for WordPress are
+-----------------------------------------------------------------------------------------------		
+1) wp-config.php
+	- is one of the core configuration files in a WordPress installation. 
+	- essential settings that control 
+	  - how WordPress interacts with your database,
+	  - security keys,
+	  - the site URL. 
+	  - etc
+
+	- When you first download WordPress, the wp-config.php file isn’t included.   
+	- wp-config-sample.php will be found.
+
+	- see below on how to create wp-config.php with necessary settings.
+
+2) custom.conf
+	- supplements /etc/php/7.4?/fpm/pool.d/www.conf
+	- to override listen = 0.0.0.0:9000
+
+🟢 PHP-FPM tests
+-----------------------------------------------------------------------------------------------			
+1) PHP-FPM Configuration Verification: 
+   (from WordPress container)
+	
+   Config File: /etc/php/7.4/fpm/pool.d/www.conf confirms listen = 0.0.0.0:9000.
+   
+2) PHP-FPM Process Check
+   (from WordPress container)
+
+   Command: ps aux | grep php-fpm
+   
+   Result: PHP-FPM is running with a master process (php-fpm: master process) 
+   	   and two worker pools (php-fpm: pool www) under www-data.
+   	   
+3) Local PHP-FPM Connectivity (WordPress Container):
+   (from WordPress container)
+
+   Command: curl -v http://localhost:9000
+   
+   Test PHP File: Not yet tested (recommended: create test.php with phpinfo()).
+
+4) Nginx to PHP-FPM Connectivity (Nginx Container):
+   (from Nginx container)
+   
+   Command: curl -v http://wordpress:9000
+	
+

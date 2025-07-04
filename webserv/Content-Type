@@ -1,0 +1,279 @@
+Content-Type: Type/subType
+---------------------------
+
+Type		Subtypes (Examples)
+------------------------------------
+multipart	form-data, mixed, alternative, related
+application	x-www-form-urlencoded, pdf, json, xml, javascript, zip
+text		plain, html, css, csv, javascript, xml
+image		jpeg, png, gif, svg+xml, webp, tiff, bmp
+audio		mpeg, wav, ogg, aac, opus, webm
+video		mp4, webm, ogg, avi, mpeg, quicktime
+
+font		ttf, otf, woff, woff2
+message		http, imdn+xml, rfc822
+model		gltf+json, iges, mesh, vrml, x3d+binary
+
+
+
+//The following file uploads as part of multi-part-form-data
+
+1) Upload image
+---------------
+	a) Content-Type: multipart/form-data; boundary=
+	
+	b) Content-Disposition: form-data; name="file"; filename="redtick .jpg"
+	   Content-Type: image/jpeg
+	
+???	c) Missing - terminating boundary with '--'
+
+2) Upload Binary data 
+----------------------
+	a) Content-Type: multipart/form-data; boundary=
+	
+	b) Content-Disposition: form-data; name="file"; filename="binarydata.bin"
+	   Content-Type: application/octet-stream
+	
+???	c) Missing - terminating boundary with '--'
+	
+3) Upload XML file 
+-------------------
+	a) Content-Type: multipart/form-data; boundary=
+	
+	b) Content-Disposition: form-data; name="file"; filename="xmlfile.xml"
+	   Content-Type: text/xml
+	
+	c) Present as expected - terminating boundary with '--'
+	
+4) Upload JSON
+--------------
+	a) Content-Type: multipart/form-data; boundary=
+	
+	b) Content-Disposition: form-data; name="file"; filename="json_data.json"
+	   Content-Type: application/json
+	
+	c) Present as expected - terminating boundary with '--'
+
+5) Upload Non-UTF8 Encoded Data
+-------------------------------
+	***) I am apparently expected to see Charset: as below, but I didn't
+		Content-Type: text/plain; charset=ISO-8859-1
+
+	a) Content-Type: multipart/form-data; boundary=
+	
+	b) Content-Disposition: form-data; name="file"; filename="non_utf8_file.txt"
+	   Content-Type: text/plain
+	
+	c) Present as expected - terminating boundary with '--'
+	
+6) Upload text-file
+-------------------
+	a) b) c) as above
+
+
+//The following are not part of a multipart-form-data
+
+1) Form-data (without file upload)
+-----------------------------------
+	a) Content-Type: application/x-www-form-urlencoded
+	
+	b) no boundary 
+
+	Manually decode URL encoding, example -
+	
+		- Replace %20 with a space ( )
+		- Replace %2B with a plus sign (+)
+		- Replace %3D with an equal sign (=), etc
+		
+	How to decode in Python
+	
+	import urllib.parse
+	encoded_str = "username=JohnDoe%20Smith&password=secret%2B123"
+	decoded_str = urllib.parse.unquote(encoded_str)
+	print(decoded_str)
+
+
+2) application/json:
+
+	a)
+	POST /submit-json HTTP/1.1
+	Host: example.com
+	Content-Type: application/json
+	Content-Length: 37
+
+	{"username": "JohnDoe", "password": "secret123"}
+	
+	b) send JSON data in an HTTP request (using fetch in JavaScript):
+	
+	fetch('https://example.com/submit-form', {
+	  method: 'POST',
+	  headers: {
+	    'Content-Type': 'application/json'
+	  },
+	  body: JSON.stringify({
+	    username: 'JohnDoe',
+	    password: 'secret123',
+	    age: 30
+	  })
+	});
+
+	
+3) text/plain:
+
+	a)
+	POST /submit-text HTTP/1.1
+	Host: example.com
+	Content-Type: text/plain
+
+	username=JohnDoe
+	password=secret123	
+	
+4) application/xml:
+
+	a)
+	POST /submit-xml HTTP/1.1
+	Host: example.com
+	Content-Type: application/xml
+	Content-Length: 89
+
+	<form>
+	  <username>JohnDoe</username>
+	  <password>secret123</password>
+	</form>
+	
+5) Sending image as raw binary data in the request body
+
+	a)
+	POST /upload-image HTTP/1.1
+	Host: example.com
+	Content-Type: application/octet-stream
+	Content-Length: [binary size]
+
+	(binary image data here, raw)
+	
+	b) Request Setup (using fetch in JavaScript):
+	
+	// Get the file from an input field
+	const imageBlob = document.getElementById('file-input').files[0]; 
+
+	fetch('https://example.com/upload-image', {
+	  method: 'POST',
+	  headers: {
+	    'Content-Type': 'application/octet-stream'  // Indicate we're sending raw binary data
+	  },
+	  body: imageBlob  // Send the binary data of the image
+	});
+
+	
+	c) 
+	When I save and open the raw binary data as jpeg, which is the nature of this data
+	the image will be correctly created.
+	
+	d) If the content-Type does not state what the correct nature of this raw binary data
+	how can I determine it?
+	
+	1. Checking the File Signature (Magic Number)
+	
+	File Type	Magic Number (Hex)	MIME Type
+	---------	------------------	---------
+	JPEG		FF D8 FF		image/jpeg
+	PNG		89 50 4E 47 0D 0A 1A 0A	image/png
+	GIF		47 49 46 38 39 61	image/gif
+	BMP		42 4D			image/bmp
+	MP3		49 44 33		audio/mpeg
+	WAV		52 49 46 46		audio/wav
+	PDF		25 50 44 46		application/pdf
+	ZIP		50 4B 03 04		application/zip
+	
+	2. Using Libraries to Detect File Type
+		- file-type (Node.js):
+		- python-magic (Python):
+	
+Here’s the table including payload types and their corresponding `Content-Type` headers:
+
+|-------|-------------------------------|-----------------------------------------------|
+| **#** | **Payload Type**              | **Content-Type**                              |
+|-------|-------------------------------|-----------------------------------------------|
+| 1  /  | Upload of text file           | `text/plain`                                  |
+|	|				|						|
+| 2  /  | Form-data                     | `multipart/form-data; boundary=<boundary>`    |
+|	|				|						|
+| 3  /  | Upload image                  | `image/jpeg`, `image/png`, or similar         |
+|	|				|						|
+| 4     | Upload video                  | `video/mp4`, `video/webm`, or similar         |
+|	|				|						|
+| 5     | Upload audio                  | `audio/mpeg`, `audio/ogg`, or similar         |
+|	|				|						|
+| 6  /  | JSON data                     | `application/json`                            |
+|	|				|						|
+| 7  /  | XML data                      | `application/xml` or `text/xml`               |
+|	|				|						|
+| 8  /  | Binary data                   | `application/octet-stream`                    |
+|	|				|						|
+| 9  /  | Multipart requests            | `multipart/mixed; boundary=<boundary>`        |
+|	|				|						|
+| 10    | Compressed data               | `application/gzip` or `application/zip`       |
+|	|				|						|
+| 11    | Encrypted data                | Custom, e.g., `application/x-encrypted`       |
+|	|				|						|
+| 12    | Large data payloads           | Varies based on data type                     |
+|	|				|						|
+| 13 /  | Empty payload                 | No `Content-Type` or dependent on the server  |
+|	|				|						|
+| 14    | Array of data                 | `application/json`  				|
+|	|				|	or `application/x-www-form-urlencoded`	|
+|	|				|						|
+| 15    | Custom MIME types             | A specific custom MIME type                   |
+|	|				|						|
+| 16    | Streamed data                 | Varies based on data type,  			|
+|	|				|		often `application/octet-stream`|
+|	|				|						|
+| 17    | Corrupted data                | Same as the intended data type  		|
+|	|				|			(e.g., `image/jpeg`)	|
+|	|				|						|
+| 18  / | Non-UTF8 Encoded Data         | Depends on data type, with charset, 		|
+|	|				|	e.g., `text/plain; charset=ISO-8859-1`	|
+|	|				|						|
+| 19    | SQL commands                  | `text/plain`  				|
+|	|				|	or `application/x-www-form-urlencoded`	|
+| 20    | JSON-LD                       | `application/ld+json`                         |
+|	|				|						|
+| 21    | Base64-encoded data           | `text/plain` or `application/base64`          |
+|	|				|						|
+| 22    | Custom headers with payload   | Depends on payload type,   			|
+|	|				|		e.g., `application/json`	|
+|-------|-------------------------------|-----------------------------------------------|
+
+Content-Type: (MIME-type)
+--------------------------
+
+	type/subtype
+	
+Examples:
+	text/plain
+	text/html
+	text/css
+	text/csv
+	
+	image/jpeg
+	image/jpg
+	image/gif
+	
+	audio/mpeg
+	audio/wav
+	
+	video/mp4
+	video/ogg
+	
+	application/json
+	application/javascript
+
+Rules for the use of MIME-types:
+
+1) */* is used when you don't care about the specific type or subtype 
+	(e.g., in Accept headers).	
+
+2) type/* is valid when you want any subtype under a specific type 
+	(e.g., image/* for any image type).
+	
+3) */subtype is not valid, because the subtype must always be explicitly defined.

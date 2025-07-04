@@ -1,0 +1,170 @@
+For Se
+------
+
+a. How environment variables are populated in Apache and NGINX
+   -----------------------------------------------------------
+
+  1) Apache: Uses the CGI module or other modules like mod_cgi, mod_php to 
+     handle HTTP requests andpopulate CGI environment variables.
+
+  2) NGINX: Uses a FastCGI or similar process to handle scripts, passing the necessary 
+     environment variables to the script.
+
+b. Output from CGI
+   ---------------
+
+   The output of a CGI script should consist of two sections
+	- a minimal header section 
+	- HTML
+
+
+c. CGI functions 
+   -------------
+   
+- cgi.FieldStorage(fp=sys.stdin, environ=os.environ) to be used on 
+      
+	POST request body must contain the following Content-Type
+      
+	1) Content-Type: application/x-www-form-urlencoded
+      	    
+	name=John&age=30
+      	  
+	2) Content-Type: multipart/form-data; boundary=----WebKitFormBoundary12345
+      	    
+	------WebKitFormBoundary12345
+	Content-Disposition: form-data; name="username"
+	//something goes here
+	------WebKitFormBoundary12345--
+
+	3) the function returns a object.
+		use keys() and getvalue(key) functions to get key value pair
+	    
+- urllib.parse.parse_qs() and urllib.parse.parse_qsl() to be used 
+  
+     1) import urllib.parse
+     	data = sys.stdin.read()
+	fields = urllib.parse.parse_qs(data)
+	
+- Other HTTP Request Parsing Functions in cgi Module
+  
+	cgi.parse(): Deprecated, use urllib.parse.parse_qs() instead.
+	cgi.parse_multipart(): Parses multipart/form-data without cgi.FieldStorage().
+	cgi.parse_header(): Parses Content-Type headers.
+
+To discuss with Emma and Bing
+-----------------------------
+
+HTTP request-line and environment variables for CGI module
+----------------------------------------------------------
+
+1) GET request
+--------------
+	GET /index.html HTTP/1.1
+	
+	REQUEST_METHOD=GET
+	REQUEST_URI=/index.html
+	SCRIPT_NAME=/index.html
+	QUERY_STRING=
+	
+	
+2) POST request with only file upload
+-------------------------------------	
+	POST /upload HTTP/1.1
+	
+	REQUEST_METHOD=POST
+	REQUEST_URI=/upload
+	SCRIPT_NAME=/upload
+	CONTENT_TYPE=multipart/form-data (or application/octet-stream if a raw file)
+	CONTENT_LENGTH=<actual length>
+	QUERY_STRING=
+	
+***	UPLOAD_DIR=/somewhere  //env set by user, not recognized by CGI module
+	
+
+3) POST request with only form fields
+-------------------------------------
+	POST /submit-form HTTP/1.1
+
+	REQUEST_METHOD=POST
+	REQUEST_URI=/submit-form
+	SCRIPT_NAME=/submit-form
+	CONTENT_TYPE=application/x-www-form-urlencoded
+	CONTENT_LENGTH=<actual length>
+	QUERY_STRING=
+
+4) POST request with multi-form data, file upload, and form fields
+------------------------------------------------------------------
+	POST /upload-form HTTP/1.1
+	
+	REQUEST_METHOD=POST
+	REQUEST_URI=/upload-form
+	SCRIPT_NAME=/upload-form
+	CONTENT_TYPE=multipart/form-data
+	CONTENT_LENGTH=<actual length>
+	QUERY_STRING=
+	
+5) DELETE request
+-----------------
+	DELETE /resource/123 HTTP/1.1
+
+	REQUEST_METHOD=DELETE
+	REQUEST_URI=/resource/123
+	SCRIPT_NAME=/resource/123
+	QUERY_STRING=
+	
+	
+--------------------------------------------------------------------------------------
+
+REQUEST_URI v SCRIPT_NAME
+-------------------------------------
+
+Example:
+
+GET /user/profile/index.php?name=john%20doe HTTP/1.1
+
+REQUEST_URI = /user/profile/index.php?name=john%20doe  
+SCRIPT_NAME = /index.php  
+QUERY_STRING = name=john%20doe  
+
+/user/profile/ is a folder, and inside that folder, there is an index.php file.
+
+--------------------------------------------------------------------------------------
+
+base64 decoding and encoding
+----------------------------
+
+Base64 represent binary data (like bytes) using a set of 64 printable characters
+Each character in the Base64 string represents 6 bits of data.
+1. Setup and Character Set Definition
+	Each character in this set corresponds to a value from 0 to 63 (since 2⁶ = 64).
+2. Remove Padding
+3. Convert Base64 Characters to Their 6-Bit Values
+4. Convert Decimal Values to Binary Strings
+5. Adjust for Padding in Binary
+6. Group Binary into 8-Bit Chunks (Bytes)
+7. Convert Bytes to Characters
+
+Example of Decoding
+Suppose the input is SGVsbG8=:
+
+Base64 alphabet: A=0, B=1, ..., Z=25, a=26, ..., z=51, 0=52, ..., 9=61, -=62, _=63.
+S=18, G=6, V=21, s=44, b=27, G=6, 8=60, = (padding).
+Values: [18, 6, 21, 44, 27, 6, 60].
+Binary (6 bits each): 010010 000110 010101 101100 011011 000110 111100.
+Concatenated: 010010000110010101101100011011000110111100.
+Trim 2 bits (1 = means 2 bits padded): 01001000011001010110110001101100011011.
+Group by 8: 01001000 01100101 01101100 01101100 011011.
+Decimal: 72 101 108 108 111.
+ASCII: H e l l o.
+Output: "Hello".
+
+
+Encoding:
+1) Convert Input to Binary:
+2) Group into 6-Bit Chunks
+3) Convert 6-Bit Chunks to Decimal:
+4) Map to Base64 Characters:
+5) Add Padding if Needed:
+6) Combine into Final String:
+
+

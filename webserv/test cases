@@ -1,0 +1,47 @@
+TEST CASES
+
+1) Delete: Try to delete a file with no read, write or execute permission.
+
+	If file does not have read permission, 
+	file.open() returns false.
+	
+	So using file.open() to check if file exists is problematic.
+
+2) Can I use telnet to send HTTP request with Transfer-Encoding: Chunked, and expect
+	the Server application to handle it?
+	
+3) Transfer-Encoding: chunked
+	nc localhost 8080 <<EOF
+	POST / HTTP/1.1
+	Host: localhost:8080
+	Transfer-Encoding: chunked
+
+	4
+	Wiki
+	5
+	pedia
+	6
+	 in
+	8
+	chunks.
+	0
+
+	EOF
+	
+4) wrk - a HTTP benchmarking tool from https://github.com/wg/wrk
+	to generate significant load when run on a single multi-core CPU
+
+>	git clone https://github.com/wg/wrk.git
+	
+	Basic Usage -
+>	wrk -t12 -c400 -d30s http://127.0.0.1:8080/index.html
+	
+	This runs a benchmark for 30 seconds, using 12 threads, 
+	and keeping 400 HTTP connections open.
+	
+5) How does the developer handle race condition that may arise from concurrent
+	GET and DELETE request for same document, same time ?
+	
+	Answer: In our implementation, epoll_wait() will process one event at a time,
+	So, GET and DELETE request will not be executed concurrently.
+

@@ -1,0 +1,105 @@
+Socket programming - understanding sockets, text files, binary files
+
+A) Do not confuse listening socket with connected socket.
+
+B) listening socket:
+--------------------
+- Created by the server.
+- has one listening socket that handles connection requests from all clients.
+
+- Typically, the server closes the listening socket if it’s shutting down or 
+  if it no longer wants to accept new client connections.
+
+C) connected socket:
+-----------------
+- Created by the server upon accepting a client’s connection request 
+  (each connection has its own connected socket).
+- client does not have a listening socket.
+- client's role is simply to initiate a connection. (done by the browser)
+- The client only needs a single connected socket. (On the browser end I suppose).
+- The server end needs a connected socket for connection with this instance of client request.
+- accept() returns a connected socket
+- This can become confusing, if I abstract the a client class to handle client_fd, connection(),
+  accept() etc
+
+When the client connects to the server, how both sides manage their connected sockets:
+--------------------------------------------------------------------------------------
+
+A) --- Client's Perspective: ---
+
+(Understand this in the context of server-client existing on same device).
+(Not applicable for this project).
+
+1) The client creates its own socket with socket(AF_UNIX, SOCK_STREAM, 0); 
+which gives it a client-side socket descriptor. 
+
+2) The client then calls connect() on this socket.
+
+3) After connect() is successful, the client’s socket is now connected to the 
+server’s listening socket, forming a communication channel.
+
+4) The operating system maintains the actual connection channel between the 
+client’s socket and the server’s connected socket. When data is sent from the 
+client’s socket, the OS ensures it arrives at the server’s corresponding 
+connected socket, and vice versa.
+
+5) This client-side socket descriptor is separate and independent from any descriptors 
+on the server side. 
+
+
+B) --- Server's Perspective: ---
+
+(This is applicable for this project, because browser acts as client).
+
+1) The server has a listening socket that continuously waits for incoming connections.
+
+2) When a client connects, the server’s accept() function creates a new connected socket
+specifically for that client. This connected socket has its own unique socket descriptor 
+on the server side, which the server then uses to communicate with this client.
+
+3) The original listening socket continues listening for more connections and is not 
+used to send or receive data to/from clients.
+	
+Non-blocking I/O operations between client and server:
+------------------------------------------------------
+
+1) I use epoll() to monitor multiple file descriptors.
+	
+	epoll_wait(epollfd, events, MAX_EVENTS, -1);
+	
+	timeout = -1, means epoll() will block indefinitely until atleast one fd becomes ready
+	timeout = 0, means epoll() will return immediately without blocking.
+	timeout > 0 means wait for x millisecs
+	
+	This doesn't have control over blocking of subsequent read(), write() operations
+	
+2) set the status flag in the socket file descriptor to O_NONBLOCK
+	flags = fcntl(sock, F_GETFL, 0);
+	flags |= O_NONBLOCK; //add O_NONBLOCK to existing flag statuses
+	fcntl(sock , F_SETFL , flags);
+	
+	this ensures the non-blocking on the file descriptor itself
+	
+
+What combination is suitable?
+
+a) timeout = -1		Blocks indefinetly	Socket is Blocking.	Traditional blocking I/O
+   Don't set F_SETFL 
+   
+b) timeout = 0		Non-blocking poll	Socket is Blocking.	Rarely useful.
+   Don't set F_SETFL 
+	
+c) timeout = -1		Blocks indefinetly	Socket non-Blocking.	Event-driven non-blocking I/O
+   set F_SETFL 
+   
+d) timeout = 0		Non-blocking poll	Socket non-Blocking	*I don't agree with chatgpt
+   set F_SETFL 	
+
+I choose d) to fulfill the subject requirement on Pg 6. 
+
+	It must be non-blocking and use only 1 poll() (or equivalent) for all the I/O
+	operations between the client and the server (listen included).
+	 
+- If I set timeout = -1 in epoll_wait(), I/O operation is blocking until atlease one event occurs,
+  which means listen() is blocked, until epoll_wait() returns control.
+  

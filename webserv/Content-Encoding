@@ -1,0 +1,69 @@
+Content-Encoding
+----------------
+
+- The "Content-Encoding" header field indicates 
+	- what content codings have been applied to the representation, 
+	beyond those inherent in the media type, 
+	- and thus what decoding mechanisms have to be applied in order to obtain data 
+	in the media type referenced by the Content-Type header field.
+	
+- Content-Encoding is primarily used to allow a representation's data 
+	to be compressed without losing the identity of its underlying media type
+	
+- Example:
+	Content-Encoding: gzip
+	
+- If one or more encodings have been applied to a representation
+	- list the content codings in the order in which they were applied.
+	
+- the representation is defined in terms of the coded form, 
+	- and all other metadata about the representation is about the coded form 
+	unless otherwise noted in the metadata definition.
+	
+- If the media type includes an inherent encoding, such as a data format that is always 
+	compressed, then that encoding would not be restated in Content-Encoding
+	
+- An origin server MAY respond with a status code of 415 (Unsupported Media Type) 
+if a representation in the request message has a content coding that is not acceptable.
+
+
+Content codings
+---------------
+
+Gzip, Compress, Deflate
+
+------------------------------------------------------------------------------------------
+
+Content-Encoding vs Transfer-Encoding
+-------------------------------------
+
+Content-Encoding: gzip
+
+	- The content (e.g., a file or response body) is compressed using the GZIP format 
+	before being sent.
+	- The recipient (client or intermediary) is expected to decompress the body to retrieve 
+	the original content.
+	
+Transfer-Encoding: gzip, chunked
+
+	- The data is compressed at the transport level to reduce transmission size.
+	- This compression occurs before applying chunked encoding.
+	
+	and,
+	- The compressed data is split into chunks for streaming, typically 
+	when the server doesn't know the total size of the response in advance.
+	
+What does it mean if it has both Content-Encoding: gzip and Transfer-Encoding: gzip, chunked ?
+---------------------------------------------------------------------------------------------
+
+- The server compresses the original content using GZIP (Content-Encoding: gzip).
+
+- Then, it applies another layer of GZIP compression for transmission (Transfer-Encoding: gzip).
+
+- Finally, it breaks the double-compressed data into chunks for streaming (Transfer-Encoding: chunked).
+
+
+- The client processes the Transfer-Encoding in reverse:
+- The client then processes the Content-Encoding
+
+

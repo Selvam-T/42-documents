@@ -1,0 +1,82 @@
+Sources of Environment Variables and precedence:
+-----------------------------------------------
+
+1) Command line docker compose run variable
+   example:
+   $ docker compose run -e DEBUG=1 web python console.py
+   
+2) .env file
+   --env-file (use this option to pass .env path on command line)
+
+3) environment: attribute in the compose.yml file
+   
+4) env_file: attribute to define .env file in compose
+
+5) ENV directive.
+   ARG or ENV setting in the Dockerfile evaluates only if there is no 
+   Docker Compose entry for environment, env_file or run --env.
+
+
+1) Inject .env into Makefile
+----------------------------
+a)	- include .env 
+	  makes environment variables available to Makefile
+	
+	- Problem I faced:
+	- I did some variations of 'export .env' in Makefile 
+	  with the intention of passing this to docker-compose. yml
+	  
+	  #export $(shell sed 's/=.*//' .env)
+	
+	- At the same time directly injected (see below) .env into docker-compose.yml
+	  
+	- 'export' in Makefile appeared to override Environment variables, resulting in 
+	  empty string / error in docker-compose.yml
+	
+	- Solution: don't export from Makefile
+	
+	- I understand you can 'export' from Makefile to docker-compose.yml, 
+	  which I did not explore.
+
+b)⚠️	- I did not provide default value if .env didn't exist. Not resolved
+
+2) Inject .env into docker-compose.yml
+--------------------------------------
+
+>	docker-compose will automatically detect .env if it is in the same directory
+
+nginx:
+    image: "${NGINX_IMG:-my_nginx}"		# (a)
+    build:
+      context: .
+      args:
+	DEBIAN_VERSION: ${DEBIAN_VERSION}	# (b)
+    container_name: nginx-server
+
+#(a) default value provided in case .env is not available.
+
+#(b) note that it is in the context of 'build:'
+	and it is under args: directive as key:value pair, why?
+	because this is passed as argument to build, which calls Dockerfile
+	
+	- if I provided default value for args: key, I get warning message.
+	  so I don't set default value for args: in docker-compose, hoping to rely on
+	  Dockerfile default value.
+	  
+	- Default value can be provided in Dockerfile ARGS, but if .env was
+	  not available, it passes an empty string to ARGS, default value doesn't kick in
+	  
+⚠️	- So providing Default value for args: in docker-compose.yml is not resolved
+	
+	
+3) You cannot inject .env into Dockerfile 
+------------------------------------------
+
+   Therefore you will receive ARG from docker-compose.yml in this case.
+   
+	ARG DEBIAN_VERSION
+	FROM debian:${DEBIAN_VERSION}
+	
+	- ARG is a build-time variable, allowing to pass values 
+	- ARG values exist only while the image is being built.
+

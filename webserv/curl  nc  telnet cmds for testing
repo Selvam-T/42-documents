@@ -1,0 +1,108 @@
+Curl command for testing 
+
+POST:
+-----
+
+1) HTTP POST request to server running on localhost:8080
+
+	curl -X POST http://localhost:8080
+	
+2) Upload a file (sends only file name, not its content)
+
+	curl -X POST -F "file=@testfile.txt" http://localhost:8080
+	
+3) send only text in the testfile.txt
+
+	curl -X POST --data-binary "@testfile.txt" http://localhost:8080
+	
+4) I tried to send both file content and file name, but it doesn't work
+	curl -X POST --data-binary "@testfile.txt" -F "file=@testfile.txt" http://localhost:8080
+	
+5) Send form data
+	
+	curl -X POST -d "key=value" http://localhost:8080
+	
+6) send JSON
+
+	curl -X POST -H "Content-Type: application/json" -d '{"key":"value"}' http://localhost:8080
+
+		
+GET:
+----
+
+1) Basic GET Request
+
+	curl http://localhost:8080
+	
+2) GET Request with Query Parameters
+
+	curl "http://localhost:8080?key=value&name=example"
+	
+3) GET Request with Custom Headers
+
+	curl -H "Authorization: Bearer <token>" http://localhost:8080
+	
+	//the <token> is usually a JWT (JSON Web Token) used for verifying the client 
+	  making the request.
+	
+4) GET Request with Verbose Output
+
+	curl -v http://localhost:8080
+	
+	// enables verbose mode, provide detailed information about the request and response
+	// DNS lookup, Connection details, Headers sent and received, HTTP response status
+	
+5) GET Request with Redirection Handling
+
+	curl -L http://localhost:8080
+	
+	// Example response from the server:
+		HTTP/1.1 301 Moved Permanently
+		Location: http://localhost:8080/newpath
+		
+	// With curl -L, the client automatically follows the redirect to
+		http://localhost:8080/newpath.
+		
+DELETE:
+------
+
+1) curl -X DELETE http://localhost:8080/testfile.txt
+
+2) curl -X DELETE -u username:password http://localhost:8080/testfile.txt
+
+
+/*******************************************************************************************/
+
+Transfer-Encoding: chunked: (using CURL, sends the entire data block as a single chunk)
+---------------------------------------------------------------------------------------
+
+curl -X GET http://localhost:8080 \
+-H "Transfer-Encoding: chunked" \
+--data-binary @- <<EOF
+Hello
+Test
+Pass Exam
+Soon
+EOF
+
+Transfer-Encoding: chunked: (using nc)
+--------------------------------------
+
+nc localhost 8080 <<EOF
+POST / HTTP/1.1
+Host: localhost:8080
+Transfer-Encoding: chunked
+
+4
+Wiki
+5
+pedia
+6
+ in
+8
+chunks.
+0
+
+EOF
+
+

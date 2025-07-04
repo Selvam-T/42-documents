@@ -1,0 +1,127 @@
+The config files required for WordPress are
+1) wp-config.php
+2) custom.conf
+
+1) wp-config.php
+----------------
+
+WordPress doesn't itself serve pages directly, Nginx does that.
+Wordpress process requests and generates dynamic content. 
+The domain name localhost and sthigar.42.fr are handled by Nginx.
+WordPress doesn't need to know the external port.
+
+WordPress stores the site URL nad home URL in the database (wp_options).
+HOwever you can override these in wp-config. php.
+
+wp-config.php file 
+------------------
+
+	- is one of the core configuration files in a WordPress installation. 
+	- essential settings that control 
+	  - how WordPress interacts with your database,
+	  - security keys,
+	  - the site URL. 
+	  - etc
+	
+	- When you first download WordPress, the wp-config.php file isn’t included.   
+	- wp-config-sample.php will be found.
+	
+	- see below on how to create wp-config.php with necessary settings.
+	
+
+DATABASE settings and NGINX related setting in wp-config.php
+------------------------------------------------------------
+
+	- WP_HOME and WP_SITEURL (Nginx related)
+	- DB_NAME, DB_USER, DB_PASSWORD, DB_HOST etc (Database related)
+	
+	- can be updated in wp-config.php or WP Database (wp_options Table)
+	
+	- WP_HOME: The url users navigate to.
+	- WP_SITEURL: The url where the WordPress core files are located.
+	- WordPress uses these to generate links, CSS, JS and redirect users.
+	
+a)	- Place the following lines in wp-config.php manually -
+	- define('WP_SITEURL', 'http:://sthiagar.42.fr:8443/wp-admin' );
+	- define('WP_HOME', 'http:://sthiagar.42.fr:8443');
+	- define('DB_NAME', 'wordpress');
+	- etc
+	- Place wp-config.php and custom.conf in conf folder, 
+	  COPY into container using entrypoint.sh during runtime
+	
+	- or set it dynamically
+	- define( 'WP_SITEURL', 'https://' . $_SERVER['HTTP_HOST'] . '/path/to/wordpress' );
+	- Setting this value in wp-config.php overrides the wp_options table value for siteurl.
+
+b)	- Use WP-CLI tool to create and edit a new wp-config.php -
+	- wp config create --dbname=<db_name> --dbuser=<db_user> etc
+	- it saves in the current working directory
+	
+a)**	- using ARGS: directive in docker-compose pass 
+	  environment variables to build process of WordPress container. 
+	- RUN wp config create -dbname=${WORDPRESS_DB_NAME} ...
+	** This didn't work, environment variable value not substituted, hence
+	  wp-config.php has empty values in define("DB_NAME', "");
+	  I didn't resolve this.
+	  
+b)	- using ENVIRONMENT: directive in docker-compose pass
+          environment variables to run time of wordpress container.
+          Generate using wp config at entrypoint.
+	  I used this method.
+	  
+	
+c)	- SQL command to update database
+	  UPDATE wp_options SET option_value = 'https://example.com' WHERE option_name = 'siteurl';
+	  
+d)*	- You can pass these settings as environment variables in docker-compose.yml
+	- If wp-config.php doesn't exist, WordPress will auto-generate it using these variables.
+	- If it does exist, the env vars are ignored.
+	
+	* This didn't work. 
+	WordPress:latest includes an entrypoint script that checks for environment variables and
+	generate wp-config.php.  
+
+2) custom.conf
+   -----------
+   - PHP-FPM uses php-fpm.conf and www.conf 
+   - the listen directive specifies where PHP-FPM accepts FastCGI requests (from Nginx)
+   - by default, www.conf contains listen directive
+   - to override this we add custom.conf
+
+   - Alternatively, I could update a specific line in www.conf in Dockerfile
+     RUN sed -i 's/listen = .*/listen = 0.0.0.0:9000/' /etc/php/8.2/fpm/pool.d/www.conf
+   
+3) Essential setup for WordPress database connectivity
+------------------------------------------------------
+	1) ensure you pass credentials to runtime using environment: directive in .yml
+	2) Create wordpress database
+	3) Create wordpress user
+	4) Grant necessary permissions
+	
+4) Database user vs Admin_user vs Regular_user
+----------------------------------------------
+
+MariaDB database user (eg., wordpress) used to authenticate with the database
+ 
+    - database level user for database access
+  
+a)  - MYSQL_USER injected in mariadb, 
+      created using mysql in mariadb ENTRYPOINT, as _MYSQL_USER_
+b)  - WORDPRESS_DB_USER injected into wordpress,
+      configured into wp-config.php in wordpress ENTRYPOINT, as -dbuser
+  
+Admin_user is the WordPress admin user for logging into the WordPress dashboard
+  
+  - for site administation
+  - created in wordpress ENTRYPOINT, using wp core install, as --admin_user
+  - automatically assigned the Administrator role, grants full control
+  
+Regular_user
+
+  - created in wordpress ENTRYPOINT, using wp user create
+  - lower role subscriber, contributor, editor, author et
+  - limited privileges
+  - not created aitomatically during installation, you add them
+  
+Regular_user
+  --admin_user 

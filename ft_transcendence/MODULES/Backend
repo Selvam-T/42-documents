@@ -1,0 +1,26 @@
+🟢 Backend
+-----------------------------------------------------------------------------------------------
+- written in pure PHP without frameworks. 🔒
+- however it can be overridden with a framework module.
+
+- If your backend or framework uses a database, 
+  you must follow the constraints of the Database module.
+
+- mandatory to enable an HTTPS connection for all aspects
+
+- FORMS and user INPUT validation is handled on backend ⛔
+  
+❓ what is framework
+
+
+🟢 Web modules
+-----------------------------------------------------------------------------------------------
+
+- Use a framework to build the backend 		(Major)
+
+- Use a database for the backend. 		(Minor)
+
+🟢 Devops modules
+-----------------------------------------------------------------------------------------------	
+
+- Designing the backend as microservices.	(Major)

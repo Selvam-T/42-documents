@@ -68,7 +68,7 @@ I cannot use the following string conversion functions, because they are in c++1
 3)	Contain only one static method "convert".
 	- Make sure there is only one static method.
 	
-4)	Pg. 7. please note that non displayable characters shouldn’t be used as inputs.	
+4)???	Pg. 7. please note that non displayable characters shouldn’t be used as inputs.	
 	" " --> ASCII 32, <SPACE>. 
 	How do you handle non displayable character , as in pg 7 ? Not a required test.
 	I throw exception.

@@ -1,0 +1,207 @@
+
+1)	Nginx is a high performance web server that is responsible for handling 
+	the load of some of the largest sites on the internet.
+	- handling many concurrent connections and 
+	- forwarding or serving static content.
+
+
+2) 	ssl_certificate and ssl_certificate_key
+	---------------------------------------
+	
+>	How are they generated?
+	
+	In Dockerfile - 
+	
+	a) make a dir to store certificates
+	b) run 
+	> openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    	  keyout /etc/nginx/ssl/nginx.key \
+    	  out /etc/nginx/ssl/nginx.crt \
+    	  subj "/C=US/ST=California/L=Local/O=Localhost/OU=Localhost/CN=localhost"
+    	
+    	-x509: Specifies that you want a self-signed certificate (instead of a CSR). 
+    	This means no intermediate or external CA is involved.
+    	
+	-nodes: No encryption on the private key (easier to configure, 
+	 but less secure for production).
+	
+	-days 365: The certificate will be valid for 365 days.
+	
+	-newkey rsa:2048: Generate a new RSA key with a 2048-bit length (standard for most uses).
+	
+	-keyout /etc/nginx/ssl/nginx.key: The private key is saved to /etc/nginx/ssl/nginx.key.
+	
+	-out /etc/nginx/ssl/nginx.crt: The certificate is saved to /etc/nginx/ssl/nginx.crt.
+	
+	-subj "/C=US/ST=California/L=Local/O=Localhost/OU=Localhost/CN=localhost": 
+	Sets the Distinguished Name (DN) for the certificate, which includes the Country (C), 
+	State (ST), Locality (L), Organization (O), Organizational Unit (OU), 
+	and Common Name (CN) (typically the domain name or IP address).
+	
+	This is typically used for testing, development, or internal use where you don’t need 
+	a trusted CA. The CN (Common Name) is set to localhost, so the certificate is only valid 
+	for localhost.
+	
+>	Now you have certificates residing in /etc/nginx/ssl/ on the container
+
+>	In nginx.conf specify the path to Public certificate and Private Key
+
+	> ssl_certificate /etc/nginx/ssl/nginx.crt;
+		This file is sent to the client to verify the website’s authenticity.
+	
+	> ssl_certificate_key /etc/nginx/ssl/nginx.key;
+		This key is never shared—it’s used to decrypt encrypted requests.
+
+>	Additionally you instruct nginx to use SSL, meaning nginx will encrypt the
+	connection on port 443 using SSL.
+	
+	> listen 443 ssl;
+	> ssl_certificate /etc/nginx/ssl/nginx.crt;
+	> ssl_certificate_key /etc/nginx/ssl/nginx.key;
+
+	    
+3)	How is nginx instructed to handle HTTPS traffic?
+
+	In nginx.conf -
+	
+	> listen 443 ssl http2;
+	> ssl_certificate /etc/nginx/ssl/nginx.crt;
+	> ssl_certificate_key /etc/nginx/ssl/nginx.key;
+	
+	To serve HTTPS, you explicitly define ssl (SSL/TLS encryption).
+	HTTPS is not implied by http2.
+	
+	HTTP/2 itself is a protocol for HTTP traffic.
+	Omitting http2 simply means that NGINX will use HTTP/1.1 
+	as the protocol for handling the encrypted traffic instead of HTTP/2.
+
+	
+4)	ssl_ciphers and ssl_prefer_server_ciphers directives:
+
+	- ssl_ciphers: This line specifies which ciphers (encryption algorithms) 
+	NGINX should use for SSL/TLS connections.
+	
+	- ssl_prefer_server_ciphers: This directive tells NGINX to prefer the 
+	server’s choice of ciphers over the client’s preferences.
+	
+	You can technically omit both settings, and NGINX will still work. 
+	However, omitting them can make your SSL/TLS configuration less secure.	
+
+5)	In nginx.conf 
+	SSL protocols are limited to TLSv1.2 and TLSv1.3.
+	
+6)	Why redirect HTTP to HTTPS in nginx.conf?
+
+	I do not redirect HTTP. I throw error.
+	
+	> But to redirect, return 301 https://$server_name$request_uri;
+
+	It's generally a good practice to separate HTTP and HTTPS configurations 
+	into different server blocks.
+
+	$request_uri is a built-in variable in NGINX that represents the full original 
+	request URI, including the query string.
+	
+	You don't need to explicitly define $request_uri anywhere in your configuration. 
+	It's a predefined NGINX variable that automatically gets the full URI from the 
+	HTTP request, including the path and query string. 
+	
+	
+7)	I want use SSL certificate that is trusted by browsers:
+
+	1) Disable SSL checks in browser
+		click on Advanced
+		Click "Proceed to localhost (unsafe)".
+		
+	2) Use Let's Encrypt:
+	3) Purchase an SSL Certificate is not an option.
+
+	
+8)	How to configure sthiagar.42.fr domain name ?
+
+	3 ways to do it.
+
+	1) Add an entry in /etc/hosts manually
+	   127.0.0.1   sthiagar.42.fr
+	
+	   You can access sthiagar.42.fr from host, and
+		fron within each container services
+	
+	2) Use docker-compose.yml with 
+	   extra_hosts: - "sthiagar.42.fr:127.0.0.1"
+	  
+	  all services resolve to 127.0.0.1 
+	  cannot access sthiagar.42.fr from host browser
+	  
+	3) Use docker-compose.yml with custom network
+	   aliases: - sthiagar.42.fr
+	   
+	   all services resolves to Nginx's container IP dynamically
+	   cannot access sthiagar.42.fr from host browser
+	   
+9)	SSL Certificate is generated using openssl in nginx Dockerfile
+	
+	> Without SSL certificate (self-signed or CA-signed) you cannot configure
+	  Nginx to successfully handle an HTTPS connection.
+	  
+	> In this project we generate self-sgined certificate. Needs work around to make it work.
+
+	> curl command will fail because it doesn't trust the self-signed certificate.
+	  Because self-sgined certificates are not signed by a trusted Certificate Authority.
+	  In curl command you can use -k flag with fetch page without checking the SSL certificate.
+	  
+	> When you make HTTPS connection from a browser, the browser flags it as untrusted,
+	  hence it doesn't fetch the page. You force it to fetch from Advanaced button.
+	
+	
+10)	location{} blocks in configuration file.
+	
+a)	https://localhost:8443/wp-admin
+	location / {}
+		- / means everything is a match
+		- root is ../static 
+		- uri = wp-admin
+		- uri = wp-admin, is identified as directory.
+		- index directive in this block is index.html
+		- therefore uri = wp-admin/index.html
+		- check in root if uri exists, it does not exist.
+		- it does not return 403, because there is more location block to check
+	location ~ ^/wp-admin(/.*)?$ {}
+		- root is ../wordpress
+		- uri = /wp-admin
+		- root is ../wordpress
+		- uri is a directory
+		- it drops down to next location block
+	location ~ \.php$ {}
+		- uri is wp-admin/index.php
+		- process using fastcgi
+		
+	
+b)	https://localhost:8443/wp-admin/index.php
+	
+		- same as above, except in 
+		  location ~ ^/wp-admin(/.*)?$ {}
+		  uri = /wp-admin/index.php is identified as file
+		- rest is same
+			
+c)	https://localhost:8443/index.php
+	
+	location / {}
+		- uri = index.php
+		- uri is identified as file
+		- index directive is not applied
+		- but index.php does not exist in root
+		- it does not return error, because there is other location to check
+	location ~ \.php$ {}
+		- current uri = index.php
+		- I am going to assume, once in this block
+	 	  wp can handle all .php
+	 
+d)	https://localhost:8443/index.html
+	
+	location / {}
+		- uri = index.html
+		- uri is identified as file
+		- uri is found in root and served
+	
+	   

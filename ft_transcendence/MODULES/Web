@@ -1,0 +1,54 @@
+- 7 major modules is required.
+
+- Two Minor Modules count as one Major Module.
+
+- review each module as it may require modifications to your baseline website.
+
+🟢 Web
+-----------------------------------------------------------------------------------------------
+
+		+---------------------+       +---------------------+
+		| Backend Framework   |<----->| Frontend Framework  |
+		| (Fastify + Node.js) |       | (Tailwind + TS)     |
+		| (Backend)           |       | (Frontend)          |
+		+---------------------+       +---------------------+
+			  |                            |
+			  | Stores/Retrieves           | Displays
+			  |                            |
+			  v                            v
+		+---------------------+       +------------------------+
+		| Database            |<----->| Blockchain             |
+		| (SQLite)            |       | (Avalanche + Solidity) |
+		| (Backend)           |       | (Backend)              |
+		+---------------------+       +------------------------+
+			  ^                            |
+			  | Supports                   | Sends Data
+			  +----------------------------+
+          
+The flowchart represents the Pong game modules and their interdependencies:
+
+Modules (Nodes):
+----------------
+	Backend Framework (Fastify with Node.js, Backend): Handles APIs and core logic.
+	
+	Frontend Framework (Tailwind CSS + TypeScript, Frontend): Displays the game interface.
+	
+	Database (SQLite, Backend): Stores game data.
+	
+	Blockchain (Avalanche + Solidity, Backend): Stores tournament scores securely.
+
+Interdependencies (Arrows):
+---------------------------
+	Backend Framework → Frontend Framework: Provides APIs for the frontend to fetch/display data.
+	
+	Backend Framework → Database: Uses SQLite to store/retrieve game data.
+	
+	Backend Framework → Blockchain: Interacts with Avalanche for score storage/retrieval.
+	
+	Database → Blockchain: Supports Blockchain with auxiliary data (e.g., score metadata).
+	
+	Frontend Framework → Blockchain: Displays Blockchain-stored scores to users.
+	
+	Blockchain → Backend Framework: Sends score data back to the backend for processing.
+
+

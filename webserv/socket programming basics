@@ -1,0 +1,208 @@
+For reference: UNIX: Network Programming" by W. Richard Stevens 
+
+Socket programming basics
+-------------------------
+
+1)	Client and Server establish TCP connection
+
+2)	Client sends HTTP request over TCP connection
+3)	Server processes that request and sends back a reply.
+
+	Send Request / Send reply until connection is closed.
+	
+Server
+------
+	- Create socket
+	- Set socket options
+	- Bind socket to port 
+	- Listen for incoming connection
+	LOOP:
+	- Accept connection
+	- Recv  // HTTP message exchange
+	- Send  // HTTP message exchange
+	- close connection
+		- send EOF character
+		- close the socket file descriptor
+
+//Client --> don't need to create application. Browser is used as client.
+//------
+//	- create socket
+//	- connect
+//	- send
+//	- recv
+//	- close
+
+C++ has no standard library for socket programming
+---------------------------------------------------
+	- POSIX socket API (Portable OS Interface)
+		is a standardized interface for network communication, 
+		defined in the POSIX standard, and is implemented in C.
+	- includes functions for 
+		creating sockets, 
+		connecting to remote servers, 
+		sending and receiving data, 
+		and closing connections.
+		
+	- <sys/socket.h> and 
+	  <netinet/in.h>, 
+		provide the POSIX socket API functions. 
+	
+	- socket()
+	- bind()
+	- listen()
+	- accept() //used by the server
+	- connect() //used only by the client
+	- send()
+	- recv()
+	
+	
+	- You can then leverage C++ features (like RAII with classes to manage resources, 
+	e.g., socket file descriptors) while still using POSIX APIs for network communication.
+	
+	- While C++ does not add specific socket functions, you can wrap POSIX socket 
+	calls within C++ classes to create a higher-level, more C++-friendly API.
+	
+	- Sockets are represented by file descriptors, 
+	  you interact with them using system calls like 
+	  - socket()	//#include <sys/socket.h>
+	  - bind()
+	  - listen()
+	  - accept()
+	  - read()
+	  - write()
+	  - close()
+	  
+	A system call in C is a request made by a program to the operating system's kernel to 
+	perform a low-level operation.   
+
+I/O multiplexing or event notification mechanisms
+-------------------------------------------------
+
+- select() is best for small-scale applications with a few descriptors.
+
+- poll() offers improvements over select(), but still has linear scanning limitations.
+
+- epoll() is the most efficient and scalable choice for large numbers of descriptors on Linux.
+
+They are used to manage multiple file descriptors for asynchronous I/O operations, allowing a 
+program to monitor several file descriptors at once to see if they are ready for reading, writing, 
+or have errors without blocking the program’s execution.
+
+These functions prevent the program from being stuck waiting for data on a single socket, 
+making them ideal for handling large-scale network applications like HTTP servers.
+
+How many file descriptors will there be ?
+-----------------------------------------
+Say you have 10 clients making request -
+	- The listening socket (used to accept incoming client connections).
+	- 1 file descriptor for the listening socket (the socket you create 
+	with socket() and bind()).
+	
+	- 10 file descriptors for the 10 connected client sockets
+	(each returned by accept()).
+
+
+struct sockaddr explained
+-------------------------
+
+- a generic data structure used in computer networking to store a 
+	- socket address, 
+		which essentially contains information about a 
+		- network host's IP address and port number, 
+  allowing applications to identify and communicate with specific network destinations.
+  
+- While sockaddr is a single structure, its internal details are interpreted differently 
+  based on the address family specified by the sa_family field.
+  
+- sa_family (unsigned short): Indicates the address family 
+  (e.g., AF_INET for IPv4, 
+         AF_INET6 for IPv6)
+         
+- sa_data (char array): 
+  Contains the actual address data, which varies based on the address family.
+  
+- struct sockaddr_in (for IPv4): 
+  This structure is commonly used to store an IPv4 address and port number, 
+  with fields like 
+  	- sin_addr (IP address) and 
+  	- sin_port (port number).
+
+- struct sockaddr_in6 (for IPv6): 
+  Similarly, this structure holds an IPv6 address and port details.
+  
+How to use struct sockaddr:
+--------------------------
+Casting:
+	When using socket functions like 
+	- bind, 
+	- connect, or 
+	- getsockname, 
+	you typically need to cast a specific address structure (like sockaddr_in) 
+	to a generic sockaddr pointer.	
+
+Accessing address data:
+
+To access the specific address details within a sockaddr, you need to cast the 
+pointer back to the appropriate address family structure and access its fields.
+
+getaddrinfo() explained:
+----------------------
+int getaddrinfo(const char *restrict node,
+                       const char *restrict service,
+                       const struct addrinfo *restrict hints,
+                       struct addrinfo **restrict res);
+                       
+	parameters explained:
+		- node		is hostname, such as "localhost"
+		- service	is port number, such as "8080"
+		- hints		is struct addrinfo, is just the initial guidance (input) 
+		  		to influence how getaddrinfo resolves the addresses, 
+		- result 	is the place where the resolved addresses are stored, 
+				as a linked list.
+				
+- A domain name (e.g., example.com) resolves to one or more IP addresses 
+  through DNS (Domain Name System). 
+
+- This resolution happens when you call getaddrinfo() which query DNS servers 
+  to find the IP addresses associated with the domain name.
+  
+hostname vs IP address
+-----------------------
+www.example.com is a hostname.
+localhost is a hostname.
+
+A hostname needs to be resolved to an IP address.
+
+i.e. www.example.com is resolved to 127.0.0.1
+
+"resolve" means converting a hostname (like localhost) into an actual IP address (e.g., 127.0.0.1) 
+and converting a service name (like "http") into its corresponding port number (e.g., 80 for HTTP).
+
+Service vs protocol
+-------------------
+- A service is typically a protocol or port number.
+
+- Port "80" for HTTP or "8080" for HTTP in non-production environment.
+
+In summary, port 80 is the standard HTTP port for public-facing services. 
+while port 8080 is often used for development, testing, or alternative HTTP services.
+
+domain vs hostname vs website
+-----------------------------
+
+- A domain refers to the human-readable name (e.g., example.com) 
+  that users type into a browser.
+ 
+- sub domain - examples www, mail, support etc, as in
+	www.example.com
+	mail.example.com
+	support.example.com
+
+- A hostname is a specific name that resolves to an IP address 
+  (e.g., example.com or www.example.com)
+
+- A website is a collection of resources (HTML, CSS, JavaScript, etc.) 
+  that is served when a browser accesses the hostname.
+
+- server_name (in config file) refers to the hostnames the server listens for.
+

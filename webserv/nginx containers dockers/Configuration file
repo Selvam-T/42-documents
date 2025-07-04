@@ -23,7 +23,7 @@ nginx.conf, placed in
 	kill -s QUIT 1628	//unix tool command
 
 --------------------------------------------------------------------------------
-Nginx configuratio file
+configuratio Nginx file
 
 1) Simple directive;
    Block directives {}	

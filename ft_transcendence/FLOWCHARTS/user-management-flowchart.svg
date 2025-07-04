@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="600" y="40" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle">User Management System and Core Components</text>
+  <text x="600" y="70" font-family="Arial" font-size="16" text-anchor="middle">Pong Game Architecture - Connections and Interdependencies</text>
+  
+  <!-- Core System (Blue) -->
+  <rect x="500" y="120" width="200" height="80" rx="10" fill="#007bff" stroke="#0056b3" stroke-width="2"/>
+  <text x="600" y="160" font-family="Arial" font-size="16" text-anchor="middle" fill="white">Backend Framework</text>
+  <text x="600" y="180" font-family="Arial" font-size="12" text-anchor="middle" fill="white">Fastify with Node.js</text>
+  
+  <rect x="500" y="220" width="200" height="80" rx="10" fill="#007bff" stroke="#0056b3" stroke-width="2"/>
+  <text x="600" y="260" font-family="Arial" font-size="16" text-anchor="middle" fill="white">Frontend Framework</text>
+  <text x="600" y="280" font-family="Arial" font-size="12" text-anchor="middle" fill="white">Tailwind CSS + TypeScript</text>
+  
+  <rect x="500" y="320" width="200" height="80" rx="10" fill="#007bff" stroke="#0056b3" stroke-width="2"/>
+  <text x="600" y="360" font-family="Arial" font-size="16" text-anchor="middle" fill="white">Database</text>
+  <text x="600" y="380" font-family="Arial" font-size="12" text-anchor="middle" fill="white">SQLite</text>
+  
+  <!-- User Management (Green) -->
+  <rect x="120" y="200" width="220" height="80" rx="10" fill="#28a745" stroke="#1e7e34" stroke-width="2"/>
+  <text x="230" y="235" font-family="Arial" font-size="16" text-anchor="middle" fill="white">Standard User Management</text>
+  <text x="230" y="255" font-family="Arial" font-size="12" text-anchor="middle" fill="white">Backend</text>
+  <text x="230" y="275" font-family="Arial" font-size="10" text-anchor="middle" fill="white">User data, profiles, match history</text>
+  
+  <rect x="120" y="300" width="220" height="80" rx="10" fill="#28a745" stroke="#1e7e34" stroke-width="2"/>
+  <text x="230" y="335" font-family="Arial" font-size="16" text-anchor="middle" fill="white">Standard User Management</text>
+  <text x="230" y="355" font-family="Arial" font-size="12" text-anchor="middle" fill="white">Frontend</text>
+  <text x="230" y="375" font-family="Arial" font-size="10" text-anchor="middle" fill="white">Registration, login, profile UIs</text>
+  
+  <rect x="120" y="400" width="220" height="80" rx="10" fill="#28a745" stroke="#1e7e34" stroke-width="2"/>
+  <text x="230" y="435" font-family="Arial" font-size="16" text-anchor="middle" fill="white">Remote Authentication</text>
+  <text x="230" y="455" font-family="Arial" font-size="12" text-anchor="middle" fill="white">Backend</text>
+  <text x="230" y="475" font-family="Arial" font-size="10" text-anchor="middle" fill="white">Google Sign-in integration</text>
+  
+  <rect x="120" y="500" width="220" height="80" rx="10" fill="#28a745" stroke="#1e7e34" stroke-width="2"/>
+  <text x="230" y="535" font-family="Arial" font-size="16" text-anchor="middle" fill="white">Remote Authentication</text>
+  <text x="230" y="555" font-family="Arial" font-size="12" text-anchor="middle" fill="white">Frontend</text>
+  <text x="230" y="575" font-family="Arial" font-size="10" text-anchor="middle" fill="white">Google Sign-in button and UI</text>
+  
+  <!-- Game Features (Red) -->
+  <rect x="880" y="120" width="200" height="80" rx="10" fill="#dc3545" stroke="#bd2130" stroke-width="2"/>
+  <text x="980" y="155" font-family="Arial" font-size="16" text-anchor="middle" fill="white">New Game with History</text>
+  <text x="980" y="175" font-family="Arial" font-size="12" text-anchor="middle" fill="white">and Matchmaking</text>
+  <text x="980" y="195" font-family="Arial" font-size="12" text-anchor="middle" fill="white">Backend</text>
+  
+  <rect x="880" y="220" width="200" height="80" rx="10" fill="#dc3545" stroke="#bd2130" stroke-width="2"/>
+  <text x="980" y="255" font-family="Arial" font-size="16" text-anchor="middle" fill="white">Game Customization</text>
+  <text x="980" y="275" font-family="Arial" font-size="12" text-anchor="middle" fill="white">Backend</text>
+  
+  <!-- Enhanced Features (Yellow) -->
+  <rect x="880" y="320" width="200" height="80" rx="10" fill="#ffc107" stroke="#d39e00" stroke-width="2"/>
+  <text x="980" y="355" font-family="Arial" font-size="16" text-anchor="middle" fill="black">AI Opponent</text>
+  <text x="980" y="375" font-family="Arial" font-size="12" text-anchor="middle" fill="black">Backend</text>
+  
+  <rect x="880" y="420" width="200" height="80" rx="10" fill="#ffc107" stroke="#d39e00" stroke-width="2"/>
+  <text x="980" y="455" font-family="Arial" font-size="16" text-anchor="middle" fill="black">User and Game Stats</text>
+  <text x="980" y="475" font-family="Arial" font-size="12" text-anchor="middle" fill="black">Dashboards, Backend</text>
+  
+  <!-- Advanced Features (Purple) -->
+  <rect x="880" y="520" width="200" height="80" rx="10" fill="#6f42c1" stroke="#5e37a6" stroke-width="2"/>
+  <text x="980" y="555" font-family="Arial" font-size="16" text-anchor="middle" fill="white">Advanced 3D Techniques</text>
+  <text x="980" y="575" font-family="Arial" font-size="12" text-anchor="middle" fill="white">Backend</text>
+  
+  <!-- Server-Side Pong (Pink) -->
+  <rect x="880" y="620" width="200" height="80" rx="10" fill="#e83e8c" stroke="#c1366a" stroke-width="2"/>
+  <text x="980" y="655" font-family="Arial" font-size="16" text-anchor="middle" fill="white">Server-Side Pong and API</text>
+  <text x="980" y="675" font-family="Arial" font-size="12" text-anchor="middle" fill="white">Backend</text>
+  
+  <!-- Monitoring (Cyan) -->
+  <rect x="500" y="450" width="200" height="80" rx="10" fill="#17a2b8" stroke="#138496" stroke-width="2"/>
+  <text x="600" y="485" font-family="Arial" font-size="16" text-anchor="middle" fill="white">Monitoring System</text>
+  <text x="600" y="505" font-family="Arial" font-size="12" text-anchor="middle" fill="white">Prometheus and Grafana</text>
+  
+  <!-- Connection Lines: Core System Interconnections -->
+  <line x1="600" y1="200" x2="600" y2="220" stroke="#0056b3" stroke-width="2"/>
+  <line x1="600" y1="300" x2="600" y2="320" stroke="#0056b3" stroke-width="2"/>
+  <line x1="600" y1="400" x2="600" y2="450" stroke="#0056b3" stroke-width="2"/>
+  
+  <!-- User Management Internal Connections -->
+  <line x1="230" y1="280" x2="230" y2="300" stroke="#1e7e34" stroke-width="2"/>
+  <line x1="230" y1="380" x2="230" y2="400" stroke="#1e7e34" stroke-width="2"/>
+  <line x1="230" y1="480" x2="230" y2="500" stroke="#1e7e34" stroke-width="2"/>
+  
+  <!-- Backend Framework to User Management -->
+  <path d="M500,160 Q400,160 340,200" fill="none" stroke="#0056b3" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M500,160 Q400,160 340,440" fill="none" stroke="#0056b3" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- User Management Backend to Database -->
+  <path d="M340,240 Q420,240 500,360" fill="none" stroke="#1e7e34" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Database to User Management Backend -->
+  <path d="M500,340 Q420,340 340,260" fill="none" stroke="#0056b3" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Remote Auth to Standard User Management -->
+  <path d="M230,400 Q180,380 180,280 Q180,240 230,240" fill="none" stroke="#1e7e34" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- User Management Backend to Game Systems -->
+  <path d="M340,220 Q600,120 880,160" fill="none" stroke="#1e7e34" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M340,220 Q600,200 880,360" fill="none" stroke="#1e7e34" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M340,220 Q600,240 880,460" fill="none" stroke="#1e7e34" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M340,220 Q600,280 880,560" fill="none" stroke="#1e7e34" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M340,220 Q600,320 880,660" fill="none" stroke="#1e7e34" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Game Systems to User Management Backend -->
+  <path d="M880,180 Q650,160 340,230" fill="none" stroke="#bd2130" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M880,360 Q650,300 340,230" fill="none" stroke="#d39e00" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M880,460 Q650,340 340,230" fill="none" stroke="#d39e00" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M880,670 Q650,380 340,230" fill="none" stroke="#c1366a" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Monitoring System to Backend -->
+  <path d="M600,450 Q500,400 500,160" fill="none" stroke="#138496" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Monitoring System to Database -->
+  <path d="M600,450 Q550,410 550,360" fill="none" stroke="#138496" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Monitoring to User Management Backend -->
+  <path d="M500,490 Q420,490 340,240" fill="none" stroke="#138496" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Monitoring to Game Systems -->
+  <path d="M700,470 Q800,300 880,160" fill="none" stroke="#138496" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M700,470 Q800,330 880,360" fill="none" stroke="#138496" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M700,490 Q800,520 880,560" fill="none" stroke="#138496" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M700,510 Q800,580 880,660" fill="none" stroke="#138496" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Legend -->
+  <rect x="50" y="620" width="20" height="20" fill="#007bff"/>
+  <text x="80" y="635" font-family="Arial" font-size="14" text-anchor="start">Core System</text>
+  
+  <rect x="50" y="650" width="20" height="20" fill="#28a745"/>
+  <text x="80" y="665" font-family="Arial" font-size="14" text-anchor="start">User Management</text>
+  
+  <rect x="50" y="680" width="20" height="20" fill="#dc3545"/>
+  <text x="80" y="695" font-family="Arial" font-size="14" text-anchor="start">Game Features</text>
+  
+  <rect x="200" y="620" width="20" height="20" fill="#ffc107"/>
+  <text x="230" y="635" font-family="Arial" font-size="14" text-anchor="start">Enhanced Features</text>
+  
+  <rect x="200" y="650" width="20" height="20" fill="#6f42c1"/>
+  <text x="230" y="665" font-family="Arial" font-size="14" text-anchor="start">Advanced 3D</text>
+  
+  <rect x="200" y="680" width="20" height="20" fill="#e83e8c"/>
+  <text x="230" y="695" font-family="Arial" font-size="14" text-anchor="start">Server-Side Pong</text>
+  
+  <rect x="350" y="620" width="20" height="20" fill="#17a2b8"/>
+  <text x="380" y="635" font-family="Arial" font-size="14" text-anchor="start">Monitoring</text>
+  
+  <!-- Important Connection Notes -->
+  <text x="600" y="580" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle">Key Connection Details:</text>
+  <text x="600" y="610" font-family="Arial" font-size="14" text-anchor="middle">• User Management Backend stores data in Database</text>
+  <text x="600" y="635" font-family="Arial" font-size="14" text-anchor="middle">• Remote Authentication creates/links user accounts</text>
+  <text x="600" y="660" font-family="Arial" font-size="14" text-anchor="middle">• Standard User Management links profiles to all game systems</text>
+  <text x="600" y="685" font-family="Arial" font-size="14" text-anchor="middle">• Monitoring System collects metrics from all backend modules</text>
+  <text x="600" y="710" font-family="Arial" font-size="14" text-anchor="middle">• Game features store match outcomes and link to user profiles</text>
+  
+  <!-- Arrow Definitions -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+</svg>

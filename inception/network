@@ -1,0 +1,173 @@
+Understanding network configuration options:
+-------------------------------------------
+
+1)	Single Custom-network:
+	- All 3 containers are on one network, example app-network.
+	- doesn't automatically mean Nginx can access MariaDB
+	- Docker networks allow containers to communicate only if explicitly
+	  configured to (e.g., via ports or service names)
+	
+	- simplifies setup
+	- relies on application-level restrictions to prevent unwanted access.
+	- Nginx could theoretically reach MariaDB if misconfigured.
+	
+	- Bridge Network (Default) connects all containers in a compose file. 
+
+2)	Two networks:
+	- Front-end network: Nginx <--> wordpress (port 9000)
+	- Back-end network:  wordpress <--> MariaDB (port 3306)
+	- enforces stricter isolation, Nginx can't see MariaDB
+	
+	- Multiple custom Bridge Networks, for strict isolation.
+
+Understanding Docker Network Drivers
+------------------------------------
+
+1)	Bridge (Default)
+	- creates a private network on the host
+	- allowing containers to communicate via IP address or services name
+	- containers on different bridge networks can't communicate unless explicitly linked
+	- suitable for my setup
+	
+2)	Host
+	- Containers use the host's network stack directly
+	- no isolation from the host or other containers
+	- expose all containers(including MariaDB) to the host and external networks
+	- Forbidden in this project
+	
+3)	Overlay
+	- designed for multi-host networking (e.g., Docker Swarm)
+	- enables containers across different hosts to communicate via an overlay network
+	
+4)	Macvlan
+	- Assigns containers their own MAC address, making them appear as physical
+	  devices on the host's network.
+	- usefule for assigning static IPs or mimicking hardware
+	- Overkill for my setup.
+
+5)	None
+	- Disables networking entirely for a container, no network interfaces beyond localhost.
+
+To ensure WordPress container communicates effectively Nginx container 
+for serving PHP pages, follow these steps:
+
+1.	Verify Network Configuration:
+
+	Ensure both containers are on the same Docker network. 
+	In your docker-compose.yml, define a shared network:
+	
+2.	Check Nginx Configuration:
+
+	Confirm that Nginx is configured to pass PHP requests to the WordPress container.
+	
+	location ~ \.php$ {
+    		fastcgi_pass wordpress:9000;
+    		...
+    	}
+    	
+    	Note: wordpress is the service name in docker-compose.yml,
+    	you are instructing Nginx to forward PHP requests to the wordpress service 
+    	on port 9000.
+    	
+3.	Inspect Container Logs for any errors:
+	
+	docker logs your_nginx_container_name
+	docker logs your_wordpress_container_name
+	
+4.	Test PHP processing:
+
+	a) Create a phpinfo.php file in your WordPress container's web directory.
+		docker exec -it <wordpress-container-name> bash
+		echo "<?php phpinfo(); ?>" > /var/www/html/info.php
+		
+	b) Open a browser and go to:
+		http://localhost:8080/info.php
+		
+5.	Check File Permissions:
+
+	Ensure that the WordPress container has the necessary permissions to 
+	read and write to its web directory.
+	
+6.	Review Docker Network:
+
+	docker network inspect your_network_name
+	
+Commands to view exposed ports of containers
+--------------------------------------------
+
+1)	ss -tulnp
+	when you run ss -tulnp command from inside a container
+	it only shows connections in that specific container's network space.
+	
+2)	docker ps
+	shows all containers and ports exposed
+	
+How do you test Containers communicate with each other correctly
+----------------------------------------------------------------
+
+1)	ping test from nginx container to all containers.
+	
+	- ping confirms basic network reachability between containers. / network layer
+	- Confirms the hostname resolves to an ip address
+	- Confirms the host is up and reachable on the network
+	- Confirms the network path between the containers is functional
+	- I think it is enough to ping from 1 container to all other
+	
+	- Does not guarantee that the MariaDB service is accessible on its port (3306)
+	- Or WordPress can authenticate and query the database
+
+2)	Test port connectivity / transport layer
+	- install telnet on wordpress
+	- telnet mariadb 3306
+	
+	- This test confirms connectivity just as ping, but additionally
+	- Confirms MariaDB is running and listening on port 3306
+	- Confirms the port is open and not blocked
+	- Confirms WordPress can establish a TCP SESSION with MariaDB,
+	  which is required for wordpress to query the database
+	
+3)	Nginx and WordPress are working together ?
+	- place info.php in wordpress workdir, access https://localhost/info.php
+	- confirms Nginx is properly routing requests to WordPress container
+	- confirms, Fundamental networking or port configuration is ok at the nginx level
+	
+4)	WordPress able to access MariaDB ?
+	- ensure MySQL client is installed inside WordPress
+	- mysql -u <DB_USER> -p<DB_PASSWORD> -h mariadb <DB_NAME>
+	- SHOW DATABASE;
+	
+5)	Test WordPres MariaDB properly linked -
+	- ping test, MariaDB container's hostname is resolved?
+	- telnet test, reach MariaDB on port 3306?
+	- MySQL client test, authenticate with credentials in wp-config.php?
+	- Access the specified database, which exists and contains WordPress tables.
+		>	SHOW DATABASES; 
+		>	USE wordpress;
+		>	SHOW TABLES;
+		>	Empty set() means wordpress in not installed in database.
+		
+Tools to test networking in Linux Kernel:
+----------------------------------------
+
+iproute2
+	- routing
+	- network interfaces
+	- tunnels
+	- traffic control
+	- network-related device drivers
+	
+Commands
+	- ip addr
+	- ip link
+	- ip route
+	- ip tunnel
+	- ip link set name
+	- ip maddr
+	- ss
+	- bridge
+	
+	
+
+	
+
+    	

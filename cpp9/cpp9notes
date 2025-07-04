@@ -132,7 +132,7 @@ Questions:
 		- (It does not say, you cannot have duplicates) Pg.12
 		
 3)	Can you use std::set?
-	It does not say you cannot use std::set or any particulare container?
+	It does not say you cannot use std::set or any particular container?
 	std::set automatically sorts the list.
 	You don't need to implement the sorting algorithm?
 	

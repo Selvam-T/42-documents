@@ -1,0 +1,381 @@
+Evaluation:
+----------
+
+General:
+--------
+1) run alias unix command
+   check if there are any shell aliases for 'git'
+
+2)   /srcs folder contains all the files required to configure the application ?
+     The /srcs folder must be located at the root of the repository?
+✅   PDF does not say /srcs must be located at the root.
+
+3) Makefile is located at the root ? Same level as /srcs
+
+4) run the following command to stop all running docker containers, rm containers, 
+   images, volume, network etc.
+   
+   docker stop $(docker ps -qa); docker rm $(docker ps -qa);
+   docker rmi -f $(docker image -qa); docker volume rm $(docker volume ls -q);
+   docker network rm $(docker network ls -q) 2> /dev/null
+   
+   if there are no docker containers running or stopped running, 
+   $(docker ps -qa) returns an empty result. Therefore without container IDs as argument,
+   docker stop throws error.
+   
+   This actually confirms there are no docker containers running.
+   
+5) Examine docker-compose.yml
+   it must NOT contain 'network:host' or 'links'
+   
+   it must contain networks
+
+6) Examine all scripts used, if they use docker, 
+	- there must not be '--link' in them.
+	- no infinite loop
+
+7) Examine Dockerfiles, it must NOT contain
+   - 'tail -f' 
+   - ENTRYPOINT section must not contain them as well
+   
+8) Check Dockerfile, ENTRYPOINT section, ENTRYPOINT script
+   - "bash" or "sh" can be used to run a script, e.g.
+      ENTRYPOINT["sh", "my_script.sh"]
+      you are passing script as argument to sh.
+      
+   - but it is not allowed to use bash other than to run script.
+     example: 
+     ENTRYPOINT bash & nginx (or)
+     ENTRYPOINT nginx & bash
+     
+     in one bash is running in the background, in two bash is running in the foreground
+     but either way they are not used for running a script.
+     if the container is stopped and removed, bash could be a zombie process.
+     
+9) If .env contains any credentials, API keys, passwords, etc do not upload to git.
+   Same with secrets folder.
+   
+   User login is credentials.
+
+Simple:
+-------
+
+> You shouldn't be able to access via http
+  I redirect it to https
+  this is valid, because I am not accessing via http, but via https
+  
+> I do not allow access via localhost, I display message to that effect.
+
+> Dockerfiles, should not pull container image from docker hub
+
+> How do you search for penultimate stable version?
+  search Debian LTS version. i.e. Long Term Support
+  
+> docker image has the same name as the corresponding service
+
+> When explaining how network works.
+	docker compose - driver: bridge 
+	- all containers on same network
+	- just because containers are on the same network, 
+	  doesn't mean they can connect with each other
+	- you configure how they connect using ports and service name 
+	  in configuration files of each containers.
+	
+	docker conpose
+	  port: 
+	   - mounts host:container
+	   - makes that service accessible from internet
+	  
+	Dockerfile - EXPOSE 443
+	- EXPOSE instruction in Dockerfile does not publish the port.
+	  You don't need to specify EXPOSE. 
+	  It is only for documentation purpose.
+
+Mandatory:
+----------
+1) Docker vs Docker Compose
+	Docker is a platform packaged with application and all dependencies into a single unit.
+	Portable. Runs across different environment.
+	Example: Lunch box. Everything packed in one box. Take it to school, picnic, moon.
+	
+	Docker compose is a basket of lunch box, cutlery box, drink cooler.
+	Docker compose helps define and manage different services together.
+	
+2) Docker image used with docker compose and without docker compose
+	Docker compose builds images defined in the .yml file.
+	
+	No difference in the resulting image content.
+	Same layers, same output.
+	 
+3) benefits of docker compared to VMs
+	- Docker shares host OS kernel, less RAM & CPU usage than VMs.
+	- VM runs its own independent operating system, including its own kernel, 
+	  within the virtualized environment.
+	- Apps run in isolated containers
+	- run many containers from one image
+	- containers start in milliseconds, VMs take longer to boot.
+
+4) pertinence of the directory structure
+	- allows for easy navigation
+	- consistency in directory structure while deployed across different environments
+	- configuration files, environment variables, application settings can be
+	  placed in designated directories, as expected or required
+	
+MariaDB
+-------
+	  
+> You are not allowed to login to SQL database as root without password
+  example: mysql -u root
+  should not permit to login
+  
+> DB_USER configure in wp-config.php is allowed to login to SQL database with password
+  not witout password
+  
+> WordPress Admin_user and Regular_user are not permitted to login to SQL database
+  with or without password, unless SQL access is separately created in MariaDB
+> I am not sure if they can be allowed rights to login, let student defend the logic
+
+Data persistence
+----------------
+
+> close Virtual Machine, start again. You should see data on host.
+> If you log in to the wordpress dashboard you should see previous posts etc.
+
+
+Prohibited in the project
+--------------------------
+1)✅	latest tag
+2)✅	passwords must not be present in Dockerfiles
+3)✅	using network: host 
+		it exposes all containers to host and external network without isolation
+4)✅	using network: --link
+5)✅	using links:
+		a legacy Docker feature to connect containers
+
+Mandatory
+---------
+
+1)	environment variables
+2)*✅	use a .env file
+	*strongly recommended
+3)*	use Docker secrets to store confidential information	
+
+4)✅	nginx is the sole entry point into the infrastructure
+	accessible ONLY via port 443 (using TLSv1.2, TLSv1.3 protocol)
+	
+5)✅	network line must be present in docker-compose.yml
+
+Configure Domain name
+---------------------
+1)⏳	userlogin.42.fr
+	redirect to user's website.
+
+WordPress database
+------------------
+1)⏳	two users
+	1) administrator - Not contain 'admin' 'administrator' etc
+	2) regular user?
+
+volumes
+-------	
+1)✅	volumes will be available in host machine in /home/login/data 	
+	(I replaced login with sthiagar)
+	
+2)	It says 'volumes' available in /home/login/data, meaning
+⏳ 	/home/sthiagar/data/wp_files --> wp
+⏳ 	/home/sthiagar/data/wp_db --> mdb
+
+Domain name
+-----------
+1)	configure your domain name so it points to your local IP address. Pg. 6
+	domain name must be login.42.fr. 
+	login.42.fr will redirect to the IP address pointing to your website.
+	
+2)	localhost ?
+	It doesn't say you cannot access your website via localhost.
+❓		so https://localhost:443/ is valid ?
+
+
+How not to start container
+-------------------------
+
+1)✅	not start with command running an infinite loop
+2)❓	also applies to command used as entrypoint.
+
+3)✅    prohibited hacky patches 
+	tail -f
+	bash
+	sleep infinity
+	while true
+	
+	So I could look for word occurence in docker-compose and container files?
+	
+ 	Why would someone use 'bash'?
+
+	Example:
+	Say mysql client isn't available inside the MariaDB container, because it may 
+	be running with the default setup that doesn't include mysql client binary.
+	
+	You may try to install mysql-client inside the container, 
+	by opening bash inside the container. Then install mysql-client.
+	NOT ALLOWED.
+	
+	%$> docker exec -it srcs-mariadb-1 bash
+	%$> apt-get install mysql-client
+	%$> mysql -u root -p
+	
+ 	Is Debian or Alpine a penultimate stable version?
+	- The current stable distribution of Debian is version 12, codenamed bookworm
+	- penultimate stable version of Alpine Linux is "3.17"
+	
+	
+Data Persistence
+----------------
+1)	Check
+⏳	- error_log
+⏳	- access_log
+⏳	- ssl_private
+⏳	- ssl_public
+
+PHP-FPM
+-------	
+1)	Discuss how the student modified 'listen =' to port 9000 to enable 
+✅  	PHP-FPM to connect to NGINX container ?
+   
+2) 	Discuss how php-fpm serve php pages to nginx?
+✅	docker-compose.yml volumes:
+❓		/home/sthiagar/data/wp_files:/var/www/html
+✅	WORKDIR in Dockerfile for wordpress
+✅	root in nginx config file
+	
+	
+nginx
+-----
+-✅ 	Is nginx configured with TLSv1.2 and TLSv1.3, serving HTTPS on port 443,
+	and acting as entry point to your infrastructure?
+-✅ 	Is it correctly positioned to proxy requests to the wordpress-PHP-FPM 
+	container over port 9000, while not needing direct access to MariaDB /
+
+
+1) The latest tag is prohibited. pg. 6
+✅ 	- bookworm is the stable version
+	- from inside nginx container run, nginx -v
+	- compare version with bookworm version online. 
+	- https://packages.debian.org/bookworm/nginx
+
+2)✅  No password must be present in your Dockerfiles. pg 6.
+
+3)⏳ Your NGINX container must be the only entrypoint into your infrastructure 
+     via the port 443 only, using the TLSv1.2 or TLSv1.3 protocol.  pg 6.
+   
+✅   - It should show a status of "Up" 
+✅   - along with the port mapping (e.g., 0.0.0.0:443->443/tcp)
+   
+✅   - check nginx configuration file, does it contain
+   	ssl_protocols TLSv1.2 TLSv1.3;
+✅   - if a custom config file is used, ensure it is mounted correctly
+       in nginx volumes in docker-compose.yml
+
+Tests:
+-----   
+1) 	Basic HTTPS Connection Test
+
+	1) curl -v https://localhost:8080
+		failed:connection refused
+	
+	2) curl -v https://sthiagar.42.fr:8443
+		connected to localhost
+		but I should see SSL Certificate problem
+		
+	3) 2) curl -v -k https://sthiagar.42.fr:8443
+		connected to localhost
+		display html
+	
+2) 	SSL certificate
+
+	1) curl -v -k --tlsv1.3 --tls-max 1.3 https://sthiagar.42.fr:8443
+		this must go through
+		note: -k to skip certificate verification
+		      --tls-max 1.3, means it will allow upto 1.3 to make handshake
+		
+	//if I don't set --tls-max to 1.1 it will allow 1.3 to make handshake 
+	2)  curl -v -k --tlsv1.1 --tls-max 1.1 https://sthiagar.42.fr:8443
+		SSL routines:: no protocol available because TLSv1.1 is restricted in config
+
+	
+	3) curl -v -k --tlsv1.2 --tls-max 1.3 https://sthiagar.42.fr:8443
+
+3) Wordpress user role for basic test
+	- Administrator account - do anything on account
+				- ability to assign other users a role
+						
+	- Editor 	- do anything in regards to content creation
+			- editing of posts or pages
+	- Author	- enables the user to edit, delete and publish posts
+	- Contributor	- enables users to edit and delete their own posts
+	- Suscriber	- enables user to read content on the site
+			- useful role for membership sites		
+
+Network Test:
+------------
+
+I have installed ping and iproute2.
+
+1) ping 	is used to test network connectivity.
+
+  example, from nginx bash:
+  > ping wordpress
+  > ping mariadb 
+  
+  I am able to ping one another from each other, because they are on the same network
+  
+2) iproute2 is a suite of networking tools
+ 	ip displays IP addresses
+ 	ss provides socket statistics
+ 	
+  example, from nginx bash:
+  
+  > ss -tuln
+  you should see port 443
+  
+  > ip addr
+  take note of inet: 172.18.0.4/16 , compare with ip addr in Wordpress
+  
+  172.18.0.0 - 172.18.255.255 subnet range for Docker Bridge network
+ 
+****************************************************************************************** 	
+	
+CURRENT WORKING SUGGESTIONS -
+
+1) General build log in host - capture all build related RUN
+
+2) Wp-config.php? 
+	- what purpose does this serve?
+	- mount this?
+	
+	- something about copy from wo-config.php_sample found in /var/www/html
+	- wp-config.php contains DB credentials?
+	- sthiagar.42.fr domain name come into play in wordpress?
+	- wp-config.php and .env have same credentials?
+	
+3) .env
+	- add sthiagar.42.fr to .env?
+	
+4) login to MariaDB using mysql
+	- from wordpress-php-fpm?
+	- from nginx?
+	
+5) wordpress-php-fpm connect to mariaDB?
+	- run from wordpress
+	
+	echo "<?php \$myspli = new mysqli ('mariadb', 'root', 'password', 'wordpress');
+	if(\$mysqli->connect_error) {
+	 die('connection failed.' .\mysqli->connect_error);}
+	 echo 'connected successfully'; ?>'> /var/www/html/testdb.php
+	 
+	- go to https://localhost/testdb.php
+	
+6) custom-www.conf mount to container, but not replace default www.conf
+	and remove RUN sed in Dockerfile for wordpress
+
+

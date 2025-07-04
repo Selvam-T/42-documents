@@ -1,0 +1,59 @@
+questions for Team:
+
+10) MessageRouter::cgiHandler() / Parent process has write() which can be blocking,
+	should I make pipefd[] non blocking??
+	
+9) If header size > 8192 send error and disconnect.
+	Similarly has size limit for file size ?
+
+8) Implement Transfer-encoding based body extraction.
+
+7) In HTTPServer::start()
+	215: when reading body, if bytes read is -1 or != body size
+		throw error?
+
+6)  In HTTPServer::start()
+	if ((fcntl()) failed then do I continue without NON-BLOCKING client_fd?
+
+5) In HTTPServer::start()
+	185: close(epoll_fd); 
+	186: continue;
+	will lead to undefined behaviour, because we continue in loop after closing epoll_fd
+	
+4) In HTTPServer::start()
+	event_count = epoll_wait(epoll_fd, events, 1024, 30000); --> this is not non blocking?
+	block for 30 secs??
+
+3) Is it possible to send form-data to server compressed in gzip, in POST method?
+	Such that, content-encoding : gzip
+	So do we have to decompress gzip to extract form data?
+	
+2) Transfer-Encoding and content-Encoding (both) ?
+	
+
+1) If 'host' is not provided with 'abs_path', for all methods, in the Header of HTTP Request,
+	then return '400 bad request'? 
+		
+		
+Useful tips from Bing
+---------------------
+1) HTTPie for web
+
+
+2) hostname on local machine example: 
+
+	a) c1r4s5.42singapore.sg
+
+	b) subdomain: c1r4s5
+ 	  domain: 42singapore.sg
+
+	c) how to find on linux cmdline 
+	   $> hostname -f
+	   or
+	   $> dnsdomainname
+	   or
+	   $> cat /etc/hostname
+	   or
+	   $> cat /etc/hosts
+	   
+3) curl - command line tool to make HTTP requests

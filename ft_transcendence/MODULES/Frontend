@@ -1,0 +1,117 @@
+🟢 Frontend
+-----------------------------------------------------------------------------------------------
+
+- develope using Typescript as base code. 🔒
+  However, this requirement can be modified through the FrontEnd module.
+  
+❓ what is Typescript
+
+🟢 Website
+-----------------------------------------------------------------------------------------------
+- Your website must be a single-page application. 
+	
+	- able to use the Back and Forward buttons of the browser.
+	- compatible with the latest stable up-to-date version of Mozilla Firefox.
+	- no unhandled errors or warnings when browsing the website.
+	
+- use Docker to run your website
+	- launched with a single command line to run an autonomous container.
+	
+- main purpose of this website is to play Pong versus other players.
+⭐	- capture the essence of the original Pong (1972).
+	
+❓ what is Single-page application
+	
+🟢 Docker
+-----------------------------------------------------------------------------------------------
+
+- allowed to access the container software in rootless mode for security reasons
+  	This comes with constraints 
+  	
+	- Your runtime needs to be located in /goinfre or /sgoinfre.
+	- not able to use “bind-mount volumes” between the hostand the container 
+	  if non-root UIDs are used in the container.
+	  
+- strategies you may need to adopt
+	- container solution in virtual machine, 
+	- rebuild your container after your changes, 
+	- craft your own image with root as unique UID.
+
+❓ access the container software in rootless mode
+❓ Use any container technologies - Docker, containerd, podman, etc.
+
+🟢 Game
+-----------------------------------------------------------------------------------------------
+
+1) player 1 vs player 2 on the website
+   - both player use same keyboard
+
+2) Remote players module
+   - enhance this functionality with remote players
+	
+3) Tournament
+   - multiple players, take turns playing against each other
+   - display who is playing against whom
+❓ - display order of the play
+
+4) Registration system
+   - at start of tournament, each player must input alias
+   - reset alias, when new tournament begins
+⭐  (Standard User Management module)
+
+5) Matchmaking system
+   - organize the matchmaking of the participants, and 
+   - announce the next match.
+
+6) Rules
+   - All players must adhere to the same rules, 
+   - All players must have identical paddle speed.
+   - when using AI; the AI must exhibit the same speed as a regular player.
+   
+7) FrontEnd module vs override with the Graphics module.
+   - adhere to the default frontend constraints
+⭐ - or override it with the Graphics module
+   - visual aesthetics can vary
+
+
+🟢 Security concerns
+-----------------------------------------------------------------------------------------------   
+
+1) Password stored in Database must be hashed
+
+2) website must be protected against SQL injections/XSS attacks
+
+3) enable an HTTPS connection for all aspect
+   - if you have backend or any other features
+   - use wss instead of ws for example
+   
+4) Validation mechanisms
+   - for FORMS and user INPUTS
+   - in base page if no backend is used
+   - on the server side if a backend is employed
+   
+5) JWT Security module with 2FA
+   - whether you use JWT tokens or not, secure you website
+   
+6) Protect routes
+   - if you create an API, ensure your routes are protected
+   
+7) use strong password hashing algorithm
+
+8) Credentials, API keys, env variables
+   - stored in .env file
+   - gitignore .env file
+
+❓ what is SQL injections
+❓ what is XSS attacks
+❓ what is wss vs ws 
+  
+🟢 Standard User Management module
+-----------------------------------------------------------------------------------------------   
+- reseting alias at start of new tournament
+
+🟢 Web modules
+-----------------------------------------------------------------------------------------------
+
+- Use a framework or a toolkit to build the frontend.	(Minor)
+

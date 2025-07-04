@@ -1,0 +1,160 @@
+🟢 Gameplay and user experience
+-----------------------------------------------------------------------------------------------
+
+It includes four major modules and one minor module:
+
+> Remote Players (Backend and Frontend): 
+	Enables two players to play Pong remotely on separate computers.
+
+> Multiple Players (Backend and Frontend): 
+	Supports more than two players in a single game, with live control.
+
+> New Game with User History and Matchmaking (Backend and Frontend): 
+	Introduces a new game with user history tracking and matchmaking.
+
+> Game Customization Options (Backend and Frontend): 
+	Provides customization features (e.g., power-ups, maps) for all games.
+
+> Live Chat (Backend and Frontend): 
+	Implements a chat system for direct messaging, blocking, game invites, 
+	and tournament notifications.
+	
+	
+Modules (Nodes):
+----------------
+
+> Remote Players (Backend and Frontend):
+
+	Backend: 
+	Manages network communication (e.g., WebSockets for real-time gameplay), handles lag 
+	and disconnections, and synchronizes game state between remote players.
+	
+	Frontend: 
+	Renders the game UI for both players, ensuring smooth visuals despite network issues.
+
+> Multiple Players (Backend and Frontend):
+
+	Backend: 
+	Extends Remote Players’ logic to support 3+ players 
+	(e.g., a square board for 4 players), managing live control and game state synchronization.
+	
+	Frontend: 
+	Renders the multiplayer game UI, accommodating multiple paddles or game elements.
+	
+> New Game with User History and Matchmaking (Backend and Frontend):
+
+	Backend: 
+	Implements the new game logic, tracks user history (e.g., stats, match outcomes), 
+	and provides a matchmaking system for fair opponent pairing.
+
+	Frontend: 
+	Renders the new game UI and displays user history/matchmaking interfaces.
+	
+> Game Customization Options (Backend and Frontend):
+
+	Backend: 
+	Manages customization logic (e.g., enabling power-ups, switching maps) 
+	and applies settings to all games.
+	
+	Frontend: 
+	Provides user-friendly settings menus for customization options.
+	
+> Live Chat (Backend and Frontend):
+
+	Backend: 
+	Handles chat functionality (e.g., direct messages, blocking, game invites, 
+	tournament notifications) and stores chat data.
+
+	Frontend: 
+	Renders the chat interface and integrates profile access.
+	
+> Database (SQLite) (Backend, from Web modules): 
+
+	Stores game data, user history, chat messages, and customization settings.
+	
+	
+> Backend Framework (Fastify with Node.js) (Backend, from Web modules):
+
+	Provides APIs for gameplay, chat, and matchmaking.
+
+> Frontend Framework (Tailwind CSS + TypeScript) (Frontend, from Web modules): 
+	Renders game and chat UIs.
+
+> Standard User Management (Backend, from User Management modules): 
+	Manages user profiles linked to gameplay, chat, and history.
+
+> Blockchain (Avalanche + Solidity) (Backend, from Web modules): 
+	Stores tournament scores, potentially used in new game or dashboards.
+
+> AI Opponent (Backend, from AI-Algo modules): 
+	Uses customization options (e.g., power-ups) if implemented.
+	
+Interdependencies (Arrows):
+---------------------------
+> Remote Players (Backend) → Database: 
+	Stores match outcomes and session data.
+
+> Remote Players (Backend) → Backend Framework: 
+	Uses Fastify APIs/WebSockets for real-time communication.
+
+> Remote Players (Frontend) → Remote Players (Backend): 
+	Frontend sends player inputs and receives game state updates.
+
+> Multiple Players (Backend) → Remote Players (Backend): 
+	Extends Remote Players’ logic for 3+ players.
+	
+> Multiple Players (Backend) → Database: 
+	Stores multiplayer match outcomes.
+	
+> Multiple Players (Backend) → Backend Framework: 
+	Uses APIs/WebSockets for live control.
+	
+> New Game (Backend) → Database: 
+	Stores user history and matchmaking data.
+	
+> Multiple Players (Frontend) → Multiple Players (Backend): 
+	Frontend handles multiplayer UI and inputs.
+	
+> New Game (Backend) → Backend Framework: 
+	Uses APIs for game logic and matchmaking.
+	
+> New Game (Backend) → Standard User Management: 
+	Links user history to profiles.
+	
+> New Game (Frontend) → New Game (Backend): 
+	Frontend renders game and history UI.
+	
+> Game Customization Options (Backend) → Database: 
+	Stores customization settings.
+	
+> Game Customization Options (Backend) → Backend Framework: 
+	Uses APIs to apply settings.
+> Game Customization Options (Backend) → Remote Players, Multiple Players, New Game, AI Opponent:
+	Applies customization (e.g., power-ups) to all games.
+
+>Game Customization Options (Frontend) → Game Customization Options (Backend): 
+	Frontend sends user settings.
+
+> Live Chat (Backend) → Database: 
+	Stores chat messages and block lists.
+
+> Live Chat (Backend) → Backend Framework: 
+	Uses APIs/WebSockets for real-time messaging.
+
+> Live Chat (Backend) → Standard User Management: 
+	Links chat to user profiles and enables profile access.
+
+> Live Chat (Backend) → Remote Players, Multiple Players, New Game: 
+	Sends game invites and tournament notifications.
+
+> Live Chat (Frontend) → Live Chat (Backend): 
+	Frontend renders chat UI and sends messages.
+
+> All Frontend Modules → Frontend Framework: 
+	Use Tailwind CSS + TypeScript for UI rendering.
+
+> New Game (Backend) → Blockchain: 
+	Stores tournament scores for the new game (if applicable).
+
+> Game Customization Options (Backend) → AI Opponent: 
+	AI uses power-ups if implemented.

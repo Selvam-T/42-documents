@@ -89,7 +89,7 @@ Milliseconds (ms): One millisecond is equal to one thousandth of a second
 	  terminates
 
 6,	pthread_detach()
-	- is an alternative to pthread_join(), not an alternative to pthread_create()
+	- is an alternative to pthread_join(), not opposite of pthread_create()
 	- used to mark a thread as detached, meaning that its resources will be
 	  automatically reclaimed by the system when the thread exits
 	- detached thread cannot be joined, and their resources are automatically
@@ -353,6 +353,12 @@ Test cases:
 NOTE: The PDF does not explicitly ask to validate inputs expect number of Philosophers,
 so leave it to the student to defend it.
 
+I failed the following cases:
+
+./philo 3 600 200 200
+./philo 3 600 200 100
+./philo 3 610 200 100
+
 0.	Global variables are not permitted. Check for extern in .h file
 	or a variable declared outside of any function in .c file, like under #include
 1,✅	Negative input is not accepted?
@@ -361,6 +367,10 @@ so leave it to the student to defend it.
 4,✅	Philosopohers < 200
 5,✅	./philo 5 "" "" "" --> is not a valid input
 6.      ./philo 5 800 200 200 0 --> num of meals should be 1 or more
+
+7.	./philo 3 600 200 200
+8.	./philo 3 600 200 100
+9.	./philo 3 610 200 100
 
 6,	 valgrind --tool=drd --fair-sched=yes ./philo 2 500 300 100
 	ensure -fsanitize flag is not in the cc flag in makefile

@@ -1,0 +1,10 @@
+Connection: keep-alive
+	Keeps the connection open for multiple requests/responses.
+	
+Connection: close
+	Closes the connection after the current request/response.
+	
+Ignore other Connection:
+	Connection: Upgrade
+	Connection: proxy-authenticate
+	Connection: retry-after
