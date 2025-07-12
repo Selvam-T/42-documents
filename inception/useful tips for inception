@@ -30,7 +30,7 @@ docker compose commands -> deal with services defined in .yml
 	  It is only for documentation purpose of developers
 	  
 	  
-🟢 Dockefile for WordPress-PHP-FPM
+🟢 Dockerfile for WordPress-PHP-FPM
 -----------------------------------------------------------------------------------------------
 
 > Do I need to install PHP along with PHP-FPM ?
@@ -40,7 +40,7 @@ docker compose commands -> deal with services defined in .yml
   - When you install php-fpm and php-mysql, Debian automatically 
     installs the default PHP version.
 
-🟢 Secrets: vs Environment:
+🟢 Secrets: vs Environment variables:
 -----------------------------------------------------------------------------------------------
 
 > Secrets and Environment variables both provide configuration data to containers. 
@@ -53,15 +53,15 @@ docker compose commands -> deal with services defined in .yml
 	- accessible in container directory /run/secrets/<secret name>
 	  
 
-🟢 Fail safe operator and Redirection
+🟢 Fail safe operator (i) and Redirection (ii)
 -----------------------------------------------------------------------------------------------
-Example:
+(i) Example:
 	docker compose stop wordpress || true
 	
 	> || true is fail safe operator
 	> to prevent script or makefile from exiting when a command fails
 	
-Example: 
+(ii) Example: 
 	docker volume rm srcs_wp_files >/dev/null 2>&1;
 	
 	> /dev/null 2>&1 is redirection to black hole
@@ -73,7 +73,7 @@ Example:
 
 1) docker compose logs 
    command shows STDOUT and STDERR of each container 
-   - It does not show not the internal log files. (see 2 and 3)
+   - It does not show the internal log files. (see 2 and 3)
    Nginx
    - only logs if NGINX is configured to log to /dev/stdout or /dev/stderr
    - by default nothing, unless log paths are redirected in nginx.conf

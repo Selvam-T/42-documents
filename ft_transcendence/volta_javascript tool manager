@@ -1,0 +1,47 @@
+-	JavaScript tool manager like Volta streamlines the setup and maintenance of 
+	JavaScript development environments, promoting consistency across projects and 
+	simplifying the developer workflow.
+	
+-	What is Volta?
+	Volta is a version manager for:
+
+	node
+
+	npm
+
+	yarn
+
+	CLI tools like typescript, eslint, etc.
+
+	It ensures each project uses the exact tool versions it needs, automatically and cleanly.	
+
+-	What problems on Linux will run I run into with out Volta on your machine?
+
+	1) Wrong Node/NPM version:
+	   Your system Node/NPM may be outdated or mismatched with project requirements.
+	   
+	2) Global version conflicts:
+	   Switching between projects needing different Node versions becomes a mess.
+	   
+	3) Permission errors:
+	   Installing global packages may require sudo, leading to potential system issues.
+	   
+	4) Missing npx or incorrect behavior:
+	   Some versions of Node don’t bundle npx or have an older version.
+	
+-	How to install volta?
+
+	# install Volta
+	curl https://get.volta.sh | bash
+	
+	curl command downloads, pipe .sh file to bash, which installs it.
+
+	# install Node
+	volta install node
+
+	# start using Node
+	node
+	
+-	Volta doesn't need to be installed in your project folder at all — 
+	it's a global toolchain manager installed in your home directory 
+	(usually ~/.volta/).
