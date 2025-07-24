@@ -1,137 +1,209 @@
 
-🟧 what is style.css
+🟧 How is CSS an improvement over HTML and Tailwind CSS an improvement over CSS
 -----------------------------------------------------------------------------------------------
 
-	1) All custom CSS lives.
+CSS is an improvement over HTML by separating content from presentation, 
+	allowing for easier styling and more consistent design across a website. 
 
-	2) You define all classes and styles manually.
-
-	3) You must manage layout, spacing, responsiveness, etc., yourself.
-
-
-🟧 with and without Tailwind
------------------------------------------------------------------------------------------------
-
-Without Tailwind:
-
-	1) You’d write custom CSS for every component.
-
-	2) Need to manage class naming, scoping, and duplication.
-
-	3) Slower prototyping.
-
-	4) More room for bloated or unused CSS.
+Tailwind CSS is a utility-first CSS framework that improves upon traditional CSS 
+	by offering pre-defined, reusable utility classes, leading to faster development 
+	and more maintainable code.
 	
-With Tailwind:
+	It is similar to inline styles (in CSS). 
+	You’re applying styles directly to elements instead of assigning them a class name 
+	and then styling that class.
 
-	1) Faster development via utility-first styling.
 
-	2) Avoids context-switching (no jumping to a .css file).
+🟧 HTML
+-----------------------------------------------------------------------------------------------
 
-	3) Smaller CSS bundle when purged correctly.
+✅ Inline elements:
 
-	4) Consistent design system with spacing, color, font utilities.
-
-	5) Encourages component reusability and simplicity.
+link:			<a> </a>
+image: 			<img src="" width="">
+group elements:		<span style="font-style:itlaic;"> </span>
+bold:			<b> </b>
+line break:		<br></br>
 
 	
-🟧 Do you need style.css with Tailwind ?
------------------------------------------------------------------------------------------------
+✅ BLock elements:
 
-No, you don’t need a style.css with Tailwind — 
-but you can use one if you want custom styling or component classes.
-
-i.e.,	1) You're using only Tailwind utility classes in HTML/JSX/TSX.
-
-	2) You don’t need custom styles or extra CSS rules.
-
-	3) You’re not extending Tailwind with custom components or overrides.
-
-🟣 How do I use Tailwind CSS and implement it in my Pong game application?
------------------------------------------------------------------------------------------------
-
-Project Structure:
-
-pong-game/
-├── package.json
-├── public/
-├── src/
-│   ├── client/
-│   │   ├── client.ts
-│   │   ├── renderer.ts
-│   │   ├── socketClient.ts
-│   │   ├── tsconfig.json
-│   │   └── webClient/
-│   │       ├── index.html
-│   │       ├── index.ts
-│   │       ├── renderer
-│   │       ├── sidebar.ts
-│   │       ├── style.css
-│   │       └── webClient.ts
-│   └── server/
-│       ├── game.ts
-│       ├── server.ts
-│       ├── gameLobby.ts
-│       ├── paddleAI.ts
-│       ├── tournamentManager.ts
-│       ├── user.ts
-│       └── webSocketHandler.ts
-├── vite.config.js
+paragraph:		<p> </p>
+unordered list:		<ul> </ul>
+ordered list:		<ol> </ol>
+horizontal rule: 	<hr> </hr>
+Text heading:		<h1> </h1> ... <h6> </h6>
 
 
-🟣 Relevant Files for Tailwind
------------------------------------------------------------------------------------------------
+✅ Container: 		<div> </div>
 
-Tailwind CSS is used for styling the frontend, so you should focus on:
+1) Used to group related HTML elements together.
 
-Frontend Files:
+			<div id="header">
+			  <h1>Welcome to My Website</h1>
+			  <p>This is the header section.</p>
+			</div>
 
-1) src/client/webClient/index.html:
-	Insert Tailwind build output or link
-	- adding compiled Tailwind CSS into your project
-	- giving your project access to all Tailwind utility classes
+			<div id="main-content">
+			  <p>This is the main content area.</p>
+			  <img src="image.jpg" alt="Image">
+			</div>
 
-2) src/client/webClient/style.css:
-	Replace with Tailwind directives
-	- replacing traditional CSS classes with Tailwind utility classes directly in the HTML
+			<div id="footer">
+			  <p>Copyright 2024</p>
+			</div>
 
-3) src/client/webClient/index.ts: 
-	Likely the entry point, ensure it imports style.css
-	- project's entry file must import the CSS to apply Tailwind styles
+2) Used in conjuction with CSS to define the visual presentation.
+
+			//no relation to <div> block above	
+			<div class="my-div">
+			  <p>This is some text inside the div.</p>
+			  <img src="image.jpg" alt="An image">
+			</div>
 	
-	- Example for Vite/React/TS:
-		import './style.css';
-	- In style.css, you include
-		@tailwind base;
-		@tailwind components;
-		@tailwind utilities;
+3) Used to target JavaScript to add dynamic behaviour to a webpage.
 
-4) src/client/webClient/renderer.ts, sidebar.ts, webClient.ts:
-	DOM manipulation and dynamic styling via Tailwind classes
-	- ts
-		element.classList.remove("bg-blue-500");
-		
-		if (isDarkMode) {
-		  element.classList.add("bg-gray-900", "text-white");
-		} else {
-		  element.classList.add("bg-white", "text-black");
+	HTML code segment:
+	
+			<div id="myUniqueDiv" class="example-div common-element">
+		    	    This is the div to be targeted.
+		    	</div>
+
+	JavaScript:
+	
+			const myDivById = document.getElementById('myUniqueDiv');
+		    	console.log(myDivById.textContent);
+
+	
+✅ HTML Attributes
+	 provide additional information about elements, come in 
+	 name/value pairs like: name="value"
+	
+HTML 			<p class="classname"> </p>
+CSS			.classname{ 
+			  font-style: italic;
+			  font-weight: bold;
+			}
+
+	The class attribute can be applied to multiple elements to group them together 
+	for styling or scripting.
+	
+	
+HTML			<p id="exciting"> </p>
+CSS			#exciting {
+			  background: ...
+			  border: ...
+			  padding: ...
+			}
+
+	The id attribute is intended for unique identification of a single element. 
+	
+🟧 CSS
+-----------------------------------------------------------------------------------------------
+Syntax:
+		selector{
+			property: value;
+			property2: value2;
 		}
+
+✅ Include external css file:
+		<link rel="stylesheet" type="text/css" href="/style.css" />
 		
-Not Relevant for Tailwind:
+✅ Internal styles:
+		<style type="text/css">
+		div { color: #444;}
+		</style>
 
-1) src/server/ → Backend logic (Node/TS), no styling involved
+✅ Inline styles:
+		<tag style="property: value"> </tag>
 
-2) socketClient.ts, client.ts, tsconfig.json → Logic or config, not styling related
 
-
-🟣 Setup Tailwind
+🟧 Tailwind CSS (with example)
 -----------------------------------------------------------------------------------------------
 
-1) Install Tailwind via npm
+Tailwind CSS works by scanning all of your 
+	a) HTML files, 
+	   JavaScript components, and any 
+	   other templates for class names, 
+	b) generating the corresponding styles and 
+	c) then writing them to a static CSS file.
 
-2) Update style.css with Tailwind base directives
+Minimal Working Directory Setup:
+	index.html  
+	input.css  		--> source file for Tailwind to compile from
+	output.css (generated)  --> then link in HTML
+	package.json  		--> created during initialization of Node.js project
+	tailwind.config.js (generated)	--> Update content where Tailwind should scan for class names
+	
+1. Initialize Node Project
+	$> npm init -y
+	Creates package.json
+	
+2. Install Tailwind
+	$> npm install -D tailwindcss
+	//$> npm install -D tailwindcss @tailwindcss/vite @tailwindcss/backdrop-filter.
+	Adds tailwindcss to package.json under devDependencies.
 
-3) Configure PostCSS + Tailwind (via Vite)
+3. Create Tailwind Config
+	$> npx tailwindcss init
+	Creates tailwind.config.js.
+	
+	You must manually update content: []:
+	content: ["./index.html"],
+	
+	This tells Tailwind where to scan for class names.
+	
+npm vs npx:	npm is a package manager, install and manage project dependencies.
+		npx is a package runner that allows you to execute packages directly
+		without installing them globally.		
+	
+	
+4. Setup Input CSS File
+	@tailwind base;
+	@tailwind components;
+	@tailwind utilities;
+	
+	This acts like the source file for Tailwind to compile from.
+	
+5. Generate Output CSS
+	$> npx tailwindcss -i ./input.css -o ./output.css --watch
 
-4) Use Tailwind classes directly in HTML or via TypeScript DOM code
+	Generates output.css with all Tailwind styles used in your HTML.
+
+6. Link Tailwind in HTML
+	<link href="output.css" rel="stylesheet">
+
+	No CDN needed, you link the compiled CSS locally.
+	
+	
+🟧 Files to be updated to implement Tailwind CSS
+-----------------------------------------------------------------------------------------------
+
+Assumes I use, @tailwindcss/vite (No PostCSS/Autoprefixex)
+
+1) package.json:
+	Add tailwindcss and @tailwindcss/vite as devDependencies via 
+	npm install -D tailwindcss @tailwindcss/vite @tailwindcss/backdrop-filter.
+2) vite.config.js: 
+	Ensure the @tailwindcss/vite plugin is included in the plugins array 
+	(e.g., plugins: [viteFastify({ spa: true }), tailwindcss()]).
+
+3) tailwind.config.js: 
+	Create or update with 
+		content: ['./src/client/webClient/**/*.{html,ts,js}'] 
+	and 
+		plugins: [require('@tailwindcss/backdrop-filter')] 
+	to enable backdrop-blur-md.
+	
+4) src/client/webClient/style.css: 
+	Replace traditional CSS with Tailwind directives 
+		(@tailwind base; @tailwind components; @tailwind utilities;) 
+	and convert styles using 
+		@apply (e.g., .sidebar, .button).
+
+5) src/client/webClient/index.html: 
+	Update to reference style.css correctly 
+		(<link href="/src/client/webClient/style.css" rel="stylesheet">) 
+	and apply Tailwind classes (e.g., bg-black, w-screen).
+
 

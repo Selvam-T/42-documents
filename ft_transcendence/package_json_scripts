@@ -1,0 +1,60 @@
+
+🟧 package.json scripts
+-----------------------------------------------------------------------------------------------
+scripts": {
+    "clean": "rm -rf dist",
+    "ts": "npx tsc -p ./src/client && npx tsc -p ./src/server",
+    "re": "npm run clean && npm run build && npm run start",
+    "dev": "npm run ts && node dist/server.js --dev",
+    "dev:vite": "vite",
+    "watch": "npm run clean && npm run build:server && concurrently 'npm run watch:client' \
+    		'npm run watch:server' 'node --watch dist/server.js'",
+    "start": "node dist/server.js",
+    "build:client": "vite build",
+    "watch:client": "vite build --watch",
+    "build:server": "npx tsc -p ./src/server",
+    "watch:server": "npx tsc -p ./src/server --watch",
+    "build": "npm run build:client && npm run build:server",
+    "debug": "DEBUG=vite:* vite build"
+  },
+
+
+🟧 package.json scripts explained
+-----------------------------------------------------------------------------------------------
+  
+clean: 	Deletes the dist directory to remove old build artifacts 
+	(rm -rf dist).
+
+ts:	Compiles TypeScript code for both client and server 
+	using tsc with their respective tsconfig.json files 
+	(npx tsc -p ./src/client && npx tsc -p ./src/server).
+
+build:	Runs both client and server build scripts 
+	(npm run build:client && npm run build:server).
+
+build:client: 	Builds the client-side code using Vite (vite build).
+build:server: 	Compiles the server-side TypeScript code (npx tsc -p ./src/server).
+
+start:	Runs the compiled server code (node dist/server.js).
+
+re:	Runs clean, build, and start scripts sequentially to rebuild and start the server 
+
+dev:	Compiles TypeScript code and starts the server in development mode with a --dev flag 
+	(npm run ts && node dist/server.js --dev).
+	
+dev:vite:	Runs the Vite development server (vite).
+
+watch:	Cleans, builds the server, and runs concurrent tasks 
+	to watch client/server TypeScript changes and restart the server on changes 
+	(npm run clean && npm run build:server && concurrently 'npm run watch:client' 
+	'npm run watch:server' 'node --watch dist/server.js').
+
+watch:client:	Watches for client-side code changes and rebuilds with Vite 
+		(vite build --watch).
+		
+watch:server:	Watches for server-side TypeScript changes and recompiles 
+		(npx tsc -p ./src/server --watch).
+
+debug:	Builds the client with Vite in debug mode, enabling verbose logging 
+	(DEBUG=vite:* vite build).
+	(npm run clean && npm run build && npm run start).
