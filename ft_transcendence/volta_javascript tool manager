@@ -15,7 +15,7 @@
 
 	It ensures each project uses the exact tool versions it needs, automatically and cleanly.	
 
--	What problems on Linux will run I run into with out Volta on your machine?
+-	What problems on Linux will I run into with out Volta on host machine?
 
 	1) Wrong Node/NPM version:
 	   Your system Node/NPM may be outdated or mismatched with project requirements.
@@ -34,7 +34,7 @@
 	# install Volta
 	curl https://get.volta.sh | bash
 	
-	curl command downloads, pipe .sh file to bash, which installs it.
+	curl command downloads > pipe .sh file to bash > which installs it.
 
 	# install Node
 	volta install node
@@ -45,3 +45,10 @@
 -	Volta doesn't need to be installed in your project folder at all — 
 	it's a global toolchain manager installed in your home directory 
 	(usually ~/.volta/).
+	
+Then execute npm
+-----------------
+
+1)	npm i
+2)	npm start	
+

@@ -176,34 +176,46 @@ npm vs npx:	npm is a package manager, install and manage project dependencies.
 	No CDN needed, you link the compiled CSS locally.
 	
 	
-🟧 Files to be updated to implement Tailwind CSS
+🟧 Tailwind Application UI
 -----------------------------------------------------------------------------------------------
 
-Assumes I use, @tailwindcss/vite (No PostCSS/Autoprefixex)
+COMPONENTS
 
-1) package.json:
-	Add tailwindcss and @tailwindcss/vite as devDependencies via 
-	npm install -D tailwindcss @tailwindcss/vite @tailwindcss/backdrop-filter.
-2) vite.config.js: 
-	Ensure the @tailwindcss/vite plugin is included in the plugins array 
-	(e.g., plugins: [viteFastify({ spa: true }), tailwindcss()]).
+Application shells 	- sidebar layouts
+Headings		- Page headings
+Data display		- stats
+lists			- grid lists
+Forms			- Input groups
+			- Toggles
 
-3) tailwind.config.js: 
-	Create or update with 
-		content: ['./src/client/webClient/**/*.{html,ts,js}'] 
-	and 
-		plugins: [require('@tailwindcss/backdrop-filter')] 
-	to enable backdrop-blur-md.
 	
-4) src/client/webClient/style.css: 
-	Replace traditional CSS with Tailwind directives 
-		(@tailwind base; @tailwind components; @tailwind utilities;) 
-	and convert styles using 
-		@apply (e.g., .sidebar, .button).
+🟧 Pong game HTML attributes mapped to CSS
+-----------------------------------------------------------------------------------------------
 
-5) src/client/webClient/index.html: 
-	Update to reference style.css correctly 
-		(<link href="/src/client/webClient/style.css" rel="stylesheet">) 
-	and apply Tailwind classes (e.g., bg-black, w-screen).
+		HTML				CSS
+		----				----
+1)	<body>, <div> are tags, that contain attributes like "class", "id" etc.
+
+2)	class = ''
+
+3)	class = "sidebar"		.sidebar{}
+					.sidebar-toggle{}
+					body.sidebar-close.sidebar{}
+					
+4)	class = "button"		.button{}
+					.button:hover{}
+
+5)	id = main
+	id = sidebar
+	id = lobby1
+	id = lobby2
+	:
+	:
+	id = ready
+	
+6)	id = game
+	
+	
+7)	id = board			#board{}
 
 

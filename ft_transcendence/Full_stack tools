@@ -1,0 +1,208 @@
+	
+🟣 Setup Full-stack WebSocket project 
+-----------------------------------------------------------------------------------------------
+
+1. Install prerequisites
+	- 1. Install nvm (Node Version Manager) → 
+		lets you pick a specific Node.js version for your project.
+	
+		
+	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+	source ~/.bashrc
+
+
+	- 2. Use nvm install <version> → 
+		install the Node.js version you want.
+		
+		nvm install --lts
+
+	- 3. Use nvm use <version> → 
+		set it for the current project.
+		
+		nvm use --lts
+		
+		
+2. Create your project folder
+	mkdir my-websocket-app
+	cd my-websocket-app
+
+3. Initialize Node.js project
+	- This creates package.json for dependency tracking.
+	
+	npm init -y
+
+4. Install development tools
+	- 1. Vite (frontend dev server) + TypeScript:
+
+	npm install --save-dev vite typescript
+
+	- 2. ESLint (code linting):
+	
+	npm install --save-dev eslint
+
+	- 3. If you want ESLint for TypeScript:
+	
+	npm install --save-dev @typescript-eslint/parser @typescript-eslint/eslint-plugin
+
+	- 4. WebSocket library (example: ws for Node backend):
+	
+	npm install ws
+	
+	npm install --save-dev @types/ws  # for TypeScript typings
+	
+	- 5. If you want to run client + server together:
+	
+	npm install --save-dev concurrently
+	
+	Add in root package.json:
+	
+	"scripts": {
+	  "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\""
+	}
+
+
+5. Create config files
+	- 1. TypeScript config:
+	
+	npx tsc --init
+
+	- 2. ESLint config:
+		
+	npx eslint --init
+	
+		Generates > eslint.config.mjs (or .eslintrc.js)
+
+	<> Choose TypeScript if you’re using it.
+	
+	- 3. Vite config: 
+	
+	create vite.config.js manually:
+	
+		import { defineConfig } from 'vite';
+
+		export default defineConfig({
+		  server: { port: 3000 },
+		});
+
+6. Set up folder structure
+
+	my-websocket-app/
+	client/       # Frontend code (Vite, TS)
+	server/       # Backend code (Node.js + WebSocket)
+	package.json
+	tsconfig.json
+	vite.config.js
+	eslint.config.mjs
+
+7. Configure npm scripts in package.json
+
+	"scripts": {
+	  "dev": "vite",            // run frontend dev server
+	  "build": "vite build",    // build frontend
+	  "lint": "eslint .",       // lint all files
+	  "start": "node server/index.js" // run backend
+	}
+
+8. Initialize Git (optional but recommended)
+
+	git init
+	echo "node_modules" >> .gitignore
+
+At this point:
+✅ You have nvm controlling your Node.js version.
+✅ You have npm managing dependencies.
+✅ You have Vite for the client build.
+✅ You have TypeScript with a config.
+✅ You have ESLint with a config.
+✅ You have a project folder structure for both client and server.
+
+You can now safely start coding both sides of your WebSocket app without having to retrofit build or linting tools later.
+
+
+🟣 Flow from Tools to Code
+-----------------------------------------------------------------------------------------------
+	1. nvm → Controls Node.js version
+
+	2. Node.js & npm → Run code + install dependencies
+
+	3. Vite → Build & serve client TS code
+
+	4. TypeScript + tsconfig.json → Compile TS to JS
+
+	5. ESLint + eslint.config.mjs → Lint for errors/style issues
+
+	6. WebSocket server (ws) → Real-time server comms
+
+	7. package.json → Defines dependencies & scripts
+
+	8. vite.config.ts → Vite build config for frontend
+
+	9. server/index.ts → Server entry point
+
+	10. client/src/main.ts → Client entry point
+
+
+🟣 Tools explained
+-----------------------------------------------------------------------------------------------
+
+1. Node.js – 
+	JavaScript runtime (outside the browser) that runs your development tools like Vite and ESLint.
+
+2. nvm – 
+	Node Version Manager; 
+	- lets you install/manage multiple Node.js versions on your machine.
+	- ensures you’re using the right Node.js version.
+
+3. package.json – Lists your project’s dependencies (npm packages) and scripts to run tools.
+
+4. npm – 
+	Node Package Manager; 
+	- installed with Node.js
+	- installs Vite, TypeScript, ESLint, and other dependencies listed in package.json.
+
+5. Vite – 
+	- Fast dev server + build tool for modern frontend projects; 
+	- uses Node.js under the hood.
+	- reads vite.config.js to start a dev server and bundle your code.
+
+6. vite.config.js – 
+	Config file for Vite (build options, plugins, etc.).
+
+7. .ts – 
+	TypeScript source files; TypeScript is JavaScript with types.
+	- reads tsconfig.json to compile .ts files into JavaScript for the browser.
+
+8. tsconfig.json – 
+	Config file for the TypeScript compiler; tells it how to transpile .ts → .js.
+
+9. eslint – 
+	Linter for detecting and enforcing coding standards.
+	- reads eslint.config.mjs to check your .ts or .js files for code style errors.
+	- To check syntax, find problems, and enforce code style
+
+10. eslint.config.mjs – 
+	Config file for ESLint (rules, plugins, ignores).
+
+	
+🟣 Whole chain
+-----------------------------------------------------------------------------------------------
+
+[ Your Code (.ts, .js, .css, etc.) ]
+          │
+          ▼
+[ TypeScript Compiler ] ← tsconfig.json
+          │
+          ▼
+[ Vite Dev Server / Bundler ] ← vite.config.js
+          │
+          ▼
+[ Node.js Runtime (via nvm) ]
+          │
+          ▼
+[ npm Packages & Scripts ] ← package.json
+          │
+          ▼
+[ ESLint Linting ] ← eslint.config.mjs
+
+
+
