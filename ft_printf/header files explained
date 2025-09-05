@@ -1,0 +1,17 @@
+header files used in ft_printf
+
+# include <stdarg.h>
+	Provides facilities for working with functions 
+	that accept a variable number of arguments.
+# include <unistd.h>
+	Includes functions related to the POSIX operating system API, 
+	such as file and directory operations.
+# include <stdlib.h>
+	Contains functions involving memory allocation, 
+	random number generation, and other general utilities.
+# include <inttypes.h>
+	Defines a set of typedefs for integer types with specified widths, 
+	providing a standardized way to work with integers of known sizes.
+# include <stdio.h>
+	Includes functions for input and output operations, 
+	like printf and scanf.

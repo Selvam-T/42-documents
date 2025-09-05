@@ -1,0 +1,9 @@
+Pointer and Type casting a Pointer explained
+
+(void *)&(ph[i]) is a typecast expression.
+
+In C, &(ph[i]) takes the address of the i-th element of the array ph. This address has type struct thread_data *, meaning it's a pointer to a struct thread_data object.
+
+The (void *) part is a typecast. It's used to convert the pointer &(ph[i]) to a void * pointer type. This is commonly done when you want to pass a pointer to a function that accepts a void * parameter, which is a generic pointer type that can point to any data type.
+
+In this case, the pthread_create function expects a void * pointer as the fourth argument, so (void *)&(ph[i]) is used to cast the struct thread_data * pointer to void *, allowing it to be passed to the function.

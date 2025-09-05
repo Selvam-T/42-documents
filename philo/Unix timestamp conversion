@@ -1,0 +1,30 @@
+Unix Timestamp conversion tools
+
+Convert epoch to human-readable date and vice versa.
+
+The Unix epoch (or Unix time or POSIX time or Unix timestamp) is the number of seconds that have elapsed since January 1, 1970 (midnight UTC/GMT)
+
+https://www.epochconverter.com/
+
+C data structure to represent time is -
+	struct	timeval currenttime;
+
+Call function, pass data structure as argument.
+	gettimeofday(&currenttime, NULL);
+returns time in seconds.
+
+To convert it to milliseconds -
+
+millisecs	=	currenttime.tv_sec * 1000 	+ 	currenttime.tv_usec / 1000;
+	c						a									b
+
+a) currenttime.tv_sec * 1000: 
+	This part of the formula converts the time represented 
+	in seconds (currenttime.tv_sec) to milliseconds. 
+	1 second equals 1000 milliseconds
+b) currenttime.tv_usec / 1000: 
+	This part of the formula converts the microseconds component
+	 (currenttime.tv_usec) to milliseconds. 
+	To convert microseconds to milliseconds, you divide by 1000.
+c) 	By adding these two components together, you obtain the total time 
+	in milliseconds.

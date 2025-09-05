@@ -1,0 +1,26 @@
+Virtual inheritance vs Regular inheritance
+
+What is Virtual referring to?
+	Inheritance. 
+
+What is Public (private or protected) >
+	Access Specifier.
+
+Put them together:
+a) 
+
+Virtual Public B: 
+This means that B is inherited virtually, 
+ensuring that there is only one instance of B in the derived class hierarchy, 
+even if multiple paths lead to B. 
+This avoids ambiguity and reduces redundancy.
+
+Public B: 
+This means that B is inherited in a straight forward manner. 
+If multiple paths lead to B, multiple instances of B could be created, 
+which might lead to ambiguity or redundancy in the derived class hierarchy.
+
+b)
+public virtual and virtual public are functionally equivalent and can be used interchangeably. 
+The ordering of public and virtual doesn’t change the meaning in this context.
+

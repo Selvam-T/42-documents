@@ -131,7 +131,6 @@ Tailwind CSS works by scanning all of your
 Minimal Working Directory Setup:
 	index.html  
 	input.css  		--> source file for Tailwind to compile from
-	output.css (generated)  --> then link in HTML
 	package.json  		--> created during initialization of Node.js project
 	tailwind.config.js (generated)	--> Update content where Tailwind should scan for class names
 	
@@ -140,9 +139,9 @@ Minimal Working Directory Setup:
 	Creates package.json
 	
 2. Install Tailwind
-	$> npm install -D tailwindcss
-	//$> npm install -D tailwindcss @tailwindcss/vite @tailwindcss/backdrop-filter.
-	Adds tailwindcss to package.json under devDependencies.
+	$> npm i tailwindcss @tailwindcss/vite -D
+		Adds tailwindcss Engine and tailwind pluggin for vite 
+		into package.json under devDependencies.
 
 3. Create Tailwind Config
 	$> npx tailwindcss init
@@ -159,22 +158,27 @@ npm vs npx:	npm is a package manager, install and manage project dependencies.
 	
 	
 4. Setup Input CSS File
-	@tailwind base;
-	@tailwind components;
-	@tailwind utilities;
+	@import "tailwindcss";
 	
 	This acts like the source file for Tailwind to compile from.
+
+5. I don't need to generate output.css with all Tailwind styles used in your HTML.
+	1. $> npx tailwindcss -i ./input.css -o ./output.css --watch
 	
-5. Generate Output CSS
-	$> npx tailwindcss -i ./input.css -o ./output.css --watch
-
-	Generates output.css with all Tailwind styles used in your HTML.
-
-6. Link Tailwind in HTML
-	<link href="output.css" rel="stylesheet">
-
-	No CDN needed, you link the compiled CSS locally.
+	2. and link Tailwind in HTML
+		<link href="output.css" rel="stylesheet">
 	
+   Because, Vite is handling the entire Tailwind CSS compilation process automatically.
+
+6. I have installed prettier code formatter and Tailwind CSS plugin 
+	> npm install -D prettier prettier-plugin-tailwindcss
+	
+	> Add commands in package.json "scripts: -
+		"format:check": "prettier --check .",
+    		"format": "prettier --write ."	
+	> npm run format --> to clean up code. It will sort Tailwind classes and save.	
+	
+7. tailwind.config.js is not required.
 	
 🟧 Tailwind Application UI
 -----------------------------------------------------------------------------------------------
@@ -217,5 +221,78 @@ Forms			- Input groups
 	
 	
 7)	id = board			#board{}
+
+	
+🟧 Vite are designed to handle more than just JavaScript. They process CSS, images, and more.
+-----------------------------------------------------------------------------------------------
+
+When you run npm run start, here is what happens behind the scenes:
+
+1.  Vite Starts: 
+    
+    The watch:client script runs vite build --watch. This tells Vite to build your project 
+    and then watch for any file changes to rebuild automatically.
+
+2.  Vite Finds Your CSS: 
+    In your index.ts, you have the line import './style.css';. Vite sees this 
+    and knows it needs to process style.css.
+
+3.  Vite Processes the CSS: 
+    Inside your style.css file, you have this important directive at the top:
+    
+    @import "tailwindcss"; 
+    
+4. Vite Serves Your App: 
+   Vite then takes this final CSS and either injects it directly into your webpage 
+   (in development) or bundles it into a single CSS file in your dist folder 
+   (for a production build).   
+
+
+🟧 Tailwind using vite pluggin vs postcss plugin
+-----------------------------------------------------------------------------------------------
+- The PostCSS-based setup is the standard, tool-agnostic way to use Tailwind. 
+  It works with Webpack, Parcel, Rollup, or even just the command line.
+  
+- Vite is a highly optimized build tool with its own plugin system. 
+  To make the developer experience as smooth as possible, frameworks often create 
+  dedicated Vite plugins.
+- @tailwindcss/vite is a specialized wrapper that handles the entire PostCSS setup for you, 
+  inside of Vite.
+  
+- When you use @tailwindcss/vite, it does the following under the hood:
+	- It automatically sets up PostCSS.
+	- It configures Tailwind CSS as a PostCSS plugin.
+	- It adds autoprefixer.
+	- It integrates this entire process seamlessly into Vite's lightning-fast 
+	  Hot Module Replacement (HMR) and build pipeline.
+	- Therefore, @tailwindcss/vite includes the functionality of @tailwindcss/postcss. 
+	  You do not need both. By using the Vite plugin, you are telling Vite, 
+	  "Handle the entire Tailwind and PostCSS process for me in the most optimized way."
+
+
+🟧 Step-by-step guide to clean up your package.json and configuration.
+-----------------------------------------------------------------------------------------------
+- I think I was currently using postcss plugin with autoprefixer pluggin. 
+  I had commented out @tailwindcss/vite in vite configuration file.
+  I wasn't using both.
+  So now I am removing postcss plugin and use tailwindcss/vite
+
+1)  Uninstall the Redundant Packages
+	> npm uninstall @tailwindcss/postcss postcss autoprefixer
+	
+2) Move @tailwindcss/vite to devDependencies
+	> npm uninstall @tailwindcss/vite
+	
+3) Then, install it correctly as a dev dependency:
+	> npm install -D @tailwindcss/vite
+	
+4) vite.config.js (or vite.config.ts):
+	1. import tailwindcss from '@tailwindcss/vite'
+	2. plugins; [] --> tailwindcss()
+	3. add, CSS: { extract: true} --> to handle CSS extraction, example dynamic class handling
+	
+5) Delete postcss.config.js
+
+6) Delete tailwind.config.js
 
 

@@ -1,0 +1,47 @@
+function pointer
+
+1) 	Declaration: 
+	
+	(pointers to regular functions vs member functions)
+
+	static AForm* (*fptr[])(std::string target);
+	Array of pointers to regular functions that return AForm* and take a std::string parameter.
+
+	static AForm* (Intern::*fptr[])(std::string target);
+	Array of pointers to member functions that return AForm* and take a std::string parameter.
+
+	Function pointer declaration explained.
+
+	static AForm* (Intern::*fptr[])(std::string target);
+                    --   a   --   --  b --   -- c  --            - -  d ---
+
+	a) Return type of the function pointer
+	b) Member function. Without that, it means a regular function
+	c) * means a pointer , [] means an array of pointers
+	d) () determines that this is a function, without () it would mean it is a variable
+
+2)	Initialization:
+	
+	AForm* (Intern::*fptr[])(std::string target) = { NULL };
+
+3)	Assigning reference to functions to the function pointer in the constructor
+	
+	Intern::Intern() 
+	{
+   	 //function pointer assignment
+  	  fptr[0] = &Intern::ShrubberyCreation;
+  	  fptr[1] = &Intern::RobotomyRequest;
+	    fptr[2] = &Intern::PresidentialPardon;
+	}
+	
+4)	Invocation:
+	
+	The mistake I make is in not placing the parameter paranthesis
+
+	correct:
+	return (this->*fptr[i])(target); 
+
+	incorrect:
+	return (this->fptr[i](target));
+
+

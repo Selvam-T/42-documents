@@ -1,0 +1,26 @@
+while (**argv) v. while(*argv)
+
+To iterate over every string in argv.
+
+while (**argv) {}
+	throws a segmentation fault.
+
+while (*argv) {}
+	correct. does not throw error. 
+
+chatgpt explanation:
+
+while (**argv) dereferences twice:
+
+*argv dereferences to a string (a pointer to the beginning of a character array).
+**argv tries to access the first character of that string.
+If argv is an array of strings and the last element is NULL, **argv tries to access 
+the first character of a NULL pointer, causing a segmentation fault since there's 
+no valid memory there.
+
+while (*argv) dereferences once:
+
+*argv points to a string (a pointer to the beginning of a character array).
+The loop condition while (*argv) checks if the pointer is pointing to a valid string 
+(i.e., it's not NULL). It stops when it encounters a NULL pointer, indicating 
+the end of the array of strings (argv).

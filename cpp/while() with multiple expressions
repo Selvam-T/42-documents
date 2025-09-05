@@ -1,0 +1,29 @@
+while() with multiple expressions
+
+1.	while(expression1, expression2, expression3)
+	Evaluates expressions sequentially but returns the value of the last expression.
+
+	while(false, true, true)
+	is same as while(true)
+
+	while(true, true, false)
+	is same as while(false)
+
+2.	while (i-- > 0,  std::cout << prompt, std::getline(std::cin,input))
+• {
+• 	//the last expression determines the truth condition of while()
+• 	//the first expression i--> 0 does not determine the truth condition of the while()
+• 		besides it throws compiler warning/error saying that it is not used.
+• }
+
+In the below && condition, the 2nd expression is comma separated, it appears to behave as 1.
+i.e. the last expression determines the while loop exit.
+3.	while (i-- > 0 &&  std::cout << prompt, std::getline(std::cin,input))
+• {
+• }
+
+To rectify that, and make it rely on 'i'. I switched the expressions.
+4.	while (std::cout << prompt, std::getline(std::cin,input) && i-- > 0)
+• {
+• }
+

@@ -1,0 +1,4 @@
+Project Makefile cannot find libft library
+
+Ensure libft Makefile is run, thus libft library exists.
+You may clean *.o files. in libft folder

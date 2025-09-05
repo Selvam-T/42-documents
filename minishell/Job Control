@@ -1,0 +1,65 @@
+Job Control
+
+The shell associates a job with each pipeline.
+It keeps a table of currently executing jobs, which may be listed with the jobs command.
+When Bash starts a job asynchronously, it prints a line that indicates the
+job number and the process ID of the last process in the pipeline associated
+with this job.
+All of the processes in a single pipeline are members of the same job.
+
+Implementing job control functionality involves managing 
+• processes
+• process groups
+• signals
+• possibly terminal's foreground and background process groups
+
+How to implement job control:
+
+You would use a combination of system calls and utilities provided by the OS,
+along with appropriate data structures and bookkeeping in your C program.
+
+1.	Jobs associated with each pipleline:
+	when creating a pipeline of processes, you can assign them to a 
+	job data structure or keep track of the job ID associated with each
+	process group.
+
+	fork():	To create child processes for each command in the pipeline.
+	execve(): To replace the child process image with the desired command.
+	waitpid(): To wait for the child processes to complete.
+	pipe(): To create a pipeline for inter-process communication 
+		between commands.
+
+2.	Currently executing jobs:
+	Maintain a list of active jobs in your program.
+	Whenever a new job is started, it gets added to the list.
+	When a job completes, it is removed from the list.
+	You can periodically check this list to determine 
+	which jobs are currently executing.
+
+	waitpid(): To check the status of child processes and determine 
+	if they're still executing.
+
+3.	Currently executing job that may be listed with the jobs command:
+	Similar to the previous task, you can maintain a list of active jobs.
+	The "jobs" command typically lists background jobs, so you would need
+	to filter out jobs that are running in the background.
+	
+	waitpid() to monitor the status of child processes.
+	isatty() and ttyname() to track which processes are running in the
+	background.
+
+4.	When a job starts asynchronously, print job number and process ID:
+	Before starting a job asynchronously (eg: using for(), exec()), you can
+	print the job number and the process ID of the last process in the 
+	pipeline associated with the job. You'll need to track this information as
+	you create and manage jobs.
+	
+	Use fork() and execve() to start the job asynchronously.
+
+5.	All processes in a single pipeline that are members of the same job:
+	When setting up a pipeline of processes, you can assign them to the same job.
+	Each process in the pipeline will share the same process group ID, which you
+	can use to identify them as members of the same job. 
+
+	fork() to create child processes for each command in the pipeline.
+	pipe() to set up communication between processes in the pipeline.

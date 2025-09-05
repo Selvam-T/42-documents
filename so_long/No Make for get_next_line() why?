@@ -1,0 +1,8 @@
+No Make for get_next_line() why?
+
+get_next_line() does not have a library. 
+It is a collection of C files.
+It only needs norminette.
+
+Whereas, libft and mlx need makefile. 
+They provide libraries that in used in so_long makefile.

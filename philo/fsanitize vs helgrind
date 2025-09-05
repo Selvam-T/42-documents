@@ -1,0 +1,25 @@
+-fsanitize
+----------
+
+a) -fsanitize=thread with cc:
+
+    This flag enables ThreadSanitizer, a tool for detecting data races and thread synchronization issues. When you compile your program with this flag, ThreadSanitizer instruments your code to catch race conditions and other threading bugs at runtime.
+
+b) -fsanitize=address:
+
+    This flag enables AddressSanitizer, which is primarily used for detecting memory corruption issues like buffer overflows and use-after-free errors. While it doesn't directly detect mutex issues, it can help identify memory-related bugs that might indirectly cause threading problems.
+    
+    
+-fsanitize vs Helgrind
+----------------------
+
+Difference between using -fsanitize and Valgrind with Helgrind:
+
+-fsanitize tools (ThreadSanitizer) are typically faster and 
+integrate directly with your compiler, providing quick feedback during the development process. They use static and dynamic analysis to catch threading bugs.
+
+Valgrind with Helgrind is generally slower because it is a dynamic binary instrumentation framework, meaning it runs the entire program in an instrumented environment. This thorough approach can detect a wider range of synchronization issues but at the cost of higher runtime overhead.
+
+Both approaches are useful, and often, using them together can provide a more comprehensive analysis of threading issues in your code.
+
+

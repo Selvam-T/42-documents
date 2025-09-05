@@ -1,0 +1,33 @@
+A case of Invalid free() error:
+-------------------------------
+
+1,	I malloced a 2 dimensional array.
+
+	char	**args = malloc(sizeof(char *) * 3);
+	args[0] = "uniq";
+	args[1] = "-c";
+	args[2] = NULL;
+
+2,	args is the argument vector I pass as 2nd argument in execve();
+
+3,	In order for Valgrind to show leaks history, execve() must be commented out.
+
+4,	What did I observe when I 	free(args) 	v	free(args[0]) ?	
+	
+5,	free(args) is correct. Because I malloced args.
+	When I valgrind. It will show.
+	HEAP SUMMARY:
+	total heap usage: 1 allocs, 1 frees
+	All heap blocks were freed.
+
+6,	free(args[0]);
+	Invalid free() 
+	HEAP SUMMARY:
+	total heap usage: 1 allocs, 1 frees
+	LEAK SUMMARY:
+	definitely lost: 24 bytes in 1 blocks
+
+	It does not seem right that total heap usage shows 1 allocs, 1 free.
+	Chatgpt says that Valgrind output is misleading due to how it tracks memory
+	allocations and deallocations. It might still interpret the freeing of a part of
+	the allocated memory within 'args' as a deallocation.

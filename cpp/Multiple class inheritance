@@ -1,0 +1,27 @@
+Multiple class inheritance
+
+Class a {}
+
+Class b : a {}
+
+Class c : a {}
+
+Class x : b, c {}   <--- multiple inheritance
+
+1) 	How does the order of base classes inherited matters?
+	Class x : b , c {}
+	vs Class x : c , b {} ?
+
+	- It determines the order in which the base class subobjects are constructed and destructed. 
+	- In terms of member access and ambiguities, 
+		the order can affect which base class's members are used or overridden.
+
+2)	Assume both Class b and Class c has member attribute int q.
+	In this case int q is ambiguous in derived Class x.
+		because both Class b and Class c has int q.
+	If you try to access an ambiguous member attribute, it will result in compilation error.
+
+3)	How to resolve ambiguity?
+	 You need to specify which base class's q you are referring to (e.g., x.b::q or x.c::q), 
+	or you need to resolve the ambiguity in the derived class.
+

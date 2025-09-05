@@ -1,0 +1,22 @@
+open(), read()
+
+chat gpt : https://chat.openai.com/share/9a7b35c4-ef8b-435e-bf36-fd9394fbc461
+
+open() 	return values:
+
+	-1		error
+	3		for the first open statement. +value means a success
+	4		for the next open statement, and so on
+			read File descriptor below. 
+			open() returns File descriptor values. 
+			0, 1, 2 are reserved for File descriptors.
+
+File descriptors, fd,	used in open()
+	0		stdin
+	1		stdout
+	2		stderr
+
+read()	return values
+	number of characters read from fd
+	0		reached EOF
+	-1		error

@@ -1,0 +1,26 @@
+Copy constructor 2
+A//
+Number numA( 8 );
+Number numB = numA;
+
+//B
+Number numA( 8 );
+Number numC( numA ); 
+
+In both cases numA is already created before numB.
+Then numB is initialized.
+
+A and B are operationally the same in terms of calling the copy constructor.
+
+Copy Initialization (A): 
+	The statement Number numB = numA; uses copy initialization. 
+	This involves the copy constructor if the class Number has one defined. 
+	Essentially, this syntax is equivalent to Number numB(numA); in terms of calling the copy constructor.
+
+Direct Initialization (B): 
+	The statement Number numC(numA); uses direct initialization. 
+	This explicitly calls the copy constructor with numA as the argument.
+
+In both cases, if you have defined a copy constructor for the class Number, 
+it will be invoked to initialize numB and numC from numA. 
+The end result is the same: both numB and numC will be created as copies of numA using the copy constructor.

@@ -1,0 +1,31 @@
+static cast vs dynamic cast
+
+- use static_cast only if you are 100% sure the cast is good.
+• use dynamic_cast if you are not sure. 
+
+// how dynamic cast works:
+  
+A* 	dyn_a 	= 	dynamic_cast<A*>(p);  
+	// dynamic_cast checks 'p' to make sure it points to an 'A'
+     	// Let us say it does, so this cast is safe.  dynamic_cast succeeds.
+
+
+B* dyn_b = dynamic_cast<B*>(p);  
+	// dynamic_cast checks 'p'.  
+	//Let us say that 'p' does not point to a 'B', 
+    	//so this is a bad cast.  
+	//dynamic_cast will fail and dyn_b will be == nullptr
+
+// how static_cast works
+ 
+A* sta_a = static_cast<A*>(p);  
+	// static_cast assumes the cast is good.  
+	//No runtime check
+  	// sta_a will be identical to dyn_a above
+
+B* sta_b = static_cast<B*>(p);  
+	// static_cast assumes the cast is good... BUT IT ISN'T
+    	//  'p' does not point to a 'B', so this is a bad cast!  static_cast succeeds, resulting in
+    	//  'sta_b' being a BAD POINTER.  Dereferencing sta_b has undefined behavior.
+
+

@@ -1,0 +1,9 @@
+Static vs Dynamic allocation of array of Objects
+
+Contact *c = new Contact[8]; 
+	allocate an array of 8 members on HEAP
+	must delete[] c;
+
+Contact c[8]; 
+	static allocation on STACK 
+	no need to delete

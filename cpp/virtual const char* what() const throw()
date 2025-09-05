@@ -1,0 +1,8 @@
+virtual const char* what() const throw()
+  
+virtual		Adds nothing, as the method being overridden is already virtual. 
+			it can be omitted.
+
+...
+
+throw()	Throws no exceptions.

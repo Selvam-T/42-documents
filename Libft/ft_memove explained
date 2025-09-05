@@ -1,0 +1,8 @@
+ft_memove()
+1,	dest array needs an explicit size or be initialized, it will run into compile error otherwise. But your function need not check if array is initialized or has size defined.
+
+2, If dest size < size_t n // number of bytes to assign to dest is larger than the array size of dest, compiler error stating overflow, so it looks like the function doesn't have to check if dest array size is larger than length to copy
+
+3, I tested overlap by doing this, sor src, 1 used &dest[5], meaning the source was part of destination. It copied the specified segment to the beginning to dest.
+
+memcpy() and memmove() behaved the same for the test conditions with overlapping buffer.

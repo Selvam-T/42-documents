@@ -1,0 +1,34 @@
+Reference and pointer relationship.
+
+Scenario:
+
+    	MyClass obj;
+    
+	MyClass& ref = obj;
+    	
+	MyClass* ptr = &obj;
+
+	Therefore, MyClass* ptr = &obj;		==		MyClass* ptr = &ref;
+
+A)	 fn( MyClass	& ref );			//--> I can pass an obj, ref,*ptr  /	but not pointers. (i.e &obj, &ref, ptr)
+
+	1) 	fn(	obj     );   		// VALID		Passing an object
+	2)	fn(	ref	    );   		// VALID		Passing a reference to the object
+	3)    fn( *ptr   );			// VALID		dereferences the pointer, giving you the object that ptr points to.
+
+	4)    fn( &obj  );		// INVALID	 	Not compile because &obj is a pointer, not a reference.
+	5) 	fn(  &ref  ); 		// INVALID	 	Not compile because &ref is a pointer, not a reference.
+	6) 	fn(	ptr	    ); 		// INVALID		Not compile because `ptr` is a pointer, not a reference
+	
+
+B)	 fn( MyClass	* ptr );
+
+	1)  fn( &obj   );  		// VALID		Passing the address of the object
+	2)  fn( &ref   ); 			// VALID		Passing the address of the object that ref refers to (same as &obj).
+	3)  fn( ptr      ); 			// VALID		Passing a pointer to the object.
+
+	4)   fn( obj      ); 			//INVALID 		Not compile because obj is an object, not a pointer.
+	5)  fn( ref       ); 			//INVALID 		Not compile because `ref` is a reference, not a pointer
+	6)   fn( *ptr   );			//INVALID 		Not compile because dereferences the pointer
+	
+

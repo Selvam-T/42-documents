@@ -1,0 +1,23 @@
+pthread_create() ... pthread_join() sequence
+
+given the 2 different sequence of function calls, what is the difference in run time or outcome?
+
+1,  	pthread_create(&thread1, NULL, deposit, (void*) &deposit1);
+	pthread_create(&thread2, NULL, deposit, (void*) &deposit2);
+	
+	pthread_join(thread1, NULL);
+	pthread_join(thread2, NULL);
+
+2,	pthread_create(&thread1, NULL, deposit, (void*) &deposit1);
+	pthread_join(thread1, NULL);
+	
+	pthread_create(&thread2, NULL, deposit, (void*) &deposit2);
+	pthread_join(thread2, NULL);
+
+In sequence 1), both threads are created simultaneously and then joined sequentially. This means that thread1() and thread2() may start executing concurrently, 
+potentially leading to a shorter overall runtime if the operations within the threads can be executed concurrently and independently.
+
+In sequence 2), thread1() is joined before thread2() is created. This ensures that thread2() will not start executing until thread1() has completed, potentially leading to a 
+longer overall runtime compared to sequence 1) if the operations within the threads are not dependent on each other and could be executed concurrently.
+
+So, the difference in the sequence of function calls can affect the concurrency of execution, potentially impacting the overall runtime of the function.

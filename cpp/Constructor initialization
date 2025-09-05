@@ -1,0 +1,54 @@
+Constructor initialization of member variables
+
+There is 3 ways to initialize member variables when constructor is called.
+
+1)	Using Member Initializer List: 
+	This is the syntax used to initialize member variables of a class before the body of the constructor executes. 
+
+	PhoneBook::PhoneBook( void ) : count(0) 
+	{
+		//empty
+	} 	
+
+	'count' is a member variable of PhoneBook class.
+	'count' can be private or public.
+
+2)  Assignment within the constructor body. 
+	(Directly)
+
+	PhoneBook::PhoneBook( void ) 
+	{
+		this->count = 0;
+	} 	
+
+Situations where you might prefer assignment in the constructor body:
+
+If the initialization involves complex logic, conditional statements, or error handling, 
+it can be clearer and more manageable to use assignment within the constructor body.
+
+Example:
+
+class Example 
+{
+    int _count;
+public:
+    Example(int value) 
+   {
+        if (value < 0) 
+            _count = 0;  // Default to 0 if negative
+        else 
+            _count = value;
+    }
+};
+
+3) 	Assignment within the constructor body. 
+	(using setter function)
+
+	ex: 
+	instead of :	this->_count = value;
+	you can call setter function: 
+					this->setter(value);
+	Why? because you may want to have additional logic (e.g., validation) in the setter function.
+	It's better to use setter fucntion to maintain consistency.
+
+

@@ -1,4 +1,12 @@
+Submission. mlx.
+------------------
+You should not submit mlx folder.
+During evaluation you need to download the mlx library folder.
+
+Alternatively, you could include a line in Makefile to clone a mlx library folder if it does not exist.
+
 CUBE3D PDF requirement:
+------------------------
 
 Wolfenstein 3D game
 explore ray-casting

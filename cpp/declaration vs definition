@@ -1,0 +1,12 @@
+declaration vs definition
+
+In header file you declare member variables and functions.
+
+In implementation file you define the member variables and functions.
+
+	To define Member variable is -
+		declare it with the function type and initialize it.
+		If you don't initialize it, compiler will throw an error.
+
+	To define Member function is -
+		provide actual code for the function's behavior.

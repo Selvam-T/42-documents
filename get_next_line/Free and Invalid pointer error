@@ -1,0 +1,17 @@
+Free() and Invalid pointer error
+
+1,	You get this error, if you try to free() something that was not mallocd
+2,	or double free()
+3,	Example of a invalid pointer error, I encountered
+	char *str = (char *)malloc (5 * sizeof(char));
+	str = "hello";
+
+	free(str); --> error, because, notice, str is now pointing to a string literal.
+	for the malloc memory to be utilized, I should assign each char into each byte.
+	str[0] = 'h' ....str[4] = 'o' etc.
+
+4,	read() function would assign characters into every mallocd byte location.
+	so I can free the buffer.
+
+5,	char *str1 = strdup("hello");
+	strdup(), mallocs a string.

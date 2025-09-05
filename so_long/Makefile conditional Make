@@ -1,0 +1,7 @@
+Check if libft library is available, if not make libft
+
+$(NAME):	$(OBJECT) $(HEADERS)
+		test -d minilibx-linux && $(MAKE) -C minilibx-linux || true
+		test -f libft/libft.a && true || $(MAKE) -C libft
+		$(CC) $(CFLAGS) $(OBJECT) -o $(NAME) \
+		-L$(MINILIBX_PATH) $(MINILIBX_FLAGS) -L./libft -lft

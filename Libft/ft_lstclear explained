@@ -1,0 +1,11 @@
+ft_lstclear
+
+in the end I set 	*lst = NULL
+I wondered why that was necessary, because we know
+t = *lst
+
+while (t) loop terminates when t == NULL, so why make *lst == NULL?
+
+Because first	t = *lst	in the while loop we free(t) from head to tail, until t == NULL
+								but *lst remains pointing to the original head of the linked list.
+								so we need to set that to NULL. 

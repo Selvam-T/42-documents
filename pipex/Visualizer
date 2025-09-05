@@ -1,0 +1,29 @@
+Visualizer
+1,	https://github.com/o-reo/push_swap_visualizer
+
+2,	In a selected folder, git clone into a folder called visualizer
+	git clone https://github.com/o-reo/push_swap_visualizer visualizer
+
+3,	fish (if you want interactive shell)
+
+4,	ls
+5, 	cd visualizer
+6,	ls
+7,	we have already installed gcc, so skip Install c++ compiler
+
+8,	cmake --version
+	cmake is also already installed
+
+9,	mkdir build
+10,	cd build
+11,	cmake -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_CXX_COMPILER=/us/bin/g++ ..
+12,	ls
+13,	make
+
+14,	./bin/visualizer
+
+15,	visualizer will open 3 windows - values, control and commands
+	select the folder where you placed your push_swap
+	this is done by moving 1 or 2 levels up or down the current folder
+
+,	instead of moving push_swap_visualizer inside push_swap

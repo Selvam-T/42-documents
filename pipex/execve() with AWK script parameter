@@ -1,0 +1,12 @@
+execve() and AWK script
+
+char *args[] = {"awk", "{print $1, $2}", (char *)NULL};.
+
+on command line the AWK script would enclose the shell features in single quote.
+awk '{print $1, $2}'
+
+In Unix command line, when using AWK, single quote is often used to encapsulate
+the AWK program or script if it contains special characters or expressions that 
+might be interpreted by the shell. The single quote prevent the shell from interpreting special characters within the AWK program and ensure that the entire program is passed as an argument to AWK.
+
+But when you execute AWK command using execve(), the arguments passed are not processed by a shell, therefore, the shell features like quoting, expansions, or special characters are not interpreted in the same way they are on the command line.

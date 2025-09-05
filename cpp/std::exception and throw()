@@ -1,0 +1,42 @@
+std::exception and throw()
+
+Base Class: std::exception is the base class for all standard exceptions in C++. 
+It provides a virtual function called what() that returns a C-style string describing the exception.
+
+Custom Exception: 
+You can derive a custom exception class from std::exception if you want to provide more specific error messages 
+	or handle specific types of errors. 
+When you create an instance of your exception class, the constructor of your class is called, 
+	followed by the constructor of std::exception.
+
+Standard Exceptions: 
+Alternatively, you can use existing exceptions like std::out_of_range or 
+	std::invalid_argument if they fit your needs.
+
+How throw Works:
+-----------------------------
+1) Throwing an Exception: 
+	- When you use the throw keyword, you signal that an error has occurred. 
+	- You create an instance of an exception (which can be an object of std::exception 
+		or any derived class) and 
+	- pass it to throw.
+
+2) Exception Propagation: 
+	- The throw keyword interrupts the normal flow of the program and starts unwinding the stack. 
+	- The runtime looks for a matching catch block to handle the exception. 
+	- If it finds one, the control is transferred to that block; 
+	- otherwise, the program terminates.
+
+3) Passing std::exception to throw():
+	- you're providing an std::exception object that contains information about that error.
+	- The throw keyword passes the exception object to the runtime system.
+	-  runtime copies the exception object (using the copy constructor).
+	- It stores this copy in a special location, typically referred to as the "exception object".
+	- The runtime then initiates the stack unwinding process to search for a suitable catch block 
+		that matches the type of the exception object.
+	- When a matching catch block is found, the copied exception object is passed to it, 
+		allowing the program to handle the error.
+	
+	- The throw keyword itself doesn’t perform complex operations;
+	- it simply transfers control to the exception-handling mechanism, which takes over from there.
+

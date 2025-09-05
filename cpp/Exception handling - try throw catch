@@ -1,0 +1,28 @@
+Exception handling - try throw catch
+
+• notify caller error has occured
+• the caller can catch the exception and handle it
+
+try 
+{ 
+	- wrap the code that might throw an exception.
+	- throw std::exception()
+	- the runtime is prepared to catch and handle the exceptions 
+		that might be thrown
+	- the runtime searches for a catch block with a parameter that matches
+		the type of the thrown exception
+	- if exception occurs, the program jumps to corresponding catch
+		
+}
+catch
+{
+	- where you handle the exception
+	- excecute code to handle the error
+	- the program can terminate or continue with the code that follows
+}
+
+throw
+	- to signal that an error has occured
+	- creates and throws an exception object, which can be caught and
+		handled by a catch block
+

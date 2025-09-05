@@ -1,0 +1,93 @@
+c++ cast
+
+You must know which cast to use in which condition?
+
+• static cast
+	------------
+		- Does Semantic check
+		- 	Not Reliable at run	//Just because it compiled, it doesn't mean it is reliable
+		-	Not tested at run
+
+		- do  CONVERSION
+		- do Upcast
+		- do Downcast
+
+• dynamic cast
+	---------------
+		- Does Semantic check
+		- Reliable at run			//unlike static cast this is reliable at run
+		- Tested at run
+
+		- do Upcast
+		- do Downcast
+
+• const cast
+	------------
+		- Type qualified?
+		
+• reinterpret cast
+	-----------------
+		- Do Upcast
+		- Do Downcast
+		- Do reinterpretation
+
+		- There is hierarchy between types.
+		- void type is more generic, whereas, float type is accurate.
+		- Parent class is more generic, whereas Child class is accurate. (more specialized version of parent)
+		
+		Example 1:  C-type casting
+		float a;
+		void * b = &a;	//Implicit reinterpretation cast, Accurate type cast to Generic type.
+		void * c = (void *) &a;	//Explicit reinterpretation cast
+
+		void * d = &a;	//Implicit promotion is OK
+		int * e = d;	//Implicit demotion, HAZARDOUS, wrong value?	// cast Generic type to Accurate type. 
+		int * f = (int *) d;	//Explicit demotion is OK
+
+		Example 2: C-type casting
+		class Parent				{}
+		class Child: public Parent {}
+
+		Child	a;
+		Parent *b	= &a;	//implicit 'reinterpretation' cast
+		Parent *c	= (Parent*)&a;	//explicit 'reinterpretation' cast
+
+		Parent *d	= &a;	// implicit UPCAST.	OK
+							// because you are moving UP the hierarchy
+							// i.e. you are treating Child Object as if it were a Parent Object
+							// Child Object contains Data from Parent, as well as its own. 
+							// Now Parent can safely point to data of its own data members.
+
+		Child * e	= &d;	//implicit DOWNCAST 	NOT OK
+							//you are treating a Parent object as if it were a Child Object
+							//A Child object has both Parent and Child data, but a Parent object only has the Parent data.
+							//so if you didn't know Child object pointer is pointing to a parent, and tried to access memory
+							//specific to child, which in this case is not defined, because the parent object it is pointing to 
+							//does not have it, you run into undefined behavior.
+
+		Child * e	= (Child*)&d;	//explicit DOWNCAST 	MAY BE NOT OK possible run-time bad consequences
+		
+• explicit cast
+	--------------
+		float f = 4; 
+		int i = f;	//implicit cast
+	
+		int i = (int) f;	//explicit cast
+
+
+• implicit conversions
+	----------------------
+		- Does CONVERSION
+		- Do Upcast
+		
+		- Does Semantic Check
+		- Reliable at Run
+
+		Example:
+		int i = 4; 
+		double d = i; //implicit conversion. Information is NOT lost assigning 'int' to 'double'
+
+		double D = INT_MAX + 1000;
+		int I = D; //implicit conversion. Information is lost. 
+				//If you turn on -Wno flag in the compiler, compiler wouldn't allow implicit casting
+		i = (int)D; //you instruct compiler that you are explicitly casting.

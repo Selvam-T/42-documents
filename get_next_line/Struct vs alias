@@ -1,0 +1,19 @@
+struct name vs alias
+
+Example:
+typedef struct buffer {
+   char *content;
+   struct buffer *next;
+} list;
+
+"buffer" is the name of the struct.
+"list" is the alias of the struct.
+
+if you give struct an alias, you declare variables as-
+list	*something;
+
+if you didn't give struct an alias, you must declare variables as-
+struct buffer *something;
+
+struct must have a name, example "buffer", 
+but it does not have to have an alias, like "list"

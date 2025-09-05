@@ -1,0 +1,16 @@
+Checking state of std::ifstream object
+
+1)	if (!ifs.is_open())
+
+   	 This means that the file stream object (ifs) was attempted to be opened with a file, 
+		but the operation failed. 
+	This can happen due to various reasons such as 
+	- file not found, 
+	- lack of permissions, or 
+	- other file system issues.
+
+2) 	if (!ifs)
+	
+	This checks if the stream is in a failed state, 
+		- which includes scenarios beyond just file open failure, 
+		- such as reading or writing errors during operations.

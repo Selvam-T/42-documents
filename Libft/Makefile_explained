@@ -1,0 +1,9 @@
+Makefile and compile test function
+
+1.	run 'make' first
+2.	uncomment main function in the test function 	ex: ft_strtrim.c
+3.	gcc ft_strtrim.c -L. -lft
+		where	-L.	means look
+				-lft		can be expanded to	lib libft.a
+						l	is short for lib, therefore it is apparently shortened, and it apparently knows .a extension
+

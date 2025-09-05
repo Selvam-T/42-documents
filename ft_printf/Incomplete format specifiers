@@ -1,0 +1,26 @@
+Incomplete format specifiers
+1,	Missing Conversion Specifier:	
+	'%d' 	is valid
+	'%' is not valid, it is missing conversion specifier, like d or u.
+
+2,	Mismatched Format specifier:
+	The format specifier must match the data type of the corresponding argument.
+
+	"%d"  ----> "this" 	(mismatched)
+
+3,	Correct syntax:
+	"%d"	---> correct
+	"%2d"	---> correct 	//specifies the minimum width 
+
+4,	Invalid characters in Format specifier:
+	"%d%"   ---> Invalid
+
+5,	Unescaped %:
+	'%' --> incorrect. Not followed by Conversion Specifier or not escaped with another % is incorrect.
+	'%%'  ---> correct
+
+basically Incorrect, Invalid, are referring to missing conversion specifiers
+
+NOTE:
+Moulinette does not check invalid specifiers described above.
+DO NOT fail the person if they didn't do error handling on these cases.

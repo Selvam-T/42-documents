@@ -1,0 +1,194 @@
+Explain changes to Jason
+------------------------
+
+Question / Suggestion :
+
+1) fonts folder
+- Move assets/fonts/ folder from /src to /public in root directory
+- Subsequently update all path to fonts, example in style.css src:url
+- Why? It is suggested in Vite, static assets should be in public/ dir to be served correctly.
+- Using a relative path may cause issues during Vite's build process, because it resolves
+  paths relative to the output bundle, not the source file.
+
+2) .env to inject port info server.ts
+- npm install dotenv
+- in server.ts file > import * as dotenv from 'dotenv';
+	dotenv.config();
+	//now you can access PORT in .ts
+	//find out how to concatenate --> BASE_URL = "http://localhost:"PORT;
+	
+- replace 3000 with PORT in all files
+
+3) For my understanding - 
+	1) Why id="sidebarToggle" dynamically created inside sidebar.ts,
+		instead of manually adding in .html, 
+		<button id="sidebarToggle" class="sidebar-toggle">☰</button> ?
+	2) Since we know we are creating id="sidebarToggle" inside sidebar.ts,
+	   why have if () ... else () in initElements() in sidebar.ts?
+
+4) id="board" does not seem to have css styling. 
+   Why is there #selector rules defined in .css?
+   
+5) Google sign in -
+	Google page loaded. No local css styling ?
+
+🟧 Installation and configuration
+-----------------------------------------------------------------------------------------------	
+
+Originally I installed postcss autoprefixer. But I uninstalled it, Tailwind v4 don't require.
+
+1) Tailwind CSS Engine + tools
+
+	> npm uninstall @tailwindcss/postcss postcss autoprefixer
+	> npm uninstall @tailwindcss/vite
+	> npm uninstall tailwindcss
+	
+	> npm i tailwindcss @tailwindcss/vite -D
+	
+2) configure vite.config.js
+	1. import tailwindcss from '@tailwindcss/vite'
+	2. plugins; [] --> tailwindcss()
+	3. add, CSS: { extract: true} --> to handle CSS extraction, example dynamic class handling
+         
+3) Take a look index.html
+
+	<script type="module" src="./index.js"></script>
+	
+	- style.css is imported in index.js
+	
+	- This is the magic part: The Vite development server intercepts this request.
+	- It looks in your source folder and finds index.ts
+	- It then serves the generated JavaScript back to the browser.
+
+4) I have installed prettier code formatter and its Tailwind CSS plugin 
+	> npm install -D prettier prettier-plugin-tailwindcss
+	
+	> Add commands in package.json "scripts: -
+		"format:check": "prettier --check .",
+    		"format": "prettier --write ."	
+    		
+	> npm run format --> to clean up code. It will sort Tailwind classes and save.
+	
+   
+🟧 Traditional CSS	--> corresponding -->	Tailwind CSS
+-----------------------------------------------------------------------------------------------
+
+opacity: 0;					opacity-0
+display: none;					hidden
+pointer-events: none;				pointer-events-none
+position: fixed;				fixed
+top: 0;						top-0
+left: 0;					left-0
+width: 100%;					w-full
+height: 100%;					h-full
+background-color: rgba(0, 0, 0, 0.7); 		bg-black/70 // ADD THIS FOR THE TEST
+            colors: {
+              'debug-pink': '#ff00ff', // A bright, unmistakable color
+            },
+z-index: 1000;					z-[1000]
+
+						// TW needs flex to activate flexbox for centering.
+justify-content: center;			flex
+						justify-center						
+align-items: center;				items-center
+
+transition: opacity 0.3s ease;			transition-opacity
+						duration-300
+						ease-in-out
+						
+overflow-y: auto;				overflow-y-auto // ADD THIS FOR THE TEST
+            colors: {
+              'debug-pink': '#ff00ff', // A bright, unmistakable color
+            },
+
+
+🟧 id="modal-divs" Tailwind css implementation
+-----------------------------------------------------------------------------------------------
+
+1) Update in HTML
+2) Comment out in style.css
+
+
+🟧 id="modal-container" Tailwind css implementation
+-----------------------------------------------------------------------------------------------
+
+1) In HTML:
+	Replace -->	<div id="modal-container" class="modal-container"> 
+	with -->	<div id="modal-container" class="..as in Table above .." >
+	 
+2) In Style.css --> remove rules for id="modal-container" to avoid conflicts
+
+3) In modal.ts --> 
+
+	replace in 
+		public show() {}
+		--> modalContainer.classList.add("active");
+		
+	and in
+		public close() {}
+		--> modalContainer.classList.remove("active");
+
+/*** important: Jason to check ***/		
+4) Animation: i.e. opacity transition for dutation of 300s, wouldn't work without setTimeout()
+	Suggested:
+		// 1. Start the fade-out transition
+  		modalContainer.classList.add("opacity-0");
+  		// 2. After the animation finishes, hide it from the layout
+		  setTimeout(() => {
+		    modalContainer.classList.add("hidden");
+		  }, 300); // Must match the transition duration
+		
+5) pointer-events:none and pointer-events:auto are redundant in modal.ts
+	public show() and public close()
+	
+	ex: modalContainer.classList.remove("hidden", "opacity-0", "pointer-events-none");
+	
+	Because, when modal is "hidden" already makes the element non interactive.
+	and when modal is visible, by default div is pointer-events: auto 
+
+
+🟧 class="button" Tailwind css implementation
+-----------------------------------------------------------------------------------------------
+
+1)  For font-barlow-condensed to work, font family is defined in tailwind.config.js
+
+2) Reusuable button in style.css, used by modal-content and sidebar
+
+3) font-barlow-condensed issue in Tailwind v4
+   - Part 1: In style.css we define "Barlow Semi Condensed" using @font-face
+   - Part 2: In tailwind.config.js we generate the Utility class for "Barlow Semi Condensed"
+             Tailwind v4 compiler does not load or parse your tailwind.config.js correctly.
+    	     but this has no issue in Tailwind v3.
+
+
+🟧 Configure VS code settings.json to ignore some Linter errors
+-----------------------------------------------------------------------------------------------
+1)  In html id="modal-container", I have 'hidden' and 'flex' classes setting the same property.
+    Lint correctly flags this. But this is intentional conflict, resolved with Javascript. 
+    Linter lacks this context.
+
+	So I have added in settings.json of vscode, this line -
+	"tailwindcss.lint.cssConflict": "ignore"
+
+	But it didn't remove the warning.
+
+2) In style.css, @apply shows error Unknown at rule @applycss(unknownAtRules)
+
+	Linter is wrong because it doesn't know about Tailwind's special syntax.
+
+	However, the rule "css.lint.unknownAtRules": "ignore" is very specific and 
+	the risk is extremely low.
+
+	The most important thing to understand is that VS Code's linter is just 
+	a helpful guide; it is not the real error checker.
+
+	The real authority on whether your Tailwind CSS is correct is the Tailwind compiler, 
+	which is run by Vite every time you save a file.
+
+	I added in VS settings: Preferences: Open User Settings (JSON)     
+	
+	"css.lint.unknownAtRules": "ignore"
+
+
+
+

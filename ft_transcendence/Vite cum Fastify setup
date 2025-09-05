@@ -1,0 +1,172 @@
+
+🟨 Chain of events in a Vite + Fastify setup:
+-----------------------------------------------------------------------------------------------
+- vite --> pronounced 'veet'
+
+- Combination of Vite and Fastify --> to build full-stack applications
+	- 1) Vite --> frontend build tool
+	- 2) Fastify --> a low-overhead Node.js framework --> backend.
+
+- 1) Vite consists of two main parts:
+	1) development server --> leverages native ES modules in the browser
+	2) build command --> bundles your code with Rollup for highly optimized static assets 
+				in production
+
+- 2) Fastify offers features like 
+	- schema-based validation and a 
+	- powerful plugin architecture
+	
+- Development: npm start and the Dev Mode
+	- npm start command is configured to launch the application in development mode
+	- npm start --> running a script that starts your Fastify server
+	- Fastify server is configured to use Vite as a middleware
+		- using a plugin like @fastify/vite
+		- allows Fastify to hand off certain requests to Vite's development server.
+	
+- Two servers running
+	- 1) Fastify Server (e.g., on port 3000):
+		- main application server. 
+		- It handles API routes, server-side logic, and, 
+		- through the Vite middleware, serves your frontend application.
+	
+	- 2) Vite Dev Server (e.g., on its default port 5173):
+		- server is responsible for serving your frontend assets 
+		- (like JavaScript, CSS, and images) during development.
+		- It's the engine behind the rapid development experience.
+		
+🟣 User navigates to http://localhost:3000
+-----------------------------------------------------------------------------------------------
+
+- The initial request hits the Fastify server.
+
+- The @fastify/vite middleware intercepts this request.
+
+- For the initial HTML page, the middleware will likely use Vite to process index.html file. 
+
+- Vite injects its client-side code for Hot Module Replacement (HMR) and 
+
+- then sends the processed HTML back to the browser.
+
+
+🟣 Vite in Action
+-----------------------------------------------------------------------------------------------
+
+- The browser receives the index.html file and starts parsing it. 
+- It will find <script type="module"> tags that point to index.js, i.e. entry point.
+- The browser then sends requests for these JavaScript modules source code.
+
+- These requests are intercepted by the Vite dev server. 
+- Vite serves these files directly from your source code, 
+	leveraging the browser's native ES module support. 
+- This avoids bundling the entire application during development.
+
+- As you make changes to your frontend code, the Vite dev server uses HMR to push 
+	only the updated modules to the browser, 
+	resulting in near-instantaneous updates without a full page reload
+
+
+🟣 Fetch data from the backend
+-----------------------------------------------------------------------------------------------
+
+- When frontend application needs to fetch data from the backend, 
+	it will make API requests (e.g., to /api/users).
+
+- These API requests are also sent to the Fastify server on port 3000.
+
+- Since these requests don't correspond to frontend assets that Vite needs to handle, 
+	they are processed by your Fastify application's routes.
+
+- Fastify handlers will execute, interact with a database or other services, and 
+	return a JSON response to the browser.
+	
+- Vite's dev server can be configured to proxy API requests to the Fastify backend.
+- This makes it seem as though the frontend and backend are running on the same origin 
+	from the browser's perspective.
+
+
+🟣 In development mode:: Fastify VS Vite
+-----------------------------------------------------------------------------------------------
+
+1. browser requests http://localhost:3000.
+
+2. The Fastify server receives the request.
+
+3. The @fastify/vite middleware uses Vite to process and 
+   serve your project's root index.html.
+   
+4. Vite injects its client-side code for Hot Module Replacement (HMR) into this HTML file 
+   before sending it to the browser.
+
+5. The browser receives the processed index.html and then requests the JavaScript module 
+   index.js specified in the script tag.
+
+6. This request for a .js file is handled by the Vite dev server, which serves it directly.
+
+
+🟣 index.html VS index.js
+-----------------------------------------------------------------------------------------------	
+
+- For your JavaScript application, index.js is indeed the entry point.
+- This is where your application's logic begins, 
+	where you might import other components, and 
+	where you tell your framework (like React or Vue) where to attach itself in the DOM.
+
+- For the browser, the ultimate entry point is always an index.html file. 
+- Vite treats it as the entry point to your entire application
+- A browser's job is to render an HTML document. 
+- When you type a URL, the browser requests and receives an HTML file. 
+- HTML file tells the browser what other resources to load, such as CSS, images, JavaScript files.
+
+
+🟢 Production Mode: Creating the Production Artifacts
+-----------------------------------------------------------------------------------------------
+
+- npm run build > executes Vite's build command.
+- Vite takes application's source code and: 
+
+- Bundles: JavaScript and CSS into a few highly optimized files using Rollup.
+
+- Minifies: It minifies the code to reduce its size.
+
+- Code Splitting: splits the code into smaller chunks, so the browser only needs to 
+  download the code necessary for the initial page load.
+  
+- Static Assets: It processes and optimizes your static assets like images.
+
+- The output of this process is a dist directory containing all the static assets 
+  for your frontend application.
+  
+
+🟢 The Production Server: Fastify in action
+-----------------------------------------------------------------------------------------------
+
+- In production, the Vite dev server is no longer needed. 
+- The Fastify server takes on the full responsibility of serving both 
+  the frontend and the backend.
+  
+- The npm start command in a production environment will now simply start the Fastify server.
+
+- The configuration will be different from the development setup:
+
+- The @fastify/vite plugin, when not in development mode, will automatically look 
+  for the production build in the dist directory.
+  
+- Fastify will be configured to serve the static files from this dist directory. 
+  This is typically done using a plugin like @fastify/static.
+  
+
+🟢 When a user accesses' application in a production environment:
+----------------------------------------------------------------------------------------------- 
+
+- The request hits the Fastify server.
+- For the initial page load, Fastify serves the index.html file from the dist directory.
+- The browser receives the HTML and finds <script> and <link> tags pointing to 
+  the optimized, bundled JavaScript and CSS files.
+- The browser then requests these static assets from the Fastify server.
+- Fastify serves these bundled files from the dist directory.
+- Any subsequent API requests from the frontend are also handled by the same Fastify server.
+- browser receives a highly optimized version of your application, leading to 
+  faster load times and a better user experience.
+
+
+

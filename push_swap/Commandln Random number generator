@@ -1,0 +1,5 @@
+Commandln Random number generator
+
+(shuf -i 1-1000 -n3)
+
+where i is the range, n is how many numbers

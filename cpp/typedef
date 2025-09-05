@@ -1,0 +1,5 @@
+typedef
+
+typedef std::queue<int> C;  --> C is not a variable here, it is an alias.
+											//next time you can declare a variable as  C c.
+std::queue<int> C; --> C is a variable.

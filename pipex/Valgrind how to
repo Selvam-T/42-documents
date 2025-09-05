@@ -1,0 +1,52 @@
+Valgrind how to?
+
+1,	Insert debugging flag during compilation, provides more detailed report
+	about memory leaks, errors, and other issues
+
+	cc -g test.c
+
+2,	then run valgrind
+	valgrind --leak-check=full --show-error-list=yes ./a.out 
+	or
+	valgrind --leak-check=full --show-leak-kinds=all ./a.out
+
+3, 	In Leak Summary
+	1 block = 1 malloc contiguous block of memory
+
+4,	char* = 8 bytes
+	char** str = malloc(size of (char *) * 10);
+	str is a block of 80 bytes.
+	
+	if something is written to str, it will say, write to 0 bytes of the block.
+
+5,	if let's say you are accessing the index 10 of str, remember index 9 is \0,
+	so you are accessing out side the range.
+	it will say you are writing to 0 bytes after 80 bytes
+
+6,	if you are accessing the index 11, it will say you are writing to 
+	8 bytes after 80 bytes
+
+7,	good practice. every time I malloc, I straight away write a line to free it.
+	then move that line to where it is appropriate to free it.
+
+8,	if there is error checking, resulting in freeing of malloc memory,
+	then remember there will be 2 places to free()
+
+9,	When you run Valgrind with valid commands in pipex, the execve() gets 
+	executed. When execve() gets executed it kills the history. Therefore,
+	Valgrind report does not provide detailed report, it only says there is
+	memory leak.
+	When execve() is called successfully, the entire process image changes, 
+	including the memory allocated by Valgrind for its instrumentation.
+	The new process will not be under Valgrind's monitoring and analysis,
+	so it won't produce detailed Valgrind reports for that specific execution.
+
+10,	In order to check if memory is freed properly, you may want to comment
+	the execve() part, then see if the program logic goes into free().
+
+11,	If execve() is executed, the malloced arrays used in execve() will not be free()
+	because the programs control ends once it outputs to output file or stdout.
+
+12,	When you run Valgrind with invalid commands in pipex, the execve() 
+	is not executed, therefore it does not kill the Valgrind history.
+

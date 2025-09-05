@@ -1,0 +1,13 @@
+Copy constructor in Base class vs Derived class
+
+Copy Constructor in Derived Class:
+	If the derived class does not have a copy constructor that accepts a reference to a base class object, 
+	attempting to copy a base class object to a derived class object will result in a compiler error. 
+
+	The compiler needs an appropriate constructor to handle the conversion.
+
+Copy Constructor in Base Class:
+	If the base class does not have a copy constructor that accepts a reference to a derived class object, 
+	but you try to copy a derived class object to the base class, it will still work. 
+	This is because the derived class object can be implicitly converted to the base class type, 
+	and the base class copy constructor will handle the copying of the base class part of the derived class object.

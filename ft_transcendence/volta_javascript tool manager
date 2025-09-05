@@ -38,9 +38,6 @@
 
 	# install Node
 	volta install node
-
-	# start using Node
-	node
 	
 -	Volta doesn't need to be installed in your project folder at all — 
 	it's a global toolchain manager installed in your home directory 
@@ -50,5 +47,12 @@ Then execute npm
 -----------------
 
 1)	npm i
+
+	If invalid version or some error encountered
+	> rm -rf node_modules package-lock.json
+	> npm cache clean --force
+	> npm i
+	
+	
 2)	npm start	
 

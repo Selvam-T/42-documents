@@ -1,0 +1,26 @@
+Makefile includes another Makefile
+
+1,	$(CC) $(CFLAGS) -o $(NAME) $(OBJECT) -L./libft -lft
+	
+	-L./libft	This flag specifies the directory where the linker should look for
+				the library 'libft'. 
+				-L indicates the library path
+	-lft			specifies the library name to link against 'libft'
+				-l flag indicates the library to link
+
+2,	$(CC) $(CFLAGS) -c $(SOURCE) -I./libft -o $(OBJECT)
+
+	-I./libft		This flags adds the libft directory to the list of directories to be 
+				search for header files including the compilation process.
+				-I indicates the include path
+
+3,	make -C ./libft
+	
+	-C./libft	Specifies the directory where 'make' should operate.
+				It changes the current directory to ./libft before executing the
+				make command.
+				It will execute the Makefile located in the libft directory.
+
+4,	make -C ./libft clean
+
+				runs make clean within libft directory

@@ -1,0 +1,83 @@
+Copy constructor shallow copy vs deep copy.
+
+class Number
+{
+public:
+	int *n;
+	
+	Number(int set_n)
+	{
+		n = (int *) malloc(sizeof(int));
+		*n = set_n;
+	}
+	
+	
+	~Number()
+	{
+		free(n);
+	}
+	
+	int get()
+	{
+		return *n;
+	}
+};
+
+int main()
+{
+ 	Number numA(8);
+ 	cout << "numA: " << numA.get() << endl;
+ 	
+ 	Number numB = numA; //default copy constructor, performs a shallow copy
+ 	
+ 	cout << "numB: " << numB.get() << endl;
+ 	
+ 	*(numB.n) = 20; //this will also change the value of *(numA.n)
+ 	
+ 	//exit(0);
+ 	
+ 	return 0;   
+}
+
+SHALLOW COPY:
+--------------------
+numA uses dynamically allocated data, 
+
+When Shallow copy occurs, the value of the member variables of numA 
+	get assigned to the member variables of numB.
+So in the case of pointer 'n', the memory address stored by numA 'n' 
+	gets assigned to the memory address stored by numB 'n'. 
+
+So both numA.n and numB.n are storing the same memory address. 
+They are both pointing to the same value on the HEAP.
+
+Memory space for integer 'n' was allocated once, when numA was created.
+numB has the member variable 'n' set to the same memory address.
+
+Say, numA (8);
+numB = numA; //calling default Copy constructor performs shallow copy
+
+If I print numA and numB, both will output 8. Which seems correct, but there is a problem.
+
+1)
+	Now this is going to be a problem.
+	Say, 
+	*(numB.n) = 20;
+	If I print numA.n and numB.n , both will output 20. 
+	But we only assigned 20 to member variable of numB.
+2)
+	Double free.
+	The destructor will free numA followed by numB.
+	Since numA member attribute and numB member attribute are pointing to the same memory location,
+	numA will be freed first, no issue.
+	When numB is freed, it is attempting to free memory location that has already been freed.
+
+DEEP COPY of the object, when the constructor runs.
+----------------------------
+If I had a Copy constructor, it will perform a deep copy.
+
+Number ( const Number& rhs)
+{
+		n = (int *)malloc(sizeof(int));
+		*n = *(rhs.n); //deep copy , copying value of one object member to the other object member
+}

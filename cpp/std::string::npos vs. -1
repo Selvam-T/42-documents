@@ -1,0 +1,27 @@
+std::string::npos vs. -1
+
+Why do I need to evaluate (pos != std::string::npos) to check if there is a match. 
+I can achieve the same by doing (pos != -1)? 
+
+A)	 std::string::npos:
+	
+Definition: std::string::npos is a constant static member of the std::string class, 
+defined as the maximum possible value for the type used to represent string positions (usually std::size_t).
+   
+Purpose: It is used specifically to indicate that a position was not found in a string search. 
+It is a special value defined by the C++ standard library for this purpose.
+
+Type: std::string::npos is of type std::size_t, which is an unsigned type. 
+Therefore, it represents a very large value, and any valid string position will always be less than std::string::npos.
+
+B)	-1:
+
+Definition: -1 is an integer value. If you compare it with std::size_t, which is unsigned, 
+it can lead to potential issues because comparing signed and unsigned types can lead to incorrect results.
+	
+Problem: When -1 is used with an unsigned type like std::size_t, 
+it is implicitly converted to a large positive value due to how unsigned integers handle negative values. 
+This could lead to misleading results if the implementation is not careful.
+
+Error-Prone: Using -1 is not portable and not guaranteed to be the same across different implementations of C++. 
+It can lead to bugs if you are not consistent with the types used for comparisons.

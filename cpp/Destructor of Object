@@ -1,0 +1,54 @@
+Destructor of Object
+
+CHATGPT: https://chatgpt.com/share/e33af8cc-163f-4184-a3a8-a8cc1c81a7c1
+
+Question: 
+If the destructor is not called before exit. 
+Is the Object cleaned up?
+Will Valgrind test show memory leak?
+
+Valgrind test: 
+(a) exit from main(), where object was instantiated
+(b) exit from function b(), bypass normal cleanup process.
+
+/*************** Test code ********************************************/
+/***** /home/sthiagar/42/cpp0/sample/destructor_cleanup_test.cpp *****/
+
+#include <iostream>
+
+class Apple {
+public:
+    Apple() {
+        std::cout << "Apple created" << std::endl;
+    }
+    ~Apple() {
+        std::cout << "Apple destroyed" << std::endl;
+    }
+};
+
+void b() {
+    std::cout << "Inside function b()" << std::endl;
+    std::exit(0); // (b) Program exits here
+}
+
+int main() {
+    Apple myApple; // Apple object instantiated here
+    b(); // Calling function b()
+    return 0; // a) Exiting main()
+}
+/*************************************************************************/
+ChatGPT:
+   
+In your program, when std::exit(0) is called in the b() function, it terminates the program immediately. 
+This prevents the destructor of myApple from being called, as the program doesn't perform 
+normal stack unwinding and object destruction.
+
+However, Valgrind doesn't report a memory leak in this case 
+because the memory allocated for the Apple object is not dynamically allocated 
+(it's on the stack, not the heap). 
+Valgrind typically reports memory leaks for heap-allocated memory that is not freed properly, 
+but in this case, the stack memory is automatically reclaimed by the operating system when the program exits.
+
+So, even though the destructor is not called, the stack memory used by myApple is cleaned up by the OS, 
+and thus Valgrind does not report it as a leak.
+

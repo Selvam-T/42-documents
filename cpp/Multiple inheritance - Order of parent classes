@@ -1,0 +1,28 @@
+Multiple inheritance - Order of parent classes
+
+1)	In Class definition:	
+	class DiamondTrap : public ScavTrap, public FragTrap {};
+	
+	What does this order mean?
+	The order in which parent classes are listed in the class definition (public ScavTrap, public FragTrap) 
+	only affects the order in which they are inherited. 
+	It does not dictate the order of initialization.
+
+	How does the order of inheritance matter?
+	Order of Inheritance: 
+		The order determines which base class's member is chosen when there are ambiguities 
+		due to multiple inheritance.
+		
+		If you called a common member attribute, without specifying ScavTrap or FragTrap,
+		It will ScavTrap would be used, because it is listed first.
+
+2) 	In Constructor Initialization list:
+	DiamondTrap::DiamondTrap(void) : FragTrap(), ScavTrap()
+	
+	What does this order mean?
+	The order in which base class constructors are called is determined by the order 
+	in which they appear in the constructor's initialization list, 
+	not the order in the class definition. 
+	
+	In other words, constructors of base classes are called in the order 
+	they appear in the initialization list of the derived class's constructor.

@@ -1,0 +1,13 @@
+Create file with just EOF
+
+When I create file using Vim, it puts a newline, although it is empty
+
+$> touch empty.txt
+or
+$> printf "" >filename.txt
+creates a file with only EOF
+
+You can also test the contents of a file as hexadecimal output
+$> hexdump filename.txt
+
+"Enter" key or newline or Line Feed (LF) character is 	ASCII 	10.

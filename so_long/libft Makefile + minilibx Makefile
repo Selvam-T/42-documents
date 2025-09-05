@@ -1,0 +1,11 @@
+Project Makefile --> libft Makefile + minilibx Makefile
+
+1,	There is a difference in how I execute libft Makefile v. minilibx Makefile
+
+2,	minilibx Makefile does not have clean and fclean
+	I run the minilibx make separately
+	but the minilibx library is linked along with the project compilation of object files
+
+3, 	libft Makefile is executed alongside the compilation of the project,
+	and clean and fclean of libft is also run alongside the project clean and fclean
+	and libft library is also linked along with the project compilation of object files

@@ -1,0 +1,54 @@
+Copy constructor
+
+Default copy constructor:
+• the compiler generates it automatically if you don't provide one
+• performs shallow copy
+
+Below is an example of copy constructor.
+	Because we don't have our own copy constructor, 
+	we learn that Default copy constructor is called provided by the compiler
+
+You will also learn that this line should not be mistaken for Copy Assignment operator, because of equal sign.
+	BasicNumber num2 = num1
+Why?
+	see code.
+
+When can a copy constructor be used?
+	- when the object is initialized
+	- Typical use case is when a DEEP copy of an object is required,
+		when object has dynamically allocated member variables.
+		i.e member variables that point to data on the HEAP.
+	- when an object is returned by value from a function
+	- when an object is passed by value as an argument to a function
+//--------------------------------------------------------------------------------
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class BasicNumber
+{
+public:
+        int n;
+
+        BasicNumber (int set_n )
+        {
+            cout << "Base Param constructor is called." << endl;
+            n = set_n;
+        }
+};
+
+int main()
+{
+    BasicNumber num1(7);
+
+    cout << "num1: " << num1.n << endl;
+
+    BasicNumber num2 = num1;  -->// Don't confuse this with Copy assignment operator.
+									// Copy constructor is called if you are initializing an object
+									// notice num1 already exists. we are initializing num2 with num1
+    
+    cout << "num2: " << num2.n << endl;
+    
+    return 0;
+}

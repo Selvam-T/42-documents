@@ -1,0 +1,23 @@
+Memory leak errors
+
+1,	Double free. ie Allocated < free
+	After I free (buf->str), I didn't set buf->str = NULL.
+	Later on, when I did, if (buf->str != NULL), free(buf->str)
+	The condition was always true, therefore it attempted to free buf->str which was already freed.
+	So I ended up with double free.
+
+2.	Write() and read() error
+	because I was writing and reading from outside the allocated range of memory.
+	In my case, I was writing the last character into the null terminator byte.
+	This happened because I mallocd 1 size smaller. 
+	Because when a certain condition was reached, I was lst->len should be updated to actual len,
+	but it remained 0.
+
+3.	Allocated () > free ()
+	Failed to free the node() pointing to the buf->str.
+	Although I free buf->str, followed by node() in the free_lst() function,
+	There are conditions, where I need to free buf->str and node() outside the function.
+	1) There is a special condition, where I don't need to free the node pointing to buf->str,
+	because I free the existing buf->str, and replace it with new_buf->str to the add where node is pointing to.
+	2) But there is a condition, where I need to free the node, but, I failed to free the node() pointing to the buf->str.
+	

@@ -1,0 +1,24 @@
+compile using main.c and archive library file
+
+cc	*.o		main.c		-L.		libftprintf.a
+
+Command explained.
+-----------------------
+Compile and link all .o files with main.c, using the library libftprintf.a located in the current directory (   -L.   ).
+
+-L path: 	Adds the specified directory to the list of directories to be searched 
+			for libraries during linking.
+current directory (.).
+
+Requirement for this command.
+----------------------------------
+1,	This assumes you do not have main() in ft_printf 
+	or have a main.c included in Makefile.
+2,	This assumes, you have *.o files of all required c files.
+3,	And this assumes you have generated the libftprintf.a library.
+
+Something to take note about my Makefile.
+1,	I have command lines to generate executable file, as well as library.
+2,	I will have commented out, one or the other.
+3,	To generate the executable file, main.c needs to be included.
+

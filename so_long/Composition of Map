@@ -1,0 +1,13 @@
+Composition of Map
+
+1,	Map.ber file contains lines of same length strings, composed of 0,1,P,E,C
+	First, make a 2D string duplicate, i.e. dynamically allocate it.
+	This is similar to the strdup() function we worked with, for a 1D array.
+	We pass a string literal to strdup() function, it mallocs and copied characters and returns a new array.
+	
+2,	t_point size = {8, 5}
+	this is the size of the 2D array, 8 col, 5 row
+	this also refers to the position 8th col, 5th row.
+	so, size = {8,5} is used in 2 contexts,
+		1)	size of the array
+		2)	current position in the array 

@@ -1,0 +1,19 @@
+strlcpy()
+
+return values
+
+1, if size = dest_len + src_len
+	return (size -1)
+
+ie	dest_str + src_str + '\0' = size
+
+if size < dest_len + src_len
+	ie buffer is too small to fit entire concatenated str
+	return dest_len + src_len
+
+also,
+if size > dest_len + src_len 
+	return dest_len + src_len
+
+if src == NULL, 
+	return NULL

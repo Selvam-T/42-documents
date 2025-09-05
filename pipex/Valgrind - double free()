@@ -1,0 +1,26 @@
+Valgrind - double free()
+
+1,	void	free_str(char *str)
+	{
+		free(str);
+		str = NULL;
+	}
+
+	If you pass char* by value, str = NULL only within the scope of this function.
+	The variable 'var' that passed value in the calling function will not be NULL.
+	Assume var was already freed. 	
+	If you did something like, if (var != NULL) {free (var);}
+	var would not be equal to NULL, thus you could attempt to free var again.
+
+2,	solution. pass by reference.
+	void	free_str(char **str)
+
+3,	same applies for 2D array.
+	void	free_dbl_arr(char ***dbl_arr)
+	
+		while((*dbl_arr)[i] != NULL) 	// loop condition
+			free((*dbl_arr)[i]);			// free str at array index i
+			(*dbl_arr)[i] = NULL; 		// set str at array index i to NULL
+
+		finally set the pointer to the array of strings to NULL
+		*dbl_arr = NULL;

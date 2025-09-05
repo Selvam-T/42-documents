@@ -1,0 +1,20 @@
+Fail tests > how to fail, and why it fails
+
+1.	open()
+	1.	Non-existent file name 
+		Non-text files
+	2.	Invalid mode.
+		valid modes are - O_RDONLY, O_WRONLY OR O_RDWR
+Answer - In all cases it returns a -1
+
+2.	read()
+	1.	Invalid files descriptor.          		--> return -1
+	2.	file not open.						--> return -1
+	2.	Invalid pointer to the buffer  		--> returns -1
+		Not allocated valid memory             --> returns -1
+	3.	buffer_size = 0 --> no error returned, returns 0
+	4.	buffer_size < 0 					-->  returns -1
+
+3.	malloc()
+	You can't force malloc to fail.
+	You can purposefully set pointer to NULL, right after malloc and see if the failure test condition take appropriate actions, like free() all previously malloced contiguous data.

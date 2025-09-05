@@ -1,0 +1,36 @@
+Turn in files
+
+1,	Makefile  
+			> libftprintf.a 	must be at the root of your repository 
+			> use 'ar' to create library, 
+			> 'libtool' is forbidden
+2,	*.h
+3,	*/*.h
+4,	*.c
+5,	*/*.c
+
+External functions
+
+1,	malloc
+2,	free
+3,	write
+4,	va_start
+5,	va_arg
+6,	va_copy
+7,	va_end
+
+Buffer management:
+	DO NOT implement the buffer management of the original printf()
+
+Handle conversions:
+	%c		char		expects an argument of type 'char'
+	%s		string		it expects an argument of type 'char *' pointing to the null terminated string.
+	%p		pointer		print value of a pointer in hexadecimal format
+						it expects an argument of type 'void*'
+	%d		decimal integer		expects an argument of type 'int'
+	%i		decimal integer		expects an argument of type 'int'
+			the key difference between %d vs %i is how they interpret the input value
+	%u		unsigned integer	expects an argument of type 'unsigned int'
+	%x		Hexadecimal (lowercase)	print integers in hexadecimal format using (0-9, a-f)
+								expects an argument of type 'unsigned int'
+	%X	Hexadecimal (Uppercase)	as above (0-9, A-F).

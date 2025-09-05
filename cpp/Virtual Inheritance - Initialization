@@ -1,0 +1,31 @@
+Virtual Inheritance - Initialization
+
+Assume Base1 is derived by Base2 and Base3, (and Virtually Inherits*)
+	and Base4 derives from Base2 and Base3
+
+Example:
+	 ScavTrap and FragTrap both inherit from ClapTrap virtually.
+	Therefore the Virtual base class is ClapTrap.
+	And DiamondTrap inherits normally from ScavTrap and FragTrap.
+	Therefore the most derived class is DiamondTrap.
+
+    	The virtual base class (ClapTrap) is only initialized once by the most derived class (DiamondTrap).
+
+	When you call ScavTrap(name) and FragTrap(name), the constructors of ScavTrap and FragTrap 
+		do not directly call the parameterized constructor of ClapTrap. 
+	Instead, the virtual base class (ClapTrap) is initialized by DiamondTrap.
+	
+	Therefore, although DiamondTrap does not inherit from ClapTrap directly, 
+	the Parameterized constructor of DiamondTrap must include ClapTrap parameter constructor.
+
+DiamondTrap::DiamondTrap(std::string name) : ClapTrap(name), ScavTrap(name), FragTrap(name)
+
+If not the Default Constructor of ClapTrap will be called.
+
+Why the Default Constructor is Called
+
+The reason the default constructor of ClapTrap is called is because 
+DiamondTrap does not explicitly initialize ClapTrap with the parameterized constructor. 
+In virtual inheritance, if you do not explicitly initialize the virtual base class in the most derived class, 
+the default constructor of the virtual base class is called.
+

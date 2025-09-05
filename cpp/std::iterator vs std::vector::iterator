@@ -1,0 +1,9 @@
+std::iterator vs std::vector::iterator
+
+I thought std::vector::iterator inherited from std::iterator, 
+but that is not the case.
+
+std::iterator was a helper template to define custom iterators. 
+It has been deprecated in C++17 and removed in C++20
+
+std::vector::iterator is the type of iterator provided by the std::vector container.

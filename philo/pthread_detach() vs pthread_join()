@@ -1,0 +1,33 @@
+pthread_detach() vs pthread_join()
+----------------------------------
+
+If you're consistently calling pthread_join() on all threads after they've been created and some of them have met their exit conditions, 
+there's no strict necessity to call pthread_detach() on those threads. 
+
+pthread_join() will handle the cleanup of resources for those threads when it is called. However, calling pthread_detach() explicitly 
+can be beneficial for clarity and to ensure that resources are promptly released if the threads are not going to be joined. 
+
+Sequential vs Simultaneous order of pthread_join() 
+--------------------------------------------------
+
+HOW DO I DETERMINE whether to join the thread sequentially or simultaneously?
+
+a) You might choose sequential creation and joining if the order of execution or dependency between threads matters. For example, if the output of one thread is needed as input for another.
+	pthread_create(--thread 1--);
+	pthread_join(--thread 1--);
+	
+	pthread_create(--thread 2--);
+	pthread_join(--thread 2--);
+	
+	pthread_create(--thread 3--);
+	pthread_join(--thread 3--);
+
+b) Simultaneous creation and joining might be preferable if the threads are independent of each other and can execute concurrently without any dependencies or ordering requirements
+
+	pthread_create(--thread 1--);
+	pthread_create(--thread 2--);
+	pthread_create(--thread 3--);
+
+	pthread_join(--thread 1--);
+	pthread_join(--thread 2--);
+	pthread_join(--thread 3--);

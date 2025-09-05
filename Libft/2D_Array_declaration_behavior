@@ -1,0 +1,30 @@
+Array value assigned on declaration and behavior
+
+2D	CHAR ARRAY
+------------------
+char *str[] = {"one", "two", "three", NULL};
+
+Remember to add "NULL" as the last element, without " ".
+This array declaration does not add "NULL" automatically, like in 1D char array.
+
+ex: 
+char *c = "Hello";
+In this case the string is automatically terminated with a '\0';
+
+2D INT ARRAY
+---------------
+int	*num = {1,2,3};
+
+In this case you can't add a terminating character as the last element,
+because 0 could be a value.
+
+So, how do you get the array length, so you can loop until the end of array?
+
+len = sizeof(num) / sizeof(num[0]);
+
+But there is a caveat to this, if such an array was passed as an argument, 
+without the length of the array as an additional argument, then the above
+method of finding int array length using sizeof() would not work.
+If an int array is passed as an argument, it must come with array length as
+an additional argument.
+

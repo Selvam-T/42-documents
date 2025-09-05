@@ -1,0 +1,24 @@
+Virtual inheritance - one subobject of Base class object
+
+How to get one subobject of Base class object:
+     Virtual inheritance 
+	1) 	ScavTrap Virtual inherit ClapTrap ;
+	2)	FragTrap  Virtual inherit ClapTrap;
+	3)   DiamondTrap Virtual inherit ScavTrap and FragTrap;
+
+This ensures that DiamondTrap has only one instance of ClapTrap, regardless of 
+the multiple inheritance paths. 
+	
+This is achieved by the virtual base class mechanism,  which shares a single ClapTrap subobject 
+among all the derived classes.
+
+Understanding memory layout with and without Virtual inheritance:
+
+Without  Virtual Inheritance:
+	The object inheriting without virtual from parent, in addition to their own member attributes, they 
+	maintains their own independent 'Parent' object instance portion
+
+With Virtual inheritance:
+		They will include space for their own members and pointers or mechanisms to access the 
+		shared 'Parent' object instance, but not an actual Parent object of their own.
+

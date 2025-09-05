@@ -1,0 +1,36 @@
+Convert from one Scalar type to another
+
+1)	String to Int / float / double
+	----------------------------
+	int value; 		//float or double
+	std::stringstream ss;
+	ss << "1234";
+	ss >> value;
+
+2)	Char to String
+	---------------
+	std::string(1, 'A');
+	//pass to the string constructor 2 parameters. Int value is the number of occurences of 'A'
+
+3)	Char to Int
+	-----------
+	char c = 'A';
+	int num = static_cast<int>(c); 
+	// or simply: int num = c;
+
+4)	Int to Char
+	-----------
+	int num = 65;
+	char c = static_cast<char>(num); 
+	// or simply: char c = num;
+
+5)	Int to String
+	------------
+	int num = 123;
+	std::string str = std::to_string(num); 	// not in c++98 standards
+
+	int num = 123;
+	std::stringstream ss;
+	ss << num;
+	std::string str = ss.str();
+

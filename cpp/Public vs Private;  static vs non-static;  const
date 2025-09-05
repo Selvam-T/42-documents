@@ -1,0 +1,36 @@
+Public vs Private;  static vs non-static;  const
+
+Public member functions:
+a) 	Static int function() 	vs. 	int function()
+
+A static int function belongs to the class itself, not any specific instance. 
+It can be called without creating an instance of the class. 
+
+An int function belongs to a specific instance of the class and operates on that instance's data.
+
+b) 	void function() 	vs. 	void function() const:
+
+void function() can modify member variables of the class. 
+void function() const cannot modify any member variables (except those marked as mutable).
+
+Private member variables:
+a) 	Static int 	vs. 	int:
+
+A static int variable is shared among all instances of the class. 
+An int variable is unique to each instance of the class.
+
+b) 	Getting and setting values:
+Yes, you typically need member functions (getters and setters) to access and modify static int and int variables, 
+especially if they are private.
+
+c) 	Const member functions:
+
+You would use int function() const if the function needs to access member variables without modifying them. 
+This ensures the function doesn't change the object's state.
+
+d)	Calling the static member function
+int numAccounts = Account::getNbAccounts();
+
+e)	Calling the non-static member function on an instance
+Account a(100);
+int amount = a.checkAmount();

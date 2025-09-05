@@ -1,0 +1,26 @@
+rvalue vs lvalue
+
+Rvalue vs. Lvalue:
+
+	Lvalue (Left Value): 
+	Represents an object that occupies some identifiable location in memory 
+	(i.e., has an address). Lvalues can appear on the left-hand side or right-hand side of an assignment. 
+	
+	Example: 
+	int x = 10; where x is an lvalue.
+    
+	Rvalue (Right Value): 
+	Represents a temporary object that doesn't have a persistent memory address. 
+	Rvalues typically appear on the right-hand side of an assignment. 
+
+	Example: 
+	int y = x + 5; where x + 5 is an rvalue.
+
+Error Message - 'Could not bind to an lvalue of type': 
+
+	This error occurs when you try to assign or pass an rvalue (temporary object) to a function 
+	or variable that expects an lvalue (a persistent object with a memory address). 
+	The compiler is essentially saying that the operation requires a modifiable memory location, 
+	but you're trying to use a temporary value instead.
+
+

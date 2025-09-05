@@ -1,0 +1,37 @@
+Reference vs Pointer
+
+Reference: A reference is an alias for an existing variable. 
+It is used as if it were the original variable, without any special syntax.
+
+A reference is a dereferenced pointer.
+
+std::string& loginRef = bob.getLoginRef();
+loginRef = "newLogin";  // Directly modifies _login
+
+Pointer: A pointer holds the memory address of a variable. 
+You need to use the dereference operator * to access or modify the value.
+
+We use pointers when we need a variable out of our scope. Allocate on heap, not on stack.
+
+std::string* loginPtr = bob.getLoginPtr();
+*loginPtr = "newLogin";  // Dereference to modify _login
+
+Initialization:
+-------------
+Reference: Must be initialized at the time of declaration and cannot be changed to reference another variable later.
+
+Pointer: Can be initialized to nullptr and can point to different variables at different times.
+
+Memory Address:
+------------------
+
+Reference: Automatically dereferenced, so you don't directly see the address manipulation. 
+You can't get the address of a reference itself, but you can get the address of the variable it refers to.
+
+Pointer: Stores the memory address of the variable, and you can manipulate the address directly.
+
+Nullability:
+-----------
+Reference: Cannot be null. It must always refer to a valid object.
+
+Pointer: Can be null, which means it can point to nothing.

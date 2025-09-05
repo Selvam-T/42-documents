@@ -1,0 +1,65 @@
+PID of Parent Process vs Child Process
+
+1)	fork() Returns Values in Each Process:
+       	Correct. When fork() is called, it creates a new process (the child process). 
+	In the parent process, fork() returns the PID of the child process, 
+	while in the child process, it returns 0.
+
+2)	Return Values in Parent and Child:
+        Yes, in the parent process, fork() returns a positive value (the PID of the child). 
+	In the child process, fork() returns 0.
+
+	The return value 0 in child process in not the child's PID. 
+	It is a signal that the child process is running.
+	
+	The return value of child's PID in parent process is a signal that parent process is running.
+
+ 3)	Does the Parent Know the PID of the Child Process?
+        Yes, the parent process knows the PID of the child process
+	because fork() returns this PID to the parent.
+
+4)	Does the Child Know the PID of the Parent Process?
+        No, the child process does not directly get the PID of the parent from fork(). 
+	However, it can use the getppid() function to obtain the PID of the parent process.
+
+5)	What Does the Parent Think the PID It Received Is?
+        The parent process interprets the PID returned by fork() as the PID of the newly created child process.
+
+6)	What is the use of PID = 0 in the Child process?
+        The child process receives 0 from fork(). 
+	Using PID = 0 we can direct control to a selected block of code, that only the child needs to process.
+
+7)	What is the use of PID > 0 in the Parent process?
+	Parent receives a PID > 0 which it knows is the pid of child. (Why must it know this?)
+	1) It is useful to direct control to block of code that only the parent need to process.
+	
+8)	How can Child process get its own PID and Parent's PID?
+	To get its own PID, the child can use getpid(), 
+	and to get the parent's PID, it can use getppid().
+
+ 9)	Does the Parent Have Its Own PID?
+        Yes, the parent process has its own PID.
+
+10)	How Can the Parent Get Its Own PID?
+        The parent process can get its own PID using the getpid() .
+	There isn't a direct function to get the child’s PID from the parent. 
+	However, after fork() returns, the parent process stores the PID of the child 
+	in the variable returned by fork().
+
+11)	Is the PID of Parent and Child closely related?
+        No, the PID of the parent is not necessarily an increment of 1 from the child’s PID. 
+	PIDs are managed by the operating system and are not sequential or related in that way. 
+	Each process can have any available PID assigned by the OS.
+
+12)	Why Must the Parent Know the PID of the Child 
+	and Not the Child Know the Parent’s PID?
+
+    	The parent process needs to know the PID of the child for several reasons:
+        	To manage or communicate with the child process, 
+			for example, to wait for the child to finish using wait().
+        	To handle process control, 
+			such as sending signals or checking the child's exit status.
+
+13) 	Does the child need to wait() for parent? 
+	No, the child does not need to use wait() for the parent. In typical scenarios, 
+	wait() or waitpid() is used by the parent process to wait for the child process to finish.

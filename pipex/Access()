@@ -1,0 +1,18 @@
+Access();
+
+I have the following line to check if the path is valid.
+
+	if (access("/usr/bin/grep", F_OK) == 0)
+		printf("file path is ok\n");	
+	else
+		perror("access");
+
+If I placed this code inside the child process (before I call execve()), 
+it doesn't get executed. Although it works in the parent process.
+
+chatgpt says -
+Child process might not have access to the '/usr/bin/grep' binary due to 
+permissions or other restrictions. Hence the access() check within the 
+child process might fail, even if the binary exists.
+It suggests that I check before I fork();
+

@@ -1,0 +1,55 @@
+std::getline() and CTRL + D
+
+CHATGPT:  https://chatgpt.com/share/e6a4c3e2-6c8a-40aa-8de9-d12c16330451
+
+see 2 first to understand 1
+
+1)	Why std::cin.clear() ?
+	Resets the error flags, allowing the stream to be used for further input operations.
+
+	If you don't clear the error flags -
+	- the program won't be able to process any more input.
+	- the program might behave unexpectedly.
+
+2)	See Example below on how to handle CTRL + D as input to std::getline()
+--------------------------------------------------------------------------------
+
+int main() {
+    std::string line;
+
+    //1. if ctrl + d press without any text, failbit is TRUE, eofbit is TRUE
+    // 	failbit is TRUE because fail to read any bits, 
+    // 	eofbit is TRUE because ctrl + d signal eof
+    //	In this case while(getline) evaluates to FALSE
+    
+    //2. if (ctrl + d x 2) pressed after some text
+    //  failbit is FALSE because text was entered
+    //	failbit FALSE. eofbit TRUE means while(getline) evaluates to TRUE
+    //	enters while loop. 
+    //	If you don't break it iterates one loop. 
+    //	input stream sends text to string variable (line).
+    //	now the 2nd ctrl + d is recognized, meaning no text but eof signal.
+    //	failbit is now TRUE, eofbit is naturally TRUE.
+    //	while(getline) now evaluates to FALSE, do not enter while() 
+    
+    while (std::cout << "Enter text: ", std::getline(std::cin, line)) {
+        if (std::cin.eof()) 
+        {
+            std::cout << std::endl;
+            std::cout << "Inside while. failbit false. eofbit true.\n";
+            break;//if I don't break it goes 1 loop before failbit is set to true
+        }
+        std::cout << "Inside while. Line: " << line << "\n";
+    }
+    std::cout << std::endl;
+    // Clear the EOF state if needed
+    if (std::cin.eof()) {
+        std::cin.clear();//if I don't cin.clear() subsequent read process will fail
+        std::cout << "Outside while. EOF state cleared.\n";
+    }
+
+    // Output the value of line after encountering EOF
+    std::cout << "Outside while. Line: \"" << line << "\"\n";
+
+    return 0;
+}

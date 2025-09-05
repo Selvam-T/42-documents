@@ -1,0 +1,14 @@
+error: Server: Bind failed
+
+Bind failed error is returned by a Unix system call, specifically by the bind() function. 
+This error typically occurs because the previous instance of the server didn’t fully release 
+the port (8080 in your case), which can happen if you exit with Ctrl+C. 
+When the server process is terminated abruptly, the operating system may not immediately 
+release the bound port, leaving it in a "TIME_WAIT" state.
+
+Wait for the Port to Be Released: After using Ctrl+C, wait a few seconds before 
+restarting the server, as the OS will eventually release the port from the TIME_WAIT state.
+
+or
+
+> kill -9 $(lsof -t i:8081)

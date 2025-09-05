@@ -1,0 +1,47 @@
+operator = vs operator +
+
+1) operator = overload
+
+	 Fixed& operator = (Fixed const &rhs); // prototype
+
+	Fixed& Fixed::operator = (Fixed const &other)
+	{
+ 	   std::cout << "Copy assignment operator called" << std::endl;
+	    if (this != &other)
+	        _fixed = other.getRawBits();
+	    return *this;
+	}
+
+	Question is why am I returning a reference to this object.
+	Because, I have assigned whatever values to its member variable, and the object remains, 
+	it is not destroyed, so then why do I return a reference to the object.
+
+	You'd be right in thinking the function doesn't need to return anything, it can be void.
+	It is not intuitive. The reason is because c and c++ allows chaining as follows -
+	a = b = c = d.
+	If you didn't return a reference, only one instance is assigned.
+
+2)	In one case the object reference is destroyed, and in another it is not, why?
+
+	i) 	Fixed a;
+	     	a = Fixed( 14.2);
+
+	ii) 	Fixed a;
+		Fixed b;
+
+		a = b;
+
+	Now consider the copy assignment operator overload function.
+	
+	Fixed& Fixed::operator = (Fixed const &other)
+	{
+	    	std::cout << "Copy assignment operator called" << std::endl;
+		if (this != &other)
+      	  		_fixed = other.getRawBits();
+    		return *this;
+	}
+
+	i) When the function goes out of scope, destructor will destroy other.
+		because it is not declared as an object. 
+	ii) Whereas, 'b' is declared a variable outside of the function call.
+		Therefore, it will not be destroyed when the function goes out of scope.

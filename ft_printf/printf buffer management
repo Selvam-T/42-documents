@@ -1,0 +1,39 @@
+printf BUFFER MANAGEMENT
+
+How printf manages data it needs to print before actually sending it to the output device.
+(OUT OF SCOPE for this project)
+
+Involves use of internal buffer.
+
+1,	FORMATTING: 
+	goes through format string character by character looking for format specifier.
+	processes the format string and the corresponding arguments to generate the formatted output.
+
+2,	DATA STORAGE:
+	convert the arguments into characters according to the format specifier's requirement.
+	converted data chunks are temporarily stored in an internal buffer.
+
+3,	BUFFERING:
+	the data in the internal buffer is not immediately sent to the output device.
+	It accumulates in the buffer until a condition occurs:
+
+	>> the buffer becomes full, reaching the end of the format string.
+	flushes the buffer, sending its content to the output
+	>>'\n' is encountered. 
+	It flushes the buffer and sends the data to the output.
+	This ensures that lines of output are displayed immediately, which is helpful for interactive programs.
+
+4,	FLUSH AND OUTPUT:
+	when the internal buffer is flushed, the data in the buffer is sent to the standard output. 
+	you see formatted output on the screen.
+
+5,	REPEAT:
+	above.
+
+Buffer management is essential for performance reasons.
+	> minimizes number of write operations to the output device
+	> can group multiple output operations together
+
+You can control buffer management behaviour by using functions like 'fflush(stdout)' to explicitly flush the standard output
+or
+by changing the buffer size with 'setvbuf' or 'setbuf' functions.

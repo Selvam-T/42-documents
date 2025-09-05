@@ -1,0 +1,11 @@
+Makefile OBJECT
+
+OBJECT = ./$(SOURCE:.c=.o)
+	simple string substitution
+	It assumes that the object files will be in the current directory (denoted by ./)
+	it may not work well 
+
+OBJECT = $(patsubst %.c,%.o,$(SOURCE))
+	pattern substitution
+	approach is more flexible and can be used in more complex scenarios
+	

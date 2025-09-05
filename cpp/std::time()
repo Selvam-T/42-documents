@@ -1,0 +1,36 @@
+std::time()
+
+
+void	_displayTimestamp( void )
+{
+	std::time_t	now;
+	std::tm*	localTime;
+	char		buffer[20];
+	
+	now = std::time(NULL);
+	localTime = std::localtime(&now);
+	std::strftime(buffer, sizeof(buffer), "[%Y%m%d_%H%M%S] ", localTime);
+	
+	std::cout << buffer;
+}
+
+std::time_t	now;
+				Represents a data type used for representing time in seconds since the epoch (00:00:00 UTC, 
+				January 1, 1970).
+
+std::tm*	localTime;
+			A pointer to a structure (tm) that holds broken-down time information (like year, month, day, etc.).
+
+now = std::time(NULL);: 
+			Retrieves the current time (in seconds since the epoch) and stores it in the variable now.
+
+std::localtime(&now);
+			Converts a time_t value into a tm structure representing the local time.
+
+std::strftime(): 
+			A function used to format time into a specified format string. 
+			Parameters it takes include a character array to store the formatted string, 
+			the maximum size of the array, a format string specifying how the time should be formatted, 
+			and a tm structure containing the time information to format.
+
+			

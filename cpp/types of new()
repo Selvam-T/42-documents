@@ -1,0 +1,24 @@
+types of new()
+
+Assume pointer declaration:
+	int* _arr;
+
+1)	_arr = new int[n]
+	vs
+2)	new (&_arr[i]) int();
+
+
+1)	_arr = new int[n]
+
+	- regular new operator for array allocation.
+	- Allocates memory for an array of n elements of type int
+	- Each element in the array is constructed in its allocated memory. 
+	- The memory is zero-initialized 
+	- Returns a pointer to the beginning of the array.
+
+2)	new (&_arr[i]) int();
+	-  This uses placement new operator.
+	-  Constructs a int object at the specific memory location pointed to by &_arr[i].
+	-  this assumes memory has been previously allocated.
+	- This does not return a pointer to a newly allocated memory region;
+		 it operates on existing memory.

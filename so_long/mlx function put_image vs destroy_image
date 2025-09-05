@@ -1,0 +1,13 @@
+mlx function put_image vs destroy_image
+
+I place images on the window using the following line - 
+	mlx_put_image_to_window(game->mlx_ptr, game->win_ptr, \
+				pic, col, row);
+I then free the images using the following line - 
+	mlx_destroy_image(game->mlx_ptr, game->image.wall);
+
+Although I have destroyed the images, the window still displays the images why?
+
+The window will still display the images even after you destroy them because 
+the window maintains a reference to the image data until the window itself 
+is destroyed or the image is replaced.

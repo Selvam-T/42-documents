@@ -1,0 +1,58 @@
+C++ CAST examples
+
+1)	static_cast
+
+casting happens during compilation.
+If casting is not possible, compiler error will be thrown.
+
+	class	Parent					{};
+	class	Child: public Parent 	{};
+	class	Unrelated				{};
+
+	Child	a;
+	Parent	*b	=	&a;			//implicit UPCAST 		OK
+	Child	*c	=	&b;			//implicit DOWNCAST 	NOT OK
+	
+	Child	*d	=	static_cast<Child *>(b);	//Explicit DOWNCAST		OK
+
+	Unrelated *e	=	static_cast<Unrelated *>(&a);	//Explicit conversion 	NO!
+															//compiler will throw error
+
+
+	static_cast	will allow us to make simple conversions between related data types or classes
+					will allow us to make UPCAST and DOWNCAST on a hierarchy of classes we are familiar with
+					will prevent cast between unrelated class hierarchies
+
+2)	dynamic_cast
+
+casting happens during run time, not during compilation
+program may compile, but dynamic cast may FAIL at run time.
+
+you need to detect in you code architecture, whether the dynamic cast will be handled properly 
+	and not fail during run time.
+will only work will polymorphic instance, meaning we will be dealing with subtype polymorphism, 
+	at least 1 virtual member function.
+	i.e. 	public: virtual ~Parent( void ) {}
+	It activates something called RTTI - RuntTime Type Info, this is hidden from you, allowing Dynamic cast
+	to check if it is possible to cast the object with dynamic cast.
+
+will only work on Pointer and Reference.
+	1) Child * c	= dynamic_Cast<Child *>(b);	// return address or NULL if conversion is not possible
+
+	2) Child & d = dynamic_Cast<Child &>(*b);	//reference to unreferencing
+
+std::bad_cast	to catch bad cast exception
+
+3)	const_cast
+
+const_cast 	will replace the semantics of c cast in c++
+
+You don't want to do const_cast unless it is really necessary.
+
+	int	a = 42;
+
+	int	const	*b	= &a;					// Implicit promotion	OK		why? const b is immutable, a is mutable
+
+	int	*c	= b;							// Implicit demotion 	NOT OK	why? you can't cast mutable to immutable
+
+	int	*d	= const_cast<int *>(b);		// Explicit demotion	OK

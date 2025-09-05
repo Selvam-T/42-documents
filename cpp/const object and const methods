@@ -1,0 +1,20 @@
+const object and const methods
+
+When you have constant objects only constant methods can be calLed on it. 
+const methods are declared with the 'const' keyword at the end of their signature.
+
+example:
+
+int	main()
+{
+	const A a;		//const object of class A
+	a.method();	//method is a const method, so you can call 'a' on it.
+}
+
+class A {
+public:
+    void method() const 		//
+   {
+	//some code	
+  }
+};

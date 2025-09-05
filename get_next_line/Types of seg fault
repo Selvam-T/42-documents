@@ -1,0 +1,81 @@
+Types of Segmentation fault
+
+1.	Dereferencing null or uninitialized pointers:
+	
+	int *ptr = NULL;
+	*ptr = 10; // Segmentation fault --> assigning value to a memory location pointed to by NULL
+
+Valgrind Error:
+	Invalid write of size 4
+	Process terminating with default action of signal 11 (SIGSEGV)
+	Access not within mapped region at address 0x0
+Why size 4?
+4 bytes. i.e 1 x integer
+
+2.	Accessing out-of-bounds array elements:
+
+	int arr[5];
+	arr[10] = 7; // Segmentation fault
+
+Valgrind Error:
+	Jump to the invalid address	
+	Address 0x7 is not stack'd, malloc'd or (recently) free'd
+
+3.	Buffer overflows:
+	char buf[10];
+	strcpy(buf, "This is a long string"); // Segmentation fault
+
+Valgrind:
+	although this is expected to give valgrind error.
+	it didn't throw any error.
+
+4.	Using freed or deallocated memory:
+	
+	int *ptr = malloc(sizeof(int));
+	free(ptr);
+	*ptr = 10; // Segmentation fault
+
+Valgrind Error:
+	Invalid write of size 4
+	Address 0x4a9d040 is 0 bytes inside a block of size 4 free'd
+
+5.	Stack overflow:
+	void recurse() 
+	{
+    		recurse(); // Segmentation fault due to stack overflow
+	}
+
+Valgrind Error:
+	Stack overflow in thread #1: can't grow stack to 0x1ffe801000
+	Process terminating with default action of signal 11 (SIGSEGV)
+	Access not within mapped region at address 0x1FFE801FF8
+
+6.	Writing to read-only memory:
+	
+	 // String literals are usually stored in read-only memory
+    	char *str = "Hello, World!";
+    	str[0] = 'h'; // Attempt to modify read-only memory
+    	
+Valgrind Error:
+	Process terminating with default action of signal 11 (SIGSEGV)
+	Bad permissions for mapped region at address 0x402004
+
+7.	Incorrect pointer arithmetic:
+
+	int arr[5];
+	int *ptr = arr + 10;			--> ptr is pointing to out of range array index
+	*ptr = 5; // Segmentation fault
+
+Valgrind Error:
+	Jump to the invalid address
+	Process terminating with default action of signal 11 (SIGSEGV)
+
+	HEAP SUMMARY: 
+	total heap usage: 1 allocs, 0 frees, 1,024 bytes allocated
+Why does it say 0 frees, when I have not dynamically allocated anything? 
+Some standard library functions and I/O operations might perform dynamic memory allocations internally. 
+This can cause Valgrind to report these allocations in the heap summary.
+
+Because Segmentation fault occured at a certain line, SIGSEGV signal was sent, program exited abruptly, 
+it couldn't do the internal memory cleanup.
+

@@ -1,0 +1,24 @@
+link readline library to compiler command
+
+If you don't add the readline library during compilation you will get
+undefined reference to 'readline' error.
+
+for the linker to find definition of the readline() function during the linking phase,
+ensure that you are linking Readline library ('libreadline') when compiling
+your program.
+Add -lreadline to  your compile command
+
+cc *.c -lreadline
+
+---------------------------
+
+Readline functionality issues
+
+1,	Does the program support Readline functionality?
+2,	Terminal settings are compatible with Readline?
+
+3,	Problem with the environment setup?
+4,	Problem with Readline library installation?
+	
+5,	Check it Readline library is installed on your system
+	dpkg -l | grep readline

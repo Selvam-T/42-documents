@@ -1,0 +1,31 @@
+Copy constructor Shallow Copy vs. Deep Copy:
+
+Deep copy applies to pointers or complex objects, 
+while simple data types are copied directly and are inherently shallow copies.
+
+Example: Assume this line in Copy constructor.
+	this->_type = other._type;  
+
+Shallow Copy vs. Deep Copy:
+
+If _type is a simple data type (e.g., int, std::string, etc.), 
+	then copying the value of _type from other to this is considered a shallow copy. 
+This is because there are no pointers or complex objects involved that require deeper copying.
+
+If _type were a pointer, you would need to handle deep copying 
+	to ensure that this gets its own separate copy of the data pointed to by other._type.
+
+Value Assignment:
+
+Yes, the value stored in other._type is assigned to this->_type in your code.
+
+Why it’s considered shallow copy in general: 
+
+1) A shallow copy refers to copying the values of the object's members directly. 
+
+2) If _type were a pointer to dynamically allocated memory, 
+	a shallow copy would just copy the pointer, 
+	not the data it points to, leading to potential issues.
+
+3) However, with simple data types, this distinction isn't as critical 
+	because copying the value is sufficient and doesn't involve complexities of deep copying.

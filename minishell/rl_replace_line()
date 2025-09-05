@@ -1,0 +1,7 @@
+rl_replace_line() behavior
+
+the function displays the text argument provided, but the cursor appears on
+top of the displayed message, rather than at the end of the message, as would
+be desired. Apparently, this is the expected behavior of the function.
+
+Unfortunately, Readline doesn't provide a direct way to control the cursor position after replacing the line.
