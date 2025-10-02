@@ -237,16 +237,59 @@ See below.
 Pong-game Tailwind CSS refactoring:
 ===================================
 
-✅ CSS not applied in ids
+🌟 s✅ CSS not applied in ids
 -----------------------------------------------------------------------------------------------
 1)	id="main"
 2)	id="modal-body"
 3)	id="game"
 4)	id="board"		??
 5)	id="view"
+6)	id="modal-divs"		(newly removed)
+
+🌟 ✅ <header> and <h1>
+-----------------------------------------------------------------------------------------------
+
+1. Keep header {} in plain css
+	Although I could have merged header {} and .sidebar {}, because both cascade down
+	to all children, I didn't merge, because in the future if there were going to be
+	another header {} without .sidebar, then specificity of header {} is lost.
+
+2.	removed header h1 {} in style.css
+	replaced with utility class inside <h1> in html.
+
+🌟 ✅ <body>
+-----------------------------------------------------------------------------------------------
+
+style.css: body {} 	applies to ---> 	index.html: <body>
+
+refactored with Tailwind utility class in .html
 
 
-✅ id="modal-divs"
+🌟 ✅ id="modal-content"
+-----------------------------------------------------------------------------------------------
+The one thing to take note is utility class padding is enforced with !p-5.
+
+Global settings in .css has padding:0 
+
+Global settings properties generally have lower precedence over same properties defined in
+	selectors that come after it in .css.
+Since we removed plain css for modal-content, and apply Tailwind classes example p-5,
+	the Global padding:0 takes precedence. Reason not understood.
+
+So we use !p-5 to force the utility class padding.
+
+Without forcing it with !, padding: 5 is not applied.	
+
+🌟 🍉 id="modal-header" (NEWLY ADDED)
+-----------------------------------------------------------------------------------------------
+Contains -
+	h2 id="modal-title"
+	button class="close-button"
+	
+❌ The X is not aligned with SIGN IN text, due to absolute positioning of X.
+		
+
+🌟 ✅ id="modal-divs" (NEWLY REMOVED)
 -----------------------------------------------------------------------------------------------
 
 HTML: 
@@ -271,19 +314,167 @@ Note: modal-divs simply makes its children flex items. They follow the flex rule
       The children are "modal-container" and "modal-container-2", but not their children.
 
 
-✅ <header> and <h1>
+🌟 ✅ id="modal-title"
+-----------------------------------------------------------------------------------------------	
+
+1) id="modal-title"
+
+	HTML:
+		<h2 id="modal-title"></h2>
+		
+	style.css:
+		Does not have a ID selector for in CSS.
+		
+	modal.ts:
+		const modalTitle = document.getElementById("modal-title");
+		// ... //
+		modalTitle.innerHTML = `<h2>${viewData.title}</h2>`; 
+				---> It’s generating HTML content dynamically.
+				
+2) id="modal-title-2"
+	is probably the same, but commented out in modal.ts
+	
+
+How to replace with Tailwind CSS?
+---------------------------------
+
+The Utility-First Method: 
+	You put all the Tailwind utility classes (class="fixed top-0 flex...") directly in your HTML.
+
+Method 1:
+	Do styling in HTML:
+	<div id="modal-title" class="text-2xl font-bold text-gray-800"></div>
+	
+	//Put permanent style in the HTML
+
+	No styling in modal.ts
+	modalTitle.textContent = viewData.title; // just the text, no styling	
+
+	//Let .ts inject only the changing content.
+	
+Method 2:	
+	No styling in HTML:
+	<div id="modal-title"></div>
+
+	Do styling in modal.ts
+	modalTitle.innerHTML = `<h2 class="text-2xl font-bold text-gray-800">${viewData.title}</h2>`;
+		---> Here you inject both the text and styling every time.
+
+
+🌟 ✅ id="sidebar"
+-----------------------------------------------------------------------------------------------
+- replaced header{} and .sidebar{} with Tailwind utility class in .html.
+- You will find header{} and .sidebar{} from .css combined in .html
+- where, padding-[3em_2.25em_1.75em_2.25em] Tailwind utility class corresponds to header{}
+
+
+🌟 ✅ id="sidebar-close" (removed after refactoring)
 -----------------------------------------------------------------------------------------------
 
-1. Keep header {} in plain css
-	Although I could have merged header {} and .sidebar {}, because both cascade down
-	to all children, I didn't merge, because in the future if there were going to be
-	another header {} without .sidebar, then specificity of header {} is lost.
+.html
 
-2.	removed header h1 {} in style.css
-	replaced with utility class inside <h1> in html.
+	- in .html <header> utility class, 
+	  translate-x-0 is the default visible state, indicating sidebar is open.
+	  
+	- previously a "sidebar-close" class was added to or removed from  <body>
+	  to invoke plain css, body.sidebar-close .sidebar {}
 
- 			
-✅ id="modal-container"
+.css
+
+	- remove body.sidebar-close .sidebar {}
+
+sidebar.ts
+  
+	- if sidebar-open is false then you want sidebar hidden, i.e "translate-x-full"
+	- if sidebar-open is true then you want sidebar visible, i.e "translate-x-0"
+
+	- this transformation between making sidebar hidden and visible is handled in 
+	  sidebar.ts
+	- there is no need to add or remove "sidebar-close" class to apply css styling.
+	  I don't see this class being used as hook anywhere else. 
+
+
+🌟 ✅ toggleButton.id = "sidebarToggle"
+-----------------------------------------------------------------------------------------------
+- This id is not created in .hmtl.
+- This id is dynamically generated in sidebar.ts
+- CSS styling class utilities are assigned in sidebar.ts
+
+
+🌟 ✅ id="loginButton"
+-----------------------------------------------------------------------------------------------
+// possibly same for id="profileButton", id="friendsButton", id="logoutButton" 
+
+1. Button in sidebar is originally handled by .css class selector.
+2. Whereas, Button in modal is dynamically generated in view.ts <form>
+
+1. sidebar (replace .sidebar .button in .css)
+
+html:	
+	<button class="button" id="loginButton" onclick="navigate('signin')">Sign In</button>
+	
+	- Replace class="" with Tailwind Utility classes
+	- id="loginButton" will remain, it is used as hook in .ts
+	- id is also used to apply css in sidebar, but the plain .css styling specific to the id, 
+	  as shown below, is redundant.
+	- This property need not be added to the Utility class, because the
+	  display: inline-block property is handled by view_signin.ts
+
+style.css:
+	#loginButton {
+	  display: inline-block
+	}
+
+2. modal (replace .modal-content .button in .css)
+
+view.ts > signin: {} json
+	add Tailwind utility classes to <button> attribute in {}
+	the Tailwind utility classes will be same as in 1.
+
+🌟 ✅ REGISTER in SIGN IN FORM (or modal layout window)
+-----------------------------------------------------------------------------------------------
+Originally just as signin: {} this form applied .modal-content .button in .css
+
+Replace with Tailwind utility class -
+view.ts > Register: {} json
+	add Tailwind utility classes to <button> attribute in {}
+	the Tailwind utility classes will be same as in signin: {}.
+
+
+🌟 ✅ .link {}  and .link:hover {}
+-----------------------------------------------------------------------------------------------
+
+1.	view.ts	--> replace class="link" in <span> in signin: and register:
+
+2.	style.css	--> .link {} and .link:hover{} to be removed
+
+
+🌟 ✅  class='input'
+-----------------------------------------------------------------------------------------------	
+1.	view.ts	--> class='input'	//sign in form
+	refactor class='input' with Tailwind utility class
+	
+	<input class='font-["Barlow_Semi_Condensed"] w-full text-base bg-gray-800 
+	px-2.5 py-2 my-1.5' 
+	type='text' id='nameInput' placeholder='ENTER YOUR USERNAME' required/>
+
+	<input class='font-["Barlow_Semi_Condensed"] w-full text-base bg-gray-800 
+	px-2.5 py-2 my-1.5' 
+	type='password' id='passwordInput' placeholder='ENTER YOUR PASSWORD' required/>
+
+2.	view_profile_utils.ts	--> formField = document.createElement("input"); //edit display name
+	refactor here also, but simply adding,
+	
+	formField.className = "font-['Barlow_Semi_Condensed'] w-full text-base bg-gray-800 
+				px-2.5 py-2 my-1.5";
+
+
+3. 	style.css	--> .input {}
+	after refactoring the 2 points above, delete it.
+
+
+
+🌟 s✅ id="modal-container"
 -----------------------------------------------------------------------------------------------
 
 HTML:
@@ -352,148 +543,6 @@ modal.ts modify:
 	   }
 
 
-✅ id="modal-title"
------------------------------------------------------------------------------------------------	
-
-1) id="modal-title"
-
-	HTML:
-		<h2 id="modal-title"></h2>
-		
-	style.css:
-		Does not have a ID selector for in CSS.
-		
-	modal.ts:
-		const modalTitle = document.getElementById("modal-title");
-		// ... //
-		modalTitle.innerHTML = `<h2>${viewData.title}</h2>`; 
-				---> It’s generating HTML content dynamically.
-				
-2) id="modal-title-2"
-	is probably the same, but commented out in modal.ts
-	
-
-How to replace with Tailwind CSS?
----------------------------------
-
-The Utility-First Method: 
-	You put all the Tailwind utility classes (class="fixed top-0 flex...") directly in your HTML.
-
-Method 1:
-	Do styling in HTML:
-	<div id="modal-title" class="text-2xl font-bold text-gray-800"></div>
-	
-	//Put permanent style in the HTML
-
-	No styling in modal.ts
-	modalTitle.textContent = viewData.title; // just the text, no styling	
-
-	//Let .ts inject only the changing content.
-	
-Method 2:	
-	No styling in HTML:
-	<div id="modal-title"></div>
-
-	Do styling in modal.ts
-	modalTitle.innerHTML = `<h2 class="text-2xl font-bold text-gray-800">${viewData.title}</h2>`;
-		---> Here you inject both the text and styling every time.
-
-
-✅ id="sidebar"
------------------------------------------------------------------------------------------------
-- replaced header{} and .sidebar{} with Tailwind utility class in .html.
-- You will find header{} and .sidebar{} from .css combined in .html
-- where, padding-[3em_2.25em_1.75em_2.25em] Tailwind utility class corresponds to header{}
-
-
-✅ id="sidebar-close" (removed after refactoring)
------------------------------------------------------------------------------------------------
-
-.html
-
-	- in .html <header> utility class, 
-	  translate-x-0 is the default visible state, indicating sidebar is open.
-	  
-	- previously a "sidebar-close" class was added to or removed from  <body>
-	  to invoke plain css, body.sidebar-close .sidebar {}
-
-.css
-
-	- remove body.sidebar-close .sidebar {}
-
-sidebar.ts
-  
-	- if sidebar-open is false then you want sidebar hidden, i.e "translate-x-full"
-	- if sidebar-open is true then you want sidebar visible, i.e "translate-x-0"
-
-	- this transformation between making sidebar hidden and visible is handled in 
-	  sidebar.ts
-	- there is no need to add or remove "sidebar-close" class to apply css styling.
-	  I don't see this class being used as hook anywhere else. 
-
-
-✅ toggleButton.id = "sidebarToggle"
------------------------------------------------------------------------------------------------
-- This id is not created in .hmtl.
-- This id is dynamically generated in sidebar.ts
-- CSS styling class utilities are assigned in sidebar.ts
-
-
-✅ id="modal-content"
------------------------------------------------------------------------------------------------
-The one thing to take note is utility class padding is enforced with !p-5.
-
-Global settings in .css has padding:0 
-
-Global settings properties generally have lower precedence over same properties defined in
-	selectors that come after it in .css.
-Since we removed plain css for modal-content, and apply Tailwind classes example p-5,
-	the Global padding:0 takes precedence. Reason not understood.
-
-So we use !p-5 to force the utility class padding.
-
-Without forcing it with !, padding: 5 is not applied.	
-
-
-✅ id="loginButton"
------------------------------------------------------------------------------------------------
-// possibly same for id="profileButton", id="friendsButton", id="logoutButton" 
-
-1. Button in sidebar is originally handled by .css class selector.
-2. Whereas, Button in modal is dynamically generated in view.ts <form>
-
-1. sidebar (replace .sidebar .button in .css)
-
-html:	
-	<button class="button" id="loginButton" onclick="navigate('signin')">Sign In</button>
-	
-	- Replace class="" with Tailwind Utility classes
-	- id="loginButton" will remain, it is used as hook in .ts
-	- id is also used to apply css in sidebar, but the plain .css styling specific to the id, 
-	  as shown below, is redundant.
-	- This property need not be added to the Utility class, because the
-	  display: inline-block property is handled by view_signin.ts
-
-style.css:
-	#loginButton {
-	  display: inline-block
-	}
-
-2. modal (replace .modal-content .button in .css)
-
-view.ts > signin: {} json
-	add Tailwind utility classes to <button> attribute in {}
-	the Tailwind utility classes will be same as in 1.
-
-✅ REGISTER in SIGN IN FORM (or modal layout window)
------------------------------------------------------------------------------------------------
-Originally just as signin: {} this form applied .modal-content .button in .css
-
-Replace with Tailwind utility class -
-view.ts > Register: {} json
-	add Tailwind utility classes to <button> attribute in {}
-	the Tailwind utility classes will be same as in signin: {}.
-
 ✅ GOOGLE SIGNIN in SIGN IN FORM (or modal layout window)
 -----------------------------------------------------------------------------------------------	
 Google page loaded. No local css styling.
@@ -510,23 +559,6 @@ SIGN IN button is displayed.
 PROFILE, FRIENDS, LOGOUT hide.
 
 No .css
-
-
-✅ <body>
------------------------------------------------------------------------------------------------
-
-style.css: body {} 	applies to ---> 	index.html: <body>
-
-refactored with Tailwind utility class in .html
-
-
-✅ .link {}  and .link:hover {}
------------------------------------------------------------------------------------------------
-
-1.	view.ts	--> replace class="link" in <span> in signin: and register:
-
-2.	style.css	--> .link {} and .link:hover{} to be removed
-
 
 🟧 id="profileButton"
 -----------------------------------------------------------------------------------------------
@@ -548,31 +580,6 @@ Appear to create DOM and styling dynamically in view_friends.ts
 
 And view.ts --> friends:
 		Friend-Profile:
-
-
-🟧 class='input' ✅ I understood how to refactor, but clarify question with Jason first
------------------------------------------------------------------------------------------------	
-1.	view.ts	--> class='input'	//sign in form
-	refactor class='input' with Tailwind utility class
-	
-	<input class='font-["Barlow_Semi_Condensed"] w-full text-base bg-gray-800 
-	px-2.5 py-2 my-1.5' 
-	type='text' id='nameInput' placeholder='ENTER YOUR USERNAME' required/>
-
-	<input class='font-["Barlow_Semi_Condensed"] w-full text-base bg-gray-800 
-	px-2.5 py-2 my-1.5' 
-	type='password' id='passwordInput' placeholder='ENTER YOUR PASSWORD' required/>
-
-2.	view_profile_utils.ts	--> formField = document.createElement("input"); //edit display name
-	refactor here also, but simply adding,
-	
-	formField.className = "font-['Barlow_Semi_Condensed'] w-full text-base bg-gray-800 
-				px-2.5 py-2 my-1.5";
-
-
-3. 	style.css	--> .input {}
-	after refactoring the 2 points above, delete it.
-
 
 🟧 class="text-center" ⛔
 -----------------------------------------------------------------------------------------------

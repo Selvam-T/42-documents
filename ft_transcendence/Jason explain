@@ -1,3 +1,32 @@
+Discuss with Emma -
+-----------------
+
+1) table, th, td {} and table {} contain different attribute values for 
+	background: linerar-gradient() 
+	--> which applies? 
+	--> Why table has differing values?
+
+2)	#statsList .stat_row:nth-child(odd)
+	#statsList .stat_row:nth-child(even)
+		--> where CSS applies?
+
+3) Profile/Change Display Name - tick and cross placed too close to input field.
+4) Clicking on Change Display Name create multiple input field.
+
+	
+
+1) (Optional) tailwind.config.js is not used right now.
+
+But I could use tailwind.config.js to add theme: directive for custom fonts, 
+and remove @theme{} from style.css.
+
+I did try this, but the custom fonts did not apply at all. This has something to do with where
+the fonts files are located. Presently the fonts folder is placed inside webclient, but Vite
+expects it to be in the project root? Although I tried placing it in the root folder, I didn't
+get it to work.
+
+
+
 Explain changes to Jason
 ------------------------
 

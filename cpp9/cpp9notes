@@ -154,12 +154,12 @@ Questions:
 	It is defined by recurrence relation.
 	It starts with 0, 1. then each following number is found by formula: 2 x (i-1) + (i-2)	
 
-6)	Files to turn in does not have .tpp file, suggesting I cannot have templated class 
+6)	Pg 11. Avoid generic function. (I don't know what to make of it).
+	Files to turn in does not have .tpp file, suggesting I cannot have templated class 
 	and functions to pass as argument vectors and deque.
-	Pg 11. Avoid generic function. (I don't know what to make of it).
 	
 7)	Pg 10. Program must use merge-insert sort algorithm. 
-	       You need to use Ford-JOhnson algorith.
+	       You need to use Ford-Johnson algorith.
 
 8)	std::vector and std::deque uses same functions, yet there is vast difference in sorting time.
 	Why?
