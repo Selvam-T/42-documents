@@ -55,7 +55,10 @@ cat ex*/*.*pp | grep "include >"
 	- positive > 1000 	throw exception 'large'
 
 7)	Input file type is invalid.
-	example: input.pdf	
+	example: input.pdf (Is this valid?)	
+	
+8)	Create directory input.txt (delete input.txt file first)
+	valgrind ./btc input.txt
 
 - Bitcoin exchanges
 	-opens input file

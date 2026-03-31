@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="554pt" height="646pt" viewBox="0.00 0.00 554.00 646.13">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 642.1325)">
+<title>AndroidToolchain</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-642.1325 550,-642.1325 550,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_0</title>
+<polygon fill="none" stroke="#c0c0c0" stroke-dasharray="5,2" points="205,-547.7325 205,-630.1325 403,-630.1325 403,-547.7325 205,-547.7325"/>
+<text text-anchor="middle" x="304" y="-613.5325" font-family="Times,serif" font-size="14.00" fill="#000000">Prerequisites</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_1</title>
+<polygon fill="#e3f2fd" stroke="#e3f2fd" points="202,-430.5325 202,-512.9325 406,-512.9325 406,-430.5325 202,-430.5325"/>
+<text text-anchor="middle" x="304" y="-496.3325" font-family="Times,serif" font-size="14.00" fill="#000000">SDK Management</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_2</title>
+<polygon fill="#f3e5f5" stroke="#f3e5f5" points="8,-313.3325 8,-395.7325 429,-395.7325 429,-313.3325 8,-313.3325"/>
+<text text-anchor="middle" x="218.5" y="-379.1325" font-family="Times,serif" font-size="14.00" fill="#000000">Build Components</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_3</title>
+<polygon fill="none" stroke="#000000" points="153,-169.8 153,-278.5325 343,-278.5325 343,-169.8 153,-169.8"/>
+<text text-anchor="middle" x="248" y="-261.9325" font-family="Times,serif" font-size="14.00" fill="#000000">The Engine</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_4</title>
+<polygon fill="#fff3e0" stroke="#fff3e0" points="396,-8 396,-265.3663 538,-265.3663 538,-8 396,-8"/>
+<text text-anchor="middle" x="467" y="-248.7663" font-family="Times,serif" font-size="14.00" fill="#000000">Runtime &amp; Debug</text>
+</g>
+<!-- CA -->
+<g id="node1" class="node">
+<title>CA</title>
+<path fill="#ffe0b2" stroke="#000000" d="M383.455,-597.1344C383.455,-597.1344 224.545,-597.1344 224.545,-597.1344 218.545,-597.1344 212.545,-591.1344 212.545,-585.1344 212.545,-585.1344 212.545,-567.9306 212.545,-567.9306 212.545,-561.9306 218.545,-555.9306 224.545,-555.9306 224.545,-555.9306 383.455,-555.9306 383.455,-555.9306 389.455,-555.9306 395.455,-561.9306 395.455,-567.9306 395.455,-567.9306 395.455,-585.1344 395.455,-585.1344 395.455,-591.1344 389.455,-597.1344 383.455,-597.1344"/>
+<text text-anchor="middle" x="304" y="-580.7325" font-family="Arial" font-size="14.00" fill="#000000">ca-certificates</text>
+<text text-anchor="middle" x="304" y="-563.9325" font-family="Arial" font-size="14.00" fill="#000000">(Required for SSL/HTTPS)</text>
+</g>
+<!-- CMD -->
+<g id="node2" class="node">
+<title>CMD</title>
+<path fill="#bbdefb" stroke="#000000" d="M385.9186,-479.9344C385.9186,-479.9344 222.0814,-479.9344 222.0814,-479.9344 216.0814,-479.9344 210.0814,-473.9344 210.0814,-467.9344 210.0814,-467.9344 210.0814,-450.7306 210.0814,-450.7306 210.0814,-444.7306 216.0814,-438.7306 222.0814,-438.7306 222.0814,-438.7306 385.9186,-438.7306 385.9186,-438.7306 391.9186,-438.7306 397.9186,-444.7306 397.9186,-450.7306 397.9186,-450.7306 397.9186,-467.9344 397.9186,-467.9344 397.9186,-473.9344 391.9186,-479.9344 385.9186,-479.9344"/>
+<text text-anchor="middle" x="304" y="-463.5325" font-family="Arial" font-size="14.00" fill="#000000">cmdline-tools</text>
+<text text-anchor="middle" x="304" y="-446.7325" font-family="Arial" font-size="14.00" fill="#000000">(sdkmanager, avdmanager)</text>
+</g>
+<!-- CA&#45;&gt;CMD -->
+<g id="edge1" class="edge">
+<title>CA-&gt;CMD</title>
+<path fill="none" stroke="#000000" d="M304,-555.8493C304,-537.7183 304,-511.1005 304,-490.4078"/>
+<polygon fill="#000000" stroke="#000000" points="307.5001,-490.2032 304,-480.2032 300.5001,-490.2032 307.5001,-490.2032"/>
+<text text-anchor="middle" x="357.0677" y="-525.1325" font-family="Times,serif" font-size="14.00" fill="#000000">Enables Download</text>
+</g>
+<!-- PLAT -->
+<g id="node3" class="node">
+<title>PLAT</title>
+<path fill="#e1bee7" stroke="#000000" d="M148.3538,-362.7344C148.3538,-362.7344 27.6462,-362.7344 27.6462,-362.7344 21.6462,-362.7344 15.6462,-356.7344 15.6462,-350.7344 15.6462,-350.7344 15.6462,-333.5306 15.6462,-333.5306 15.6462,-327.5306 21.6462,-321.5306 27.6462,-321.5306 27.6462,-321.5306 148.3538,-321.5306 148.3538,-321.5306 154.3538,-321.5306 160.3538,-327.5306 160.3538,-333.5306 160.3538,-333.5306 160.3538,-350.7344 160.3538,-350.7344 160.3538,-356.7344 154.3538,-362.7344 148.3538,-362.7344"/>
+<text text-anchor="middle" x="88" y="-346.3325" font-family="Arial" font-size="14.00" fill="#000000">platforms;android-34</text>
+<text text-anchor="middle" x="88" y="-329.5325" font-family="Arial" font-size="14.00" fill="#000000">(API Framework)</text>
+</g>
+<!-- CMD&#45;&gt;PLAT -->
+<g id="edge2" class="edge">
+<title>CMD-&gt;PLAT</title>
+<path fill="none" stroke="#000000" d="M259.3495,-438.6993C246.7885,-432.8594 233.1277,-426.4748 220.5638,-420.5325 197.5753,-409.6597 191.1136,-408.2895 169,-395.7325 154.5657,-387.5361 139.2556,-377.718 125.8774,-368.7372"/>
+<polygon fill="#000000" stroke="#000000" points="127.634,-365.6995 117.3936,-362.9819 123.7042,-371.4923 127.634,-365.6995"/>
+<text text-anchor="middle" x="241.2181" y="-407.9325" font-family="Times,serif" font-size="14.00" fill="#000000">Installs</text>
+</g>
+<!-- BTOOLS -->
+<g id="node4" class="node">
+<title>BTOOLS</title>
+<path fill="#e1bee7" stroke="#000000" d="M287.521,-362.7344C287.521,-362.7344 190.479,-362.7344 190.479,-362.7344 184.479,-362.7344 178.479,-356.7344 178.479,-350.7344 178.479,-350.7344 178.479,-333.5306 178.479,-333.5306 178.479,-327.5306 184.479,-321.5306 190.479,-321.5306 190.479,-321.5306 287.521,-321.5306 287.521,-321.5306 293.521,-321.5306 299.521,-327.5306 299.521,-333.5306 299.521,-333.5306 299.521,-350.7344 299.521,-350.7344 299.521,-356.7344 293.521,-362.7344 287.521,-362.7344"/>
+<text text-anchor="middle" x="239" y="-346.3325" font-family="Arial" font-size="14.00" fill="#000000">build-tools;34.x</text>
+<text text-anchor="middle" x="239" y="-329.5325" font-family="Arial" font-size="14.00" fill="#000000">(aapt, apksigner)</text>
+</g>
+<!-- CMD&#45;&gt;BTOOLS -->
+<g id="edge3" class="edge">
+<title>CMD-&gt;BTOOLS</title>
+<path fill="none" stroke="#000000" d="M286.2531,-438.6757C281.8109,-432.9975 277.2625,-426.7 273.5638,-420.5325 264.4012,-405.254 256.2468,-387.1118 250.1627,-372.1294"/>
+<polygon fill="#000000" stroke="#000000" points="253.4062,-370.8138 246.4737,-362.8019 246.8968,-373.3883 253.4062,-370.8138"/>
+<text text-anchor="middle" x="294.2181" y="-407.9325" font-family="Times,serif" font-size="14.00" fill="#000000">Installs</text>
+</g>
+<!-- NDK -->
+<g id="node5" class="node">
+<title>NDK</title>
+<polygon fill="#fff9c4" stroke="#000000" stroke-dasharray="5,2" points="420.6193,-362.7344 317.3807,-362.7344 317.3807,-321.5306 420.6193,-321.5306 420.6193,-362.7344"/>
+<text text-anchor="middle" x="369" y="-346.3325" font-family="Arial" font-size="14.00" fill="#000000">NDK</text>
+<text text-anchor="middle" x="369" y="-329.5325" font-family="Arial" font-size="14.00" fill="#000000">(C/C++ Code)</text>
+</g>
+<!-- CMD&#45;&gt;NDK -->
+<g id="edge5" class="edge">
+<title>CMD-&gt;NDK</title>
+<path fill="none" stroke="#000000" d="M315.4711,-438.6493C325.7573,-420.1024 340.9687,-392.675 352.5498,-371.7935"/>
+<polygon fill="#000000" stroke="#000000" points="355.6356,-373.4458 357.425,-363.0032 349.514,-370.0507 355.6356,-373.4458"/>
+<text text-anchor="middle" x="354.2181" y="-407.9325" font-family="Times,serif" font-size="14.00" fill="#000000">Installs</text>
+</g>
+<!-- PTOOLS -->
+<g id="node7" class="node">
+<title>PTOOLS</title>
+<path fill="#ffcc80" stroke="#000000" d="M492.28,-232.3682C492.28,-232.3682 415.72,-232.3682 415.72,-232.3682 409.72,-232.3682 403.72,-226.3682 403.72,-220.3682 403.72,-220.3682 403.72,-203.1644 403.72,-203.1644 403.72,-197.1644 409.72,-191.1644 415.72,-191.1644 415.72,-191.1644 492.28,-191.1644 492.28,-191.1644 498.28,-191.1644 504.28,-197.1644 504.28,-203.1644 504.28,-203.1644 504.28,-220.3682 504.28,-220.3682 504.28,-226.3682 498.28,-232.3682 492.28,-232.3682"/>
+<text text-anchor="middle" x="454" y="-215.9663" font-family="Arial" font-size="14.00" fill="#000000">platform-tools</text>
+<text text-anchor="middle" x="454" y="-199.1663" font-family="Arial" font-size="14.00" fill="#000000">(ADB)</text>
+</g>
+<!-- CMD&#45;&gt;PTOOLS -->
+<g id="edge4" class="edge">
+<title>CMD-&gt;PTOOLS</title>
+<path fill="none" stroke="#000000" d="M376.355,-438.678C397.8402,-429.0365 419.2768,-415.2341 433,-395.7325 465.1127,-350.0983 463.3316,-281.7672 458.8566,-242.5007"/>
+<polygon fill="#000000" stroke="#000000" points="462.315,-241.9519 457.5818,-232.4731 455.3709,-242.8347 462.315,-241.9519"/>
+<text text-anchor="middle" x="479.2181" y="-337.9325" font-family="Times,serif" font-size="14.00" fill="#000000">Installs</text>
+</g>
+<!-- GRADLE -->
+<g id="node6" class="node">
+<title>GRADLE</title>
+<path fill="#c8e6c9" stroke="#000000" d="M325.7549,-219.1351C325.7549,-219.1351 301.084,-238.33 301.084,-238.33 296.3485,-242.0144 285.613,-245.6988 279.613,-245.6988 279.613,-245.6988 216.387,-245.6988 216.387,-245.6988 210.387,-245.6988 199.6515,-242.0144 194.916,-238.33 194.916,-238.33 170.2451,-219.1351 170.2451,-219.1351 165.5096,-215.4507 165.5096,-208.0818 170.2451,-204.3974 170.2451,-204.3974 194.916,-185.2025 194.916,-185.2025 199.6515,-181.5181 210.387,-177.8337 216.387,-177.8337 216.387,-177.8337 279.613,-177.8337 279.613,-177.8337 285.613,-177.8337 296.3485,-181.5181 301.084,-185.2025 301.084,-185.2025 325.7549,-204.3974 325.7549,-204.3974 330.4904,-208.0818 330.4904,-215.4507 325.7549,-219.1351"/>
+<text text-anchor="middle" x="248" y="-215.9663" font-family="Arial" font-size="14.00" fill="#000000">Gradle</text>
+<text text-anchor="middle" x="248" y="-199.1663" font-family="Arial" font-size="14.00" fill="#000000">(Build System)</text>
+</g>
+<!-- PLAT&#45;&gt;GRADLE -->
+<g id="edge6" class="edge">
+<title>PLAT-&gt;GRADLE</title>
+<path fill="none" stroke="#000000" d="M113.3525,-321.4756C136.1464,-302.9033 170.2781,-275.0932 198.4727,-252.1205"/>
+<polygon fill="#000000" stroke="#000000" points="200.7116,-254.8111 206.2532,-245.7811 196.2899,-249.3843 200.7116,-254.8111"/>
+<text text-anchor="middle" x="191.5214" y="-290.7325" font-family="Times,serif" font-size="14.00" fill="#000000">Provides API</text>
+</g>
+<!-- BTOOLS&#45;&gt;GRADLE -->
+<g id="edge7" class="edge">
+<title>BTOOLS-&gt;GRADLE</title>
+<path fill="none" stroke="#000000" d="M240.4261,-321.4756C241.637,-303.9351 243.4168,-278.1547 244.9468,-255.9917"/>
+<polygon fill="#000000" stroke="#000000" points="248.4546,-255.9984 245.6517,-245.7811 241.4712,-255.5162 248.4546,-255.9984"/>
+<text text-anchor="middle" x="268.6508" y="-290.7325" font-family="Times,serif" font-size="14.00" fill="#000000">Packager</text>
+</g>
+<!-- NDK&#45;&gt;GRADLE -->
+<g id="edge8" class="edge">
+<title>NDK-&gt;GRADLE</title>
+<path fill="none" stroke="#000000" stroke-dasharray="1,5" d="M349.8272,-321.4756C332.8839,-303.2208 307.6571,-276.0413 286.5523,-253.3028"/>
+<polygon fill="#000000" stroke="#000000" points="288.9392,-250.7295 279.571,-245.7811 283.8086,-255.4916 288.9392,-250.7295"/>
+<text text-anchor="middle" x="361.8524" y="-290.7325" font-family="Times,serif" font-size="14.00" fill="#000000">Native Libs</text>
+</g>
+<!-- APK -->
+<g id="node9" class="node">
+<title>APK</title>
+<polygon fill="#fff9c4" stroke="#000000" points="381.692,-125 304.308,-125 304.308,-89 387.692,-89 387.692,-119 381.692,-125"/>
+<polyline fill="none" stroke="#000000" points="381.692,-125 381.692,-119 "/>
+<polyline fill="none" stroke="#000000" points="387.692,-119 381.692,-119 "/>
+<text text-anchor="middle" x="346" y="-102.8" font-family="Arial" font-size="14.00" fill="#000000">APK / AAB</text>
+</g>
+<!-- GRADLE&#45;&gt;APK -->
+<g id="edge9" class="edge">
+<title>GRADLE-&gt;APK</title>
+<path fill="none" stroke="#000000" d="M264.3641,-177.7465C271.0817,-165.9049 279.6056,-153.0757 289.4376,-143 293.656,-138.677 298.4882,-134.6275 303.5121,-130.9181"/>
+<polygon fill="#000000" stroke="#000000" points="305.832,-133.5697 312.0734,-125.0084 301.8554,-127.8088 305.832,-133.5697"/>
+<text text-anchor="middle" x="307.2812" y="-147.2" font-family="Times,serif" font-size="14.00" fill="#000000">Builds</text>
+</g>
+<!-- DEVICE -->
+<g id="node8" class="node">
+<title>DEVICE</title>
+<polygon fill="#ffffff" stroke="#000000" points="530.4538,-52 403.5462,-52 403.5462,-48 399.5462,-48 399.5462,-44 403.5462,-44 403.5462,-24 399.5462,-24 399.5462,-20 403.5462,-20 403.5462,-16 530.4538,-16 530.4538,-52"/>
+<polyline fill="none" stroke="#000000" points="403.5462,-48 407.5462,-48 407.5462,-44 403.5462,-44 "/>
+<polyline fill="none" stroke="#000000" points="403.5462,-24 407.5462,-24 407.5462,-20 403.5462,-20 "/>
+<text text-anchor="middle" x="467" y="-29.8" font-family="Arial" font-size="14.00" fill="#000000">Device / Emulator</text>
+</g>
+<!-- PTOOLS&#45;&gt;DEVICE -->
+<g id="edge12" class="edge">
+<title>PTOOLS-&gt;DEVICE</title>
+<path fill="none" stroke="#000000" d="M456.2669,-180.7674C458.7098,-147.3628 462.5643,-94.6554 464.9285,-62.3262"/>
+<polygon fill="#000000" stroke="#000000" points="452.7555,-180.7976 455.5167,-191.0263 459.7368,-181.3082 452.7555,-180.7976"/>
+<polygon fill="#000000" stroke="#000000" points="468.4302,-62.4297 465.669,-52.201 461.4488,-61.9191 468.4302,-62.4297"/>
+<text text-anchor="middle" x="502.0421" y="-102.8" font-family="Times,serif" font-size="14.00" fill="#000000">Debug/Logcat</text>
+</g>
+<!-- PTOOLS&#45;&gt;APK -->
+<g id="edge10" class="edge">
+<title>PTOOLS-&gt;APK</title>
+<path fill="none" stroke="#000000" d="M403.502,-198.0062C383.9181,-190.0635 363.2702,-177.9349 350.9088,-159.8 346.0428,-152.6613 344.0846,-143.6611 343.5564,-135.1236"/>
+<polygon fill="#000000" stroke="#000000" points="347.0564,-135.0831 343.5218,-125.0953 340.0564,-135.1073 347.0564,-135.0831"/>
+<text text-anchor="middle" x="397.0456" y="-147.2" font-family="Times,serif" font-size="14.00" fill="#000000">Installs via ADB</text>
+</g>
+<!-- APK&#45;&gt;DEVICE -->
+<g id="edge11" class="edge">
+<title>APK-&gt;DEVICE</title>
+<path fill="none" stroke="#000000" d="M375.9101,-88.9551C391.7625,-79.3912 411.4172,-67.5334 428.4071,-57.2833"/>
+<polygon fill="#000000" stroke="#000000" points="430.2602,-60.253 437.0146,-52.0904 426.6441,-54.2593 430.2602,-60.253"/>
+</g>
+</g>
+</svg>
