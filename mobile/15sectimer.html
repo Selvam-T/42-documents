@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cycle Timer</title>
+<style>
+body{font-family:Arial,sans-serif;text-align:center;margin:50px;background:#111;color:#0f0}
+h1{margin:0 0 30px}
+.widget{font-size:80px;font-weight:bold;margin:20px;min-width:200px;display:inline-block;background:#222;padding:10px 30px;border-radius:10px}
+button{font-size:24px;padding:15px 40px;margin:10px;border:none;border-radius:8px;cursor:pointer}
+#start{background:#0f0;color:#000}
+#stop{background:#f00;color:#fff}
+</style>
+</head>
+<body>
+<h1>Cycle Timer</h1>
+<div>Seconds <div id="sec" class="widget">00</div></div>
+<div>Count <div id="cnt" class="widget">0</div></div>
+<button id="start">Start</button>
+<button id="stop" disabled>Stop</button>
+
+<script>
+let sec=0,cnt=0,iv=null,pt=null,run=false
+const se=document.getElementById('sec'),cn=document.getElementById('cnt'),st=document.getElementById('start'),sp=document.getElementById('stop')
+
+function up(){se.textContent=sec.toString().padStart(2,'0');cn.textContent=cnt}
+
+function cycle(){
+  if(iv)clearInterval(iv)
+  sec=1;se.style.color='#0f0';up()
+  iv=setInterval(()=>{sec++;up();if(sec>=16){clearInterval(iv);cnt++;up();pause()}},1000)
+}
+
+function pause(){
+  sec=4;se.style.color='#ff0';up()
+  pt=setInterval(()=>{sec--;up();if(sec<=-1){clearInterval(pt);if(run)cycle()}},1000)
+}
+
+st.onclick=()=>{if(run)return;run=true;st.disabled=true;sp.disabled=false;cycle()}
+sp.onclick=()=>{run=false;st.disabled=false;sp.disabled=true;if(iv)clearInterval(iv);if(pt)clearTimeout(pt);sec=0;cnt=0;up()}
+</script>
+</body>
+</html>

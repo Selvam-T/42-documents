@@ -3,7 +3,11 @@
 ## Context
 The goal is to run Android development on a school Linux machine with restricted permissions and limited writable storage.
 
-The original plan was to use a Dockerized Android/Flutter development environment and keep the project on a host path that could support active development, builds, and repeated downloads.
+The original plan was to use a Dockerized Android/Flutter development environment and keep the project on a host path that could support active development, builds, and repeated downloads. 
+
+My attempts to setup a dockerized container on /home failed due to insufficient disk space.  
+
+My next consideration /goinfre vs /sgoinfre.
 
 ## Initial preference: `/goinfre`
 `/goinfre` was the preferred project root at first for practical development reasons:
@@ -34,15 +38,7 @@ Although `/goinfre` was still the better workspace path in principle, it later s
 
 During the build, Flutter and related tooling attempted to download and write cache data, Git pack data, and build artifacts, and the process failed with `No space left on device`.
 
-So the conclusion changed from:
-
-- **preferred path**
-
-to:
-
-- **preferred path only when enough space is available**
-
-In other words, `/goinfre` remained architecturally cleaner, but storage availability became the deciding factor.
+`/goinfre` remained architecturally cleaner, but storage availability became the deciding factor.
 
 ## Where `/sgoinfre` fits
 `/sgoinfre` became relevant only because it represented the remaining larger storage area available to you.

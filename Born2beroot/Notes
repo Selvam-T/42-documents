@@ -1,5 +1,33 @@
 
-IMPORTANT: Born2beroot project folder is located in home/sgoinfre
+Born2beroot project folder:
+--------------------------- 
+located in /home/sthiagar/sgoinfre/VM/born2beroot
+
+Login credentials for this project:
+----------------------------------
+> Please unlock disk sda5_crypt: Born2be42*
+
+> For non-administrative activities:
+		User name: sthiagar
+		Pwd: Postcorepwd42*
+
+> System Administrative account:
+	Host name: sthiagar42
+	Pwd: Born2be42* (New pwd: Postcorepwd42*) ??
+
+Virtual Machine Console:
+------------------------
+
+GUI not installed, I think I installed as command-line only, did not select desktop environment.
+
+The black screen window opened by VirtualBox is the display/console of the virtual machine.
+
+When you log in there with username/password and get a command line, you are already inside the VM guest OS.
+
+ISO image:
+----------
+The VM uses the .vdi disk after installation, not the ISO.
+Then deleting the ISO from the host is fine.
 
 Virtual Machine:
 ----------------
@@ -49,30 +77,36 @@ Useful info to see information required to display using the script.
 		Package manager for the software installation and management	
 	
 	
-	Debian known for stability, extensive software repository and open-source principles.
-	AppArmor
-	Rocky Linux is a CentOS fork of RHEL, RedHat Enterprise Linux. 
-	But Red Hat has killed CentOS, as it was known to be.
+	Debian vs Rocky Linux: 
+	- Debian known for stability, extensive software repository and open-source principles.
 	
-	The choice between Debian and Rocky Linux should be based on your specific use case,
-	preferences, and requirements.
+	- AppArmor
 	
-	Debian offers extensive support and resources within the community.
-	Rocky doesn't have an established community.
+	- Rocky Linux is a CentOS fork of RHEL, RedHat Enterprise Linux. 
+	  But Red Hat has killed CentOS, as it was known to be.
 	
-	Debian has diverse software packages, Rocky has smaller package repository.
+	- The choice between Debian and Rocky Linux should be based on your specific use case,
+	  preferences, and requirements.
 	
-	Debian might have better hardware support due to its extensive testing and broad user base.
+	- Debian offers extensive support and resources within the community.
+	- Rocky doesn't have an established community.
 	
-	Debian strictly adheres to free and open-source software principles.
-	Rocky might include some proprietary or non-free software.
+	- Debian has diverse software packages, Rocky has smaller package repository.
+	
+	- Debian might have better hardware support due to its extensive testing and broad user base.
+	
+	- Debian strictly adheres to free and open-source software principles.
+	- Rocky might include some proprietary or non-free software.
 	
 5,	Debian GNU/Linux operating system.
-	The files are ISO images. Download files.
-	(Checksums of the images are contained in SHA512SUMS, etc.
-	check if the checksum matches that expected from the checksum file.)
+	The files are ISO images. 
+	- Download files.	
+	- check if the checksum matches that expected from the checksum file.)
+	  (Checksums of the images are contained in SHA512SUMS, etc.
 	
-6,	Create a new virtual machine: Click on 'New'
+6,	Create a new virtual machine:
+        ----------------------------
+    Click on 'New'
 	Name: born2beroot
 	Machine folder: other, other location, computer, sgoinfre, goinfre, perso, login_id
 	Type: Linux
@@ -88,10 +122,10 @@ Useful info to see information required to display using the script.
 	
 	System Administrative account:
 		Host name: sthiagar42
-		Pwd: Born2be42*
+		Pwd: Born2be42* (New pwd: Postcorepwd42*) ??
 	For non-administrative activities:
 		User name: sthiagar
-		Pwd: Born2be42*
+		Pwd: Born2be42* (New pwd: Postcorepwd42*)
 		
 	setup encrypted LVM, and partition disk into /home /var /tmp paritions
 	Encryption Passphrase: Born2be42*

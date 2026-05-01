@@ -1,0 +1,30 @@
+Phase,Order,Task,Needed now?,Why / Notes,Dockerfile relation
+First boot,1,Log into Ubuntu VM with username 'sthiagar' and your VM password,Yes,Confirm Ubuntu desktop loads and the install succeeded,Not from Dockerfile
+First boot,2,Restart the VM once,Yes,Confirms the VM reboots cleanly from the virtual disk,Not from Dockerfile
+System update,3,Run system updates (sudo apt update && sudo apt upgrade),Yes,Brings packages and security fixes up to date,Replaces container image freshness
+Base tools,4,Install git,Yes,Needed for cloning repos,Dockerfile installed git
+Base tools,5,Install curl,Yes,Useful for downloads and setup,Dockerfile installed curl
+Base tools,6,Install unzip,Yes,Needed for archives and some SDK assets,Dockerfile installed unzip
+Base tools,7,Install xz-utils,Yes,Useful for compressed archives,Dockerfile installed xz-utils
+Base tools,8,Install zip,Yes,Useful for packaging/build steps,Dockerfile installed zip
+Base tools,9,Install ca-certificates,Yes,Needed for HTTPS/SSL downloads,Dockerfile installed ca-certificates
+Java,10,Install openjdk-17-jdk,Yes,Android tooling commonly needs JDK 17,Dockerfile installed openjdk-17-jdk
+VirtualBox,11,Optionally install VirtualBox Guest Additions,Optional,"Helps with display resizing, clipboard, integration",Not in Dockerfile; VM-specific
+Android Studio,12,Install Android Studio,Yes,Preferred path in a full Ubuntu VM,Replaces manual SDK setup in Dockerfile
+Android Studio,13,Run Android Studio setup wizard,Yes,Lets Studio download required SDK pieces,Replaces manual command line tools unzip/setup
+Android SDK,14,Install Android SDK Platform-Tools,Yes,Needed for adb and device work,Dockerfile installed platform-tools
+Android SDK,15,Install one Android platform SDK,Yes,Needed to compile against a target Android version,Dockerfile installed platforms;android-36
+Android SDK,16,Install Android Build-Tools,Yes,Needed for Android builds,Dockerfile installed build-tools;36.0.0
+Android SDK,17,Accept Android SDK licenses,Yes,Required by Android build tools,Dockerfile did yes | sdkmanager --licenses
+Flutter,18,Install Flutter SDK only if your project is Flutter,Only if needed,Skip if this is a native Android-only project,Dockerfile cloned Flutter stable
+Flutter,19,Run flutter doctor only if Flutter is installed,Only if needed,Checks Flutter/Dart/Android integration,Dockerfile ran flutter doctor
+NDK,20,Install Android NDK only if the project or a plugin asks for it,Optional,Not needed for many apps,Dockerfile installed ndk;28.2.13676358
+Graphics libs,21,Install libglu1-mesa only if a tool later complains,Optional,Likely unnecessary if you skip the emulator,Dockerfile installed libglu1-mesa
+Editor workflow,22,Optionally install openssh-server if you want host VS Code to edit files in the VM,Optional,Useful for Remote SSH workflow,Not in Dockerfile; workflow-specific
+Project setup,23,Clone or copy your mobile project into the VM,Yes,Gets your code into the dev environment,Related to git usage
+Project setup,24,Open the project in Android Studio or VS Code,Yes,Start actual development work,Not in Dockerfile
+Project setup,25,Build the project once,Yes,Confirms toolchain is working,Uses Java/SDK/Flutter if applicable
+Testing,26,Prefer testing on a real Android phone instead of an emulator inside the VM,Yes,Avoids heavier RAM use and nested virtualization pain,Not in Dockerfile; project decision
+Not needed from Dockerfile,27,"Do not recreate Docker-only environment variables like DEBIAN_FRONTEND, ANDROID_HOME, FLUTTER_HOME unless you want custom paths",No,Those were mainly for the container image,Docker-specific
+Not needed from Dockerfile,28,Do not create the Docker 'developer' user or /app container workspace,No,In the VM you already have a normal Ubuntu user account,Docker-specific
+Not needed from Dockerfile,29,Do not manually unpack Android command-line tools under /usr/local unless you intentionally want a CLI-only setup,No,Android Studio handles SDK setup more simply in a desktop VM,Docker-specific
