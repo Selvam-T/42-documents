@@ -16,6 +16,18 @@ A)
 	- framework of my choice is Flutter
 	- flutter create ex00 
 
+```
+flutter create ex00
+cd ex00
+flutter pub get
+
+flutter run -d "SM A146P"
+```
+To get device name -  
+```
+adb shell getprop ro.product.model  
+```
+
 B)  		
 - Understand the structure of a Flutter project
 
